@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "target": "ESNext",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "module": "commonjs",
+        "outDir": "dist/",
+        "lib": [
+            "es2015",
+            "es2017",
+            "dom"
+        ],
+        "removeComments": true,
+        "jsx": "react",
+        "allowJs": true        
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
