@@ -6,6 +6,7 @@ import {
   Switch,
   Route
 } from "react-router-dom";
+import LoginPage from '../core/components/Login';
 function Home() {
   return <h2>Home</h2>;
 }
@@ -13,21 +14,34 @@ function Home() {
 function About() {
   return <h2>About</h2>;
 }
+function Content(props : {classProps? : any, children : any}){
+  return (
+    <div className={`content ${props.classProps}`}>
+      {props.children}
+    </div>
+  );
+}
 export default class App extends React.Component {
   render() {
     return (
-
       <div className="app-page">
         <Router>
-          <Navigation />
-          <Switch>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/">
+        <Navigation />
+          <Route exact path="/" component={Home}>
+            <Content>
               <Home />
-            </Route>
-          </Switch>
+            </Content>
+          </Route>
+          <Route exact path="/about" component={About}>
+            <Content>
+              <About />
+            </Content>
+          </Route>
+          <Route exact path="/login" component={LoginPage}>
+            <Content classProps="full-content">
+              <LoginPage />
+            </Content>
+          </Route>
         </Router>
       </div>
     );

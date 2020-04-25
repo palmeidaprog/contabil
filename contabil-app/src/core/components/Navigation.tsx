@@ -7,7 +7,6 @@ export default class Navigation extends React.Component {
     public render() {
         return (
             <div className="navigation">
-            
                 <div className="logo">
                     <div className="nav-logo"></div>
                 </div>
@@ -16,6 +15,9 @@ export default class Navigation extends React.Component {
                     <ul>
                         <li>
                             <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/login">Login</Link>
                         </li>
                         <li>
                             <Link to="/about">About</Link>

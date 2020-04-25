@@ -8,7 +8,8 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: 'bundle.min.js'
+    filename: 'bundle.min.js',
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -17,7 +18,7 @@ module.exports = {
         loader: 'awesome-typescript-loader'
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.(png|jpg|jpeg|gif|svg)$/i,
         use: [
           {
             loader: 'file-loader',
@@ -58,6 +59,12 @@ module.exports = {
         ]
       }
     ]
+  },
+  devServer: {
+    contentBase: __dirname + '/dist',
+    compress: false,
+    port: 1234,
+    historyApiFallback: true,
   },
   resolve: {
     modules: ['node_modules', 'src'],
