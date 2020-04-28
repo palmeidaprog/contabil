@@ -7,6 +7,8 @@ import {
   Route
 } from "react-router-dom";
 import LoginPage from '../core/components/Login';
+import RegisterPage from '../core/components/Register';
+
 function Home() {
   return <h2>Home</h2>;
 }
@@ -40,6 +42,11 @@ export default class App extends React.Component {
           <Route exact path="/login" component={LoginPage}>
             <Content classProps="full-content">
               <LoginPage />
+            </Content>
+          </Route>
+          <Route exact path="/register" component={RegisterPage}>
+            <Content classProps="full-content">
+              <RegisterPage />
             </Content>
           </Route>
         </Router>
