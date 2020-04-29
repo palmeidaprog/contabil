@@ -1,7 +1,7 @@
 import React from 'react';
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from "@material-ui/lab/Autocomplete"
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
@@ -10,22 +10,28 @@ import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
 
-
-class InternalState {
+class Registry{
     username: string;
     password: string;
     accountNumber: string;
     accountName: string;
     rootAccount: string;
-    isButtonDisabled: boolean;
-    helperText: string;
-    error: boolean;
-    constructor() {
+    constructor(){
         this.accountNumber = " ";
         this.accountName = "";
         this.rootAccount = "";
         this.username = "";
         this.password = "";
+    }
+}
+
+class InternalState {
+    registryUser : Registry
+    isButtonDisabled: boolean;
+    helperText: string;
+    error: boolean;
+    constructor() {
+        this.registryUser = new Registry();
         this.isButtonDisabled = false;
         this.helperText = "";
         this.error = false;
@@ -37,12 +43,13 @@ export default class RegisterPage extends React.Component {
     public redirectService: RedirectService = new RedirectService();
     private handleRegister() {
         
-        if (this.state.username !== "" && this.state.password !== "" &&
-            this.state.accountName !== "" && this.state.accountNumber !== "" &&
-            this.state.rootAccount !== "") {
+        if (this.state.registryUser.username !== "" && this.state.registryUser.password !== "" &&
+            this.state.registryUser.accountName !== "" && this.state.registryUser.accountNumber !== "" &&
+            this.state.registryUser.rootAccount !== "") {
 
             this.state.error = false;
             this.state.helperText = "Register Successfully";
+            //console.log(this.state.registryUser)
             this.redirectService.redirect('/login');
         } else {
             this.state.error = true;
@@ -57,29 +64,29 @@ export default class RegisterPage extends React.Component {
         }
     }
     private handleEnterUsername(e: any) {
-        this.state.username = e;
+        this.state.registryUser.username = e;
         this.forceUpdate();
     
     }
     private handleEnterPassword(e: any) {
-        this.state.password = e;
+        this.state.registryUser.password = e;
         this.forceUpdate();
 
     }
     private handleEnterAccountNumber(e: any) {
-        this.state.accountNumber = e;
+        this.state.registryUser.accountNumber = e;
         this.forceUpdate();
     }
     private handleEnterAccountName(e: any) {
-        this.state.accountName = e;
+        this.state.registryUser.accountName = e;
         this.forceUpdate();
     }
     private handleEnterRootAccount(e: any) {
-        this.state.rootAccount = e;
+        this.state.registryUser.rootAccount = e;
         this.forceUpdate();
     }
     private get isSubmitDisabled() {
-        return this.state.username == "" || this.state.password == "";
+        return this.state.registryUser.username == "" || this.state.registryUser.password == "";
     }
     render() {
         return (
@@ -104,10 +111,10 @@ export default class RegisterPage extends React.Component {
                                                 fullWidth
                                                 id="accountName"
                                                 type="string"
-                                                label="Nome da conta"
-                                                placeholder="Nome da conta"
+                                                label="Account Name"
+                                                placeholder="Account Name"
                                                 margin="normal"
-                                                onChange={e => this.handleEnterUsername(e.target.value)}
+                                                onChange={e => this.handleEnterAccountName(e.target.value)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                             />
                                         </div>
@@ -119,50 +126,37 @@ export default class RegisterPage extends React.Component {
                                                     error={this.state.error}
                                                     fullWidth
                                                     id="accountNumber"
-                                                    type="number"
-                                                    label="Numero da conta"
-                                                    placeholder="Numero da conta"
+                                                    type="text"
+                                                    label="Account Number"
+                                                    placeholder="Account Number"
                                                     margin="normal"
                                                     helperText={this.state.helperText}
-                                                    onChange={e => this.handleEnterPassword(e.target.value)}
+                                                    onChange={e => this.handleEnterAccountNumber(e.target.value)}
                                                     onKeyPress={e => this.handleKeyPress(e)}
                                                 />
                                         </div>
                                         <div className="col-md-6">
-                                            <Autocomplete
+                                            <Autocomplete   
                                                 options={["1.Ativo", "1.1.Imediato", "1.1.1.Caixa"]}
                                                 getOptionLabel={option => option}
                                                 className="w-100"
                                                 noOptionsText={"Loading..."}
                                                 multiple={false}
-                                                onChange={(e, v) => this.handleEnterPassword(v)}
+                                                onChange={(e, v) => this.handleEnterRootAccount(v)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
-                                                renderInput={() =>(
+                                                renderInput={params =>(
                                                     <TextField 
-                                                    hiddenLabel 
+                                                    {...params}
                                                     fullWidth
                                                     variant="outlined"
                                                     error={this.state.error}
                                                     id="rootAccount"
                                                     margin="normal"
                                                     helperText={this.state.helperText}
-                                                    placeholder="Conta pai"
+                                                    placeholder="Super Account"
                                                     />
                                                 )}
                                             />
-                                            {/* <TextField
-                                                    variant="outlined"
-                                                    error={this.state.error}
-                                                    fullWidth
-                                                    id="rootAccount"
-                                                    type="number"
-                                                    label="Conta pai"
-                                                    placeholder="Conta pai"
-                                                    margin="normal"
-                                                    helperText={this.state.helperText}
-                                                    onChange={e => this.handleEnterPassword(e.target.value)}
-                                                    onKeyPress={e => this.handleKeyPress(e)}
-                                                /> */}
                                         </div>
                                     </div>
                                     <div className="row">

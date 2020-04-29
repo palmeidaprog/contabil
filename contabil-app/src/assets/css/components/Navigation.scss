@@ -10,7 +10,7 @@
         display: flex;
         justify-content: center;
         .nav-logo{
-            background-image: url('../../images/bank-logo.jpg');
+            background-image: url('../../images/balance-logo.png');
             background-repeat: no-repeat;
             background-size: contain;
             width: 10em;
@@ -32,12 +32,12 @@
             width: 100%;
             padding: 0;
             li{
-                border-bottom: 0.1em solid #00000024;
+                border-bottom: 0.1em solid $navLines;
                 padding: 2em;
                 display: flex;
                 justify-content: center;
                 &:first-child{
-                    border-top: 0.1em solid #00000024;
+                    border-top: 0.1em solid $navLines;
                 }
                 & > a{
                     text-decoration: none;
