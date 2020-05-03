@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
-import CardHeader from "@material-ui/core/CardHeader";
 import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
+import autobind from 'autobind-decorator';
+import { Auth0Authentication } from './auth/Auth0Authentication';
 
+
+export interface HomeProps {
+    auth: Auth0Authentication;
+  }
 
 class InternalState {
     username: string;
@@ -25,9 +30,17 @@ class InternalState {
 
     }
 }
-export default class LoginPage extends React.Component {
+export default class LoginPage extends Component<HomeProps, {}> {
     public state: InternalState = new InternalState();
     public redirectService: RedirectService = new RedirectService();
+
+
+    @autobind
+    login() {
+        this.props.auth.login();
+    }
+
+    /**
     private handleLogin() {
         
         if (this.state.username === "abc@email.com" && this.state.password === "password") {
@@ -41,9 +54,10 @@ export default class LoginPage extends React.Component {
         this.forceUpdate();
 
     }
+    */
     private handleKeyPress(e: any) {
         if (e.keyCode === 13 || e.which === 13) {
-            this.state.isButtonDisabled && this.handleLogin();
+            this.state.isButtonDisabled && this.login();
         }
     }
     private handleEnterUsername(e: any) {
@@ -108,7 +122,7 @@ export default class LoginPage extends React.Component {
                                         size="large"
                                         color="secondary"
                                         className="loginBtn"
-                                        onClick={() => this.handleLogin()}
+                                        onClick={this.login}
                                         disabled={this.isSubmitDisabled}
                                     >Login</Button>
                                 </CardActions>
