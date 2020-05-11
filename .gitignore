@@ -4,6 +4,10 @@
 .project
 .classpath
 
+#angular
+dist/
+node_modules/
+
 #maven
 target/
 out/
