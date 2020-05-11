@@ -1,0 +1,53 @@
+@import 'src/assets/css/variables';
+.navigation{
+    background-color: $navColor;
+    position: fixed;
+    height: 100%;
+    min-width: 16em;
+    top: 0;
+    box-shadow: 0 0 0 2px #4b4a4a2a;
+    .logo{      
+        display: flex;
+        justify-content: center;
+        .nav-logo{
+            background-image: url('src/assets/images/balance-logo.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 10em;
+            height: 10em;
+            background-position: center;
+            position: relative;
+            border: 0.1em solid #4faec83d;
+            border-radius: 6em;
+        
+        
+        }
+    }
+    .links{
+        width: 100%;
+        margin: 0;
+        margin-top: 1em;
+        ul{
+            list-style: none;
+            width: 100%;
+            padding: 0;
+            li{
+                border-bottom: 0.1em solid $navLines;
+                padding: 2em;
+                display: flex;
+                justify-content: center;
+                &:first-child{
+                    border-top: 0.1em solid $navLines;
+                }
+                & > a{
+                    text-decoration: none;
+                    color: white;
+                }
+                &:hover{
+                    background-color: rgba(54, 91, 109, 0.521);
+                }
+            }
+            
+        }
+    }
+}
