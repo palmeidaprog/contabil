@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class UsuarioService {
+public class Usuario {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
     @NotBlank(message="O código não pode ser nulo")
@@ -17,7 +17,7 @@ public class UsuarioService {
 
     private boolean congelado;
 
-    public UsuarioService() { }
+    public Usuario() { }
 
     public Long getCodigo() {
         return codigo;

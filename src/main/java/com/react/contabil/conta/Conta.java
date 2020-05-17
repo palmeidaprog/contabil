@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
-public class ContaService {
+public class Conta {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
     @NotBlank(message="O código não pode ser nulo")
@@ -14,7 +14,7 @@ public class ContaService {
     private Long contaPaiCodigo;
 
     @NotBlank(message="O usuário não pode ser nulo")
-    private UsuarioService usuario;
+    private Usuario usuario;
 
     @NotBlank(message="O número não pode ser nulo")
     private String numero;
@@ -22,13 +22,13 @@ public class ContaService {
     @NotBlank(message="O nome da conta não pode ser nulo")
     private String nome;
 
-    private ContaService contaPai;
+    private Conta contaPai;
 
     private BigDecimal saldo;
 
     private String descricao;
 
-    public ContaService() { }
+    public Conta() { }
 
     public Long getCodigo() {
         return codigo;
@@ -38,11 +38,11 @@ public class ContaService {
         this.codigo = codigo;
     }
 
-    public UsuarioService getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioService usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
@@ -70,11 +70,11 @@ public class ContaService {
         this.contaPaiCodigo = contaPaiCodigo;
     }
 
-    public ContaService getContaPai() {
+    public Conta getContaPai() {
         return contaPai;
     }
 
-    public void setContaPai(ContaService contaPai) {
+    public void setContaPai(Conta contaPai) {
         this.contaPai = contaPai;
     }
 
