@@ -1,6 +1,4 @@
-package com.react.contabil.datalayer.usuario;
-
-import com.react.contabil.datalayer.conta.ContaDO;
+package com.react.contabil.datalayer.dataobject;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

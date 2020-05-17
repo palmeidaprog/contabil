@@ -1,16 +1,13 @@
-package com.react.contabil.datalayer.conta;
-
-import com.react.contabil.datalayer.usuario.UsuarioDO;
+package com.react.contabil.datalayer.dataobject;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "conta")
@@ -44,6 +41,9 @@ public class ContaDO {
         updatable = false
     )
     private ContaDO contaPai;
+
+    @Column(name = "saldo")
+    private BigDecimal saldo;
 
     @Column(name = "descricao")
     private String descricao;
@@ -104,5 +104,13 @@ public class ContaDO {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public BigDecimal getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 }
