@@ -5,7 +5,10 @@
         http://xmlns.jcp.org/xml/ns/persistence
         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
    <persistence-unit name="primary" transaction-type="RESOURCE_LOCAL">
-
+      <class>com.react.contabil.datalayer.dataobject.UsuarioDO</class>
+      <class>com.react.contabil.datalayer.dataobject.ContaDO</class>
+      <class>com.react.contabil.datalayer.dataobject.ValorDO</class>
+      <class>com.react.contabil.datalayer.dataobject.LancamentoDO</class>
 
       <properties>
 

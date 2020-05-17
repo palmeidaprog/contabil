@@ -35,7 +35,7 @@ public class ContaDO {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-        name="conta_conta_pai",
+        name="codigo_conta_pai",
         referencedColumnName="codigo",
         insertable = false,
         updatable = false

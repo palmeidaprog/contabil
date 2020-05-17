@@ -1,5 +1,6 @@
 package com.react.contabil.configuracao;
 
+import com.react.contabil.conta.ContaService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -10,7 +11,7 @@ public class ConfiguracaoWebService extends Application {
     private Set<Class<?>> classes = new HashSet<>();
 
     public ConfiguracaoWebService() {
-//        classes.add(AgendamentoService.class);
+        classes.add(ContaService.class);
 //        classes.add(AtendimentoService.class);
     }
 

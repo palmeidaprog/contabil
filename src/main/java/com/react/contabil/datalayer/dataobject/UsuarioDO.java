@@ -28,6 +28,14 @@ public class UsuarioDO {
     @Column(name = "congelado", columnDefinition = "BIT")
     private boolean congelado;
 
+    @Column(
+        name = "login",
+        nullable = false,
+        columnDefinition = "CHAR(16)",
+        unique = true
+    )
+    private String login;
+
     @OneToMany(
         mappedBy = "usuario",
         cascade = CascadeType.ALL,
@@ -76,5 +84,13 @@ public class UsuarioDO {
 
     public void setContas(List<ContaDO> contas) {
         this.contas = contas;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 }
