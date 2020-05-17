@@ -1,12 +1,17 @@
 package com.react.contabil.datalayer.usuario;
 
+import com.react.contabil.datalayer.conta.ContaDO;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Converter;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -24,6 +29,14 @@ public class UsuarioDO {
 
     @Column(name = "congelado", columnDefinition = "BIT")
     private boolean congelado;
+
+    @OneToMany(
+        mappedBy = "usuario",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY,
+        orphanRemoval = false
+    )
+    private List<ContaDO> contas;
 
     public UsuarioDO() { }
 
@@ -57,5 +70,13 @@ public class UsuarioDO {
 
     public void setCongelado(boolean congelado) {
         this.congelado = congelado;
+    }
+
+    public List<ContaDO> getContas() {
+        return contas;
+    }
+
+    public void setContas(List<ContaDO> contas) {
+        this.contas = contas;
     }
 }
