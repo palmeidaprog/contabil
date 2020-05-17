@@ -1,11 +1,13 @@
-package com.react.contabil.conta;
+package com.react.contabil.lancamento;
 
+
+import com.react.contabil.conta.Conta;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
-public class ValorService {
+public class Valor {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
     @NotBlank(message="O código não pode ser nulo")
@@ -25,9 +27,9 @@ public class ValorService {
     @NotBlank(message="O lançamento não pode ser nulo")
     private Long codigoLancamento;
 
-    private ContaService conta;
+    private Conta conta;
 
-    public ValorService() {  }
+    public Valor() {  }
 
     public Long getCodigo() {
         return codigo;
@@ -69,11 +71,11 @@ public class ValorService {
         this.codigoLancamento = codigoLancamento;
     }
 
-    public ContaService getConta() {
+    public Conta getConta() {
         return conta;
     }
 
-    public void setConta(ContaService conta) {
+    public void setConta(Conta conta) {
         this.conta = conta;
     }
 }

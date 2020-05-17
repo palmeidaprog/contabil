@@ -1,5 +1,7 @@
 package com.react.contabil.conta;
 
+import com.react.contabil.usuario.Usuario;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -14,7 +16,7 @@ public class Conta {
     private Long contaPaiCodigo;
 
     @NotBlank(message="O usuário não pode ser nulo")
-    private UsuarioService usuario;
+    private Usuario usuario;
 
     @NotBlank(message="O número não pode ser nulo")
     private String numero;
@@ -22,13 +24,13 @@ public class Conta {
     @NotBlank(message="O nome da conta não pode ser nulo")
     private String nome;
 
-    private ContaService contaPai;
+    private Conta contaPai;
 
     private BigDecimal saldo;
 
     private String descricao;
 
-    public ContaService() { }
+    public Conta() { }
 
     public Long getCodigo() {
         return codigo;
@@ -38,11 +40,11 @@ public class Conta {
         this.codigo = codigo;
     }
 
-    public UsuarioService getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioService usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
@@ -70,11 +72,11 @@ public class Conta {
         this.contaPaiCodigo = contaPaiCodigo;
     }
 
-    public ContaService getContaPai() {
+    public Conta getContaPai() {
         return contaPai;
     }
 
-    public void setContaPai(ContaService contaPai) {
+    public void setContaPai(Conta contaPai) {
         this.contaPai = contaPai;
     }
 

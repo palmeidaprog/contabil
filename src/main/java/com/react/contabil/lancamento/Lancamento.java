@@ -1,11 +1,13 @@
-package com.react.contabil.conta;
+package com.react.contabil.lancamento;
+
+import com.react.contabil.usuario.Usuario;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
-public class LancamentoService {
+public class Lancamento {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
     @NotBlank(message="O código não pode ser nulo")
@@ -13,7 +15,7 @@ public class LancamentoService {
 
     @NotBlank(message="O usuário não pode ser nulo")
 
-    private UsuarioService usuario;
+    private Usuario usuario;
 
     @NotBlank(message="A data não pode ser nula")
     private Date data;
@@ -21,9 +23,9 @@ public class LancamentoService {
     @NotBlank(message="O histórico não pode ser nulo")
     private String historico;
 
-    private List<ValorService> valores;
+    private List<Valor> valores;
 
-    public LancamentoService() { }
+    public Lancamento() { }
 
     public Long getCodigo() {
         return codigo;
@@ -33,11 +35,11 @@ public class LancamentoService {
         this.codigo = codigo;
     }
 
-    public UsuarioService getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UsuarioService usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
