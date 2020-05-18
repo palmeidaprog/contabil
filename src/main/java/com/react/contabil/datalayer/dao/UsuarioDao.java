@@ -5,6 +5,9 @@ import com.react.contabil.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.Stateless;
+
+@Stateless
 public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
 
     private static final Logger LOGGER = LoggerFactory

@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
+
 public class Conta {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
