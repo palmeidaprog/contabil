@@ -1,9 +1,7 @@
 package com.react.contabil.datalayer.dao;
 
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
-import com.react.contabil.datalayer.excecao.PersistenciaException;
-import org.eclipse.jetty.util.StringUtil;
-import org.jboss.resteasy.spi.NotImplementedYetException;
+import com.react.contabil.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -36,7 +36,7 @@ public class LancamentoDO {
     @OneToMany(
         mappedBy = "lancamento",
         cascade = CascadeType.ALL,
-        fetch = FetchType.EAGER,
+        fetch = FetchType.LAZY,
         orphanRemoval = true
     )
     private List<ValorDO> valores;
