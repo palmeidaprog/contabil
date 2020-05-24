@@ -13,12 +13,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Lancamento {
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Size(max = 15, message="O codigo do lançamento não pode ser maior que {max}")
     private Long codigo;
 
-    @NotBlank(message="O usuário não pode ser nulo")
-
-    private Usuario usuario;
+    @Size(max = 15, message="O codigo do usuário não pode ser maior que {max}")
+    @NotBlank(message="O código do usuário não pode ser nulo")
+    private Long codigoUsuario;
 
     @NotBlank(message="A data não pode ser nula")
     private Date data;
@@ -38,12 +38,12 @@ public class Lancamento {
         this.codigo = codigo;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Long getCodigoUsuario() {
+        return codigoUsuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setCodigoUsuario(Long usuario) {
+        this.codigoUsuario = codigoUsuario;
     }
 
     public Date getData() {

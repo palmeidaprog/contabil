@@ -10,10 +10,14 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Usuario {
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Size(max = 15, message="O codigo do usuário não pode ser maior que {max}")
     private Long codigo;
 
-    @NotBlank(message="O nome não pode ser nulo")
+    @Size(max = 16, message="O login do usuário não pode ser maior que {max}")
+    @NotBlank(message="O login do usuário não pode ser nulo")
+    private Long login;
+
+    @NotBlank(message="O nome do usuário não pode ser nulo")
     private String nome;
 
     private String sobrenome;
@@ -28,6 +32,14 @@ public class Usuario {
 
     public void setCodigo(Long codigo) {
         this.codigo = codigo;
+    }
+
+    public Long getLogin() {
+        return login;
+    }
+
+    public void setLogin(Long login) {
+        this.login = login;
     }
 
     public String getNome() {

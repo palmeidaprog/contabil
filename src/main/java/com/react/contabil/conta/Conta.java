@@ -14,19 +14,17 @@ public class Conta {
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
     private Long codigo;
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Size(max = 15, message="O codigo da conta pai não pode ser maior que {max}")
     private Long contaPaiCodigo;
 
-    @NotBlank(message="O usuário não pode ser nulo")
-    private Usuario usuario;
+    @NotBlank(message="O código do usuário não pode ser nulo")
+    private Long codigoUsuario;
 
-    @NotBlank(message="O número não pode ser nulo")
+    @NotBlank(message="O número da conta não pode ser nulo")
     private String numero;
 
     @NotBlank(message="O nome da conta não pode ser nulo")
     private String nome;
-
-    private Conta contaPai;
 
     private BigDecimal saldo;
 
@@ -42,12 +40,20 @@ public class Conta {
         this.codigo = codigo;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Long getContaPaiCodigo() {
+        return contaPaiCodigo;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setContaPaiCodigo(Long contaPaiCodigo) {
+        this.contaPaiCodigo = contaPaiCodigo;
+    }
+
+    public Long getCodigoUsuario() {
+        return codigoUsuario;
+    }
+
+    public void setCodigoUsuario(Long codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
     }
 
     public String getNumero() {
@@ -66,20 +72,12 @@ public class Conta {
         this.nome = nome;
     }
 
-    public Long getContaPaiCodigo() {
-        return contaPaiCodigo;
+    public BigDecimal getSaldo() {
+        return saldo;
     }
 
-    public void setContaPaiCodigo(Long contaPaiCodigo) {
-        this.contaPaiCodigo = contaPaiCodigo;
-    }
-
-    public Conta getContaPai() {
-        return contaPai;
-    }
-
-    public void setContaPai(Conta contaPai) {
-        this.contaPai = contaPai;
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 
     public String getDescricao() {
@@ -90,11 +88,5 @@ public class Conta {
         this.descricao = descricao;
     }
 
-    public BigDecimal getSaldo() {
-        return saldo;
-    }
 
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
 }
