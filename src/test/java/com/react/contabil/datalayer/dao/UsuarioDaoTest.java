@@ -24,21 +24,21 @@ class UsuarioDaoTest {
 
     @Test
     void inserir() {
-        this.dao = new UsuarioDao();
-        final UsuarioDO usuarioDO = TestUtils.getUsuarioDO();
-        try {
-            em = UsuarioDao.getEntityManager();
-            et = UsuarioDao.getTransaction(em);
-            et.begin();
-            this.dao.inserir(usuarioDO);
-            et.commit();
+//        this.dao = new UsuarioDao();
+//        final UsuarioDO usuarioDO = TestUtils.getUsuarioDO();
+//        try {
+//            em = UsuarioDao.getEntityManager();
 //            et = UsuarioDao.getTransaction(em);
 //            et.begin();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            UsuarioDao.close(em, et, UsuarioDO.class.getSimpleName());
-        }
+//            this.dao.inserir(usuarioDO);
+//            et.commit();
+////            et = UsuarioDao.getTransaction(em);
+////            et.begin();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            UsuarioDao.close(em, et, UsuarioDO.class.getSimpleName());
+//        }
     }
 
 }

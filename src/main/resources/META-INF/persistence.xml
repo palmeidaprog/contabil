@@ -4,28 +4,40 @@
    xsi:schemaLocation="
         http://xmlns.jcp.org/xml/ns/persistence
         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-   <persistence-unit name="primary" transaction-type="RESOURCE_LOCAL">
-      <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
-      <class>com.react.contabil.datalayer.dataobject.UsuarioDO</class>
-      <class>com.react.contabil.datalayer.dataobject.ContaDO</class>
-      <class>com.react.contabil.datalayer.dataobject.ValorDO</class>
-      <class>com.react.contabil.datalayer.dataobject.LancamentoDO</class>
+<!--   <persistence-unit name="primary" transaction-type="RESOURCE_LOCAL">-->
+   <persistence-unit name="primary">
+<!--      <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
+      <jta-data-source>java:jboss/datasources/ContabilDS</jta-data-source>
+<!--      <class>com.react.contabil.datalayer.dataobject.UsuarioDO</class>-->
+<!--      <class>com.react.contabil.datalayer.dataobject.ContaDO</class>-->
+<!--      <class>com.react.contabil.datalayer.dataobject.ValorDO</class>-->
+<!--      <class>com.react.contabil.datalayer.dataobject.LancamentoDO</class>-->
 
       <properties>
 
          <!-- Conexão ao DB -->
-         <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
-         <property name="javax.persistence.jdbc.url" value="jdbc:mysql://sql186.main-hosting.eu:3306/u515064817_contabil?useTimezone=true&amp;serverTimezone=UTC" />
-         <property name="javax.persistence.jdbc.user" value="u515064817_react" />
-         <property name="javax.persistence.jdbc.password" value="gruporeact" />
+<!--         <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />-->
+<!--         <property name="javax.persistence.jdbc.url" value="jdbc:mysql://sql186.main-hosting.eu:3306/u515064817_contabil?useTimezone=true&amp;serverTimezone=UTC" />-->
+<!--         <property name="javax.persistence.jdbc.user" value="u515064817_react" />-->
+<!--         <property name="javax.persistence.jdbc.password" value="gruporeact" />-->
 
          <!-- Propriedades do Hibernate -->
+
+
+
+
+
          <property name="hibernate.show_sql" value="false" />
          <property name="hibernate.format_sql" value="true" />
-         <property name="hibernate.hbm2ddl.auto" value="validate" />
+<!--         <property name="hibernate.hbm2ddl.auto" value="validate" />-->
          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
 
+         <property name="hibernate.c3p0.min_size" value="5" />
+         <property name="hibernate.c3p0.timeout" value="30000" />
+         <property name="hibernate.c3p0.max_statements" value="50" />
+         <property name="hibernate.c3p0.idle_test_period" value="3000" />
+         <property name="hibernate.connection.autoReconnect" value="true" />
+         <property name="hibernate.connection.autoReconnectForPools" value="true" />
       </properties>
    </persistence-unit>
 </persistence>

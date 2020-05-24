@@ -20,16 +20,20 @@ public class ContaService {
     @Inject
     private ContaServiceHandler handler;
 
+    public ContaService() {
+        System.out.println("y17");
+    }
+
     @GET
     @Path("/test")
     public Response test() {
         final UsuarioDO usuarioDO = new UsuarioDO();
-        usuarioDO.setLogin("teste");
+        usuarioDO.setLogin("testeX");
         usuarioDO.setNome("Tester");
         usuarioDO.setSobrenome("Test");
         this.handler.inserir(usuarioDO);
 
-        return Response.ok().build();
+        return Response.ok("Test").build();
     }
 
 }

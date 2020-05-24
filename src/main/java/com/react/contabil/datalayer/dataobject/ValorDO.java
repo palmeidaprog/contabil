@@ -16,13 +16,13 @@ public class ValorDO {
     @Column(name = "codigo", nullable = false)
     private Long codigo;
 
-    @Column(name = "tipo", nullable = false)
+    @Column(name = "tipo", nullable = false, columnDefinition = "char(7)")
     private String tipo;
 
-    @Column(name = "valor", nullable = false)
+    @Column(name = "valor", nullable = false, columnDefinition = "float(18,2)")
     private BigDecimal valor;
 
-    @Column(name = "saldo_conta", nullable = false)
+    @Column(name = "saldo_conta", nullable = false, columnDefinition = "float(18,2)")
     private BigDecimal saldoConta;
 
     @ManyToOne(fetch = FetchType.LAZY)

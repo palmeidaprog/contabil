@@ -42,10 +42,10 @@ public class ContaDO {
     )
     private ContaDO contaPai;
 
-    @Column(name = "saldo")
+    @Column(name = "saldo", columnDefinition = "float(18,2)")
     private BigDecimal saldo;
 
-    @Column(name = "descricao")
+    @Column(name = "descricao", columnDefinition = "TEXT(500)")
     private String descricao;
 
     public ContaDO() { }

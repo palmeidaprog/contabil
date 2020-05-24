@@ -17,6 +17,13 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
         super(UsuarioDO.class);
     }
 
+
+
+
+
+
+
+
 //    public UsuarioDO busca(Long id, String login, String nome) throws
 //            PersistenciaException {
 //

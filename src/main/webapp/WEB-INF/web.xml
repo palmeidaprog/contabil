@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+  <display-name>Contabil</display-name>
+
+<!--  <?xml version="1.0" encoding="UTF-8"?>-->
+
+<!--  <web-app-->
+<!--          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--          xmlns="http://java.sun.com/xml/ns/javaee"-->
+<!--          xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"-->
+<!--          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"-->
+<!--          id="WebApp_ID"-->
+<!--          version="3.0">-->
+
+<!--    <display-name>Contabil</display-name>-->
+
+    <!-- Auto scan REST service -->
+<!--    <context-param>-->
+<!--      <param-name>resteasy.scan</param-name>-->
+<!--      <param-value>false</param-value>-->
+<!--    </context-param>-->
+
+<!--    <context-param>-->
+<!--      <param-name>javax.ws.rs.Application</param-name>-->
+<!--      <param-value>com.react.contabil.configuracao.ConfiguracaoWebService</param-value>-->
+<!--    </context-param>-->
+
+<!--    &lt;!&ndash; this needs to be the same as servlet-mapping url-pattern &ndash;&gt;-->
+<!--    &lt;!&ndash; set this if you map the Resteasy servlet to something other than /* &ndash;&gt;-->
+<!--    &lt;!&ndash;-->
+<!--    <context-param>-->
+<!--        <param-name>resteasy.servlet.mapping.prefix</param-name>-->
+<!--        <param-value>/resteasy</param-value>-->
+<!--     </context-param>-->
+<!--     &ndash;&gt;-->
+
+<!--  <context-param>-->
+<!--    <param-name>resteasy.wider.request.matching</param-name>-->
+<!--    <param-value>true</param-value>-->
+<!--  </context-param>-->
+
+<!--    <listener>-->
+<!--      <listener-class>-->
+<!--        org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap-->
+<!--      </listener-class>-->
+<!--    </listener>-->
+
+<!--    <servlet>-->
+<!--      <servlet-name>Resteasy</servlet-name>-->
+<!--      <servlet-class>-->
+<!--        org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher-->
+<!--      </servlet-class>-->
+<!--    </servlet>-->
+
+<!--    <servlet-mapping>-->
+<!--      <servlet-name>com.react.contabil.configuracao.ConfiguracaoWebService</servlet-name>-->
+<!--      <url-pattern>/contabil/*</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+
+
+
+
+
+
+<!--  <servlet>-->
+<!--    <servlet-name>Resteasy</servlet-name>-->
+<!--    <servlet-class>-->
+<!--      org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher-->
+<!--    </servlet-class>-->
+<!--    <init-param>-->
+<!--      <param-name>javax.ws.rs.Application</param-name>-->
+<!--      <param-value>com.react.contabil.configuracao.ConfiguracaoWebService</param-value>-->
+<!--    </init-param>-->
+<!--  </servlet>-->
+
+<!--  <servlet-mapping>-->
+<!--    <servlet-name>Resteasy</servlet-name>-->
+<!--    <url-pattern>/contabil/*</url-pattern>-->
+<!--  </servlet-mapping>-->
+
+  <servlet>
+    <servlet-name>contabilAPI</servlet-name>
+    <servlet-class>
+      org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+    </servlet-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>com.react.contabil.configuracao.ConfiguracaoWebService</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>contabilAPI</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+
+  <error-page>
+    <error-code>401</error-code>
+    <location>/404.html</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/404.html</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404.html</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/500.html</location>
+  </error-page>
+  <error-page>
+    <error-code>503</error-code>
+    <location>/500.html</location>
+  </error-page>
+  <error-page>
+    <location>/500.html</location>
+  </error-page>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+</web-app>
