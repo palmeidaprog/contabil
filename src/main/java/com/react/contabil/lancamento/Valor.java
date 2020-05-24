@@ -13,15 +13,15 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Valor {
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Size(max = 15, message="O codigo do valor não pode ser maior que {max}")
     private Long codigo;
 
     @NotBlank(message="O tipo não pode ser nulo")
     private String tipo;
 
-    @Size(max = 15, message="O codigo do valor não pode ser maior que {max}")
-    @NotBlank(message="O valor não pode ser nulo")
-    private Long codigoValor;
+    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @NotBlank(message="O codigo da conta não pode ser nulo")
+    private Long codigoConta;
 
     @NotBlank(message="O saldo da conta não pode ser nulo")
     private BigDecimal saldoConta;
@@ -29,8 +29,6 @@ public class Valor {
     @Size(max = 15, message="O codigo do lançamento não pode ser maior que {max}")
     @NotBlank(message="O lançamento não pode ser nulo")
     private Long codigoLancamento;
-
-    private Conta conta;
 
     public Valor() {  }
 
@@ -50,12 +48,12 @@ public class Valor {
         this.tipo = tipo;
     }
 
-    public Long getCodigoValor() {
-        return codigoValor;
+    public Long getCodigoConta() {
+        return codigoConta;
     }
 
-    public void setCodigoValor(Long codigoValor) {
-        this.codigoValor = codigoValor;
+    public void setCodigoConta(Long conta) {
+        this.codigo = codigoConta;
     }
 
     public BigDecimal getSaldoConta() {
@@ -74,11 +72,4 @@ public class Valor {
         this.codigoLancamento = codigoLancamento;
     }
 
-    public Conta getConta() {
-        return conta;
-    }
-
-    public void setConta(Conta conta) {
-        this.conta = conta;
-    }
 }
