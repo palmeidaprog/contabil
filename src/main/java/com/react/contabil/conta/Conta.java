@@ -1,16 +1,17 @@
 package com.react.contabil.conta;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.usuario.Usuario;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Conta {
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
-    @NotBlank(message="O código não pode ser nulo")
     private Long codigo;
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
