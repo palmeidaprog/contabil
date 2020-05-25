@@ -6,6 +6,7 @@ import com.react.contabil.datalayer.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ContabilException;
 import com.react.contabil.excecao.EntidadeExistenteException;
+import com.react.contabil.excecao.EntidadeNaoEncontradaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,5 +105,46 @@ public class UsuarioServiceHandler {
         contaDO.setUsuario(usuarioDO);
 
         return contaDO;
+    }
+
+    /**
+     * Procura usuário por codigo
+     * @param codigo Código do usuário
+     * @return Usuário caso encontrado
+     * @throws BancoDadosException Erro de banco
+     * @throws EntidadeNaoEncontradaException Usuário nao encontrado ou congelado
+     * @throws ContabilException Erro desconhecido
+     */
+    public Usuario procurar(Long codigo) throws BancoDadosException,
+            EntidadeNaoEncontradaException, ContabilException {
+        try {
+            final UsuarioDO usuarioDO = this.dao.procurar(codigo);
+            if (usuarioDO == null) {
+                this.criaExcecao(String.format("Usuário codigo %d " +
+                        "não encontrado", codigo));
+            } else if (usuarioDO.isCongelado()) {
+                this.criaExcecao(String.format("Usuário codigo %d " +
+                        "encontra-se congelada", codigo));
+            }
+
+            return new Usuario(usuarioDO);
+        } catch (BancoDadosException | EntidadeNaoEncontradaException e) {
+            throw e;
+        } catch (Exception e) {
+            final String erro = String.format("Occorreu um erro desconhecido" +
+                    " ao procurar usuário código %d", codigo);
+            LOGGER.error("procurar :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
+
+    /**
+     * Suporte para procurar, joga excecao
+     * @param msg  Mensagem da excecao
+     * @throws EntidadeNaoEncontradaException
+     */
+    private void criaExcecao(String msg) throws EntidadeNaoEncontradaException {
+        LOGGER.error("procurar :: {}", msg);
+        throw new EntidadeNaoEncontradaException(msg);
     }
 }
