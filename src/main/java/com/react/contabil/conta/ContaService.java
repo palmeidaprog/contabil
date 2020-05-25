@@ -6,12 +6,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/conta")
 @RequestScoped
@@ -39,5 +38,30 @@ public class ContaService {
 
         return Response.ok("Test").build();
     }
+
+    @POST
+    @Path("/remover")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response remover(Conta conta) {
+        return Response.ok("Test").build();
+    }
+
+     public Response atualizar(Conta conta) {
+        return Response.ok("Teste").build();
+    }
+
+    @GET
+    public List<Conta> listar(@QueryParam("codigo") Long codigo, @QueryParam("numero") String numero,
+                             @QueryParam("nome") String nome) {
+        return new ArrayList<>();
+    }
+
+    @GET
+    @Path("/get/{codigo}")
+    public Conta get(@PathParam("codigo") Long codigo) {
+        //this.handler.procurar(conta);
+        return new Conta();
+    }
+
 
 }
