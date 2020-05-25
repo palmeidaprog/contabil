@@ -1,6 +1,7 @@
 package com.react.contabil.datalayer.dao;
 
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,29 +19,54 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
     }
 
 
+    /**
+     * Procura usuario pelo codigo
+     * @param codigo codigo do usuario
+     * @return Usuario
+     * @throws BancoDadosException Exceção do banco
+     */
+    public UsuarioDO procurar(Long codigo) throws BancoDadosException {
+        try {
+            return this.find(codigo);
+        } catch (Exception e) {
+            final String msg = String.format("Ocorreu um erro ao procurar " +
+                    "o usuário código: ", codigo);
+            LOGGER.error("procurar :: {} Erro: {}", msg, e.getMessage(), e);
+            throw new BancoDadosException(msg, e);
+        }
+    }
 
+    /**
+     * Inserir usuario
+     * @param usuario usuario a ser inserido
+     * @throws BancoDadosException
+     */
+    public void inserir(UsuarioDO usuario) throws BancoDadosException {
+        try {
+            this.create(usuario);
+        } catch (Exception e) {
+            final String msg = String.format("Ocorreu um erro ao inserir {}",
+                    usuario.toString());
+            LOGGER.error("inserir :: {} Erro: {}", msg, e.getMessage(), e);
+            throw new BancoDadosException(msg, e);
+        }
+    }
 
-
-
-
-
-//    public UsuarioDO busca(Long id, String login, String nome) throws
-//            PersistenciaException {
-//
-//        final String msg = String.format("usuario com filtros id %d login " +
-//                "%s nome %s", id, login, nome);
-//        try {
-//            LOGGER.debug("busca :: Procurando {} ...", msg);
-//            //this.
-//            throw new NotImplementedYetException();
-//
-//        } catch (Exception e) {
-//            final String error = String.format("Ocorreu um erro de banco " +
-//                    "ao buscar %s", msg);
-//            LOGGER.error("busca :: {}  Erro: {}", error, e.getMessage(), e);
-//            throw new PersistenciaException(error, e);
-//        }
-//    }
+    /**
+     * Atualiza usuario
+     * @param usuarioDo usuario
+     * @throws BancoDadosException Excecao de banco
+     */
+    public void  atualizar(UsuarioDO usuarioDo) throws BancoDadosException {
+        try {
+            this.update(usuarioDo);
+        } catch (Exception e) {
+            final String msg = String.format("Ocorreu um erro ao atualizar" +
+                    " {}", usuarioDo.toString());
+            LOGGER.error("atualizar :: {} Erro: {}", msg, e.getMessage(), e);
+            throw new BancoDadosException(msg, e);
+        }
+    }
 
     /**
      * Monta mensagem de log
@@ -68,10 +94,6 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
         }
 
         return sb.toString();
-    }
-
-    public void inserir(UsuarioDO usuarioDO) {
-        super.inserir(usuarioDO);
     }
 
 }

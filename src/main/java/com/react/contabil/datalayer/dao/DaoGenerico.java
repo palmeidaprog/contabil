@@ -33,7 +33,7 @@ public abstract class DaoGenerico<T, K> {
         this.type = type;
     }
 
-    protected T procurar(K key) {
+    protected T find(K key) {
         if (key == null) {
             LOGGER.error("procurar :: Chave {} do Objeto nao pode ser " +
                     "nulo", key.getClass().getSimpleName());
@@ -43,8 +43,12 @@ public abstract class DaoGenerico<T, K> {
     }
 
 
-    public void inserir(T obj) {
+    public void create(T obj) {
         this.em.persist(obj);
+    }
+
+    public void update(T obj) {
+        this.em.merge(obj);
     }
 
     /**

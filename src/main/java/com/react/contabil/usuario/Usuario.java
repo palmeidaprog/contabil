@@ -2,6 +2,7 @@ package com.react.contabil.usuario;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.datalayer.dataobject.UsuarioDO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -64,5 +65,25 @@ public class Usuario {
 
     public void setCongelado(boolean congelado) {
         this.congelado = congelado;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario codigo: " + this.codigo +  " login: " + this.login;
+    }
+
+    /**
+     * Gera usuario data Object
+     * @return usuarioDO
+     */
+    public UsuarioDO toDataObject() {
+         final UsuarioDO usuarioDO = new UsuarioDO();
+         usuarioDO.setCongelado(this.congelado);
+         usuarioDO.setNome(this.nome);
+         usuarioDO.setSobrenome(this.sobrenome);
+         //usuarioDO.setLogin(this.login);
+         usuarioDO.setCodigo(this.codigo);
+
+         return usuarioDO;
     }
 }
