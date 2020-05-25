@@ -20,9 +20,14 @@ public class ContaDO {
     @JoinColumn(
             name = "codigo_usuario",
             referencedColumnName = "codigo",
-            nullable = false
+            nullable = false,
+            insertable =  false,
+            updatable = false
     )
     private UsuarioDO usuario;
+
+    @Column(name = "codigo_usuario", nullable = false)
+    private Long codigoUsuario;
 
     @Column(name = "numero", nullable = false)
     private String numero;
@@ -112,5 +117,19 @@ public class ContaDO {
 
     public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
+    }
+
+    public Long getCodigoUsuario() {
+        return codigoUsuario;
+    }
+
+    public void setCodigoUsuario(Long codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
+    }
+
+    @Override
+    public String toString() {
+        return "Conta codigo: " + this.codigo + " " + this.numero + " - " +
+                this.nome;
     }
 }

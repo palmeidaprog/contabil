@@ -1,5 +1,6 @@
 package com.react.contabil.usuario;
 
+import com.react.contabil.conta.Conta;
 import com.react.contabil.datalayer.dao.UsuarioDao;
 import com.react.contabil.datalayer.dataobject.ContaDO;
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
@@ -9,7 +10,6 @@ import com.react.contabil.excecao.EntidadeExistenteException;
 import com.react.contabil.excecao.EntidadeNaoEncontradaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -50,6 +50,7 @@ public class UsuarioServiceHandler {
                     this.dao.atualizar(usuarioDO);
                     LOGGER.info("adicionar :: {} já existia, porém estava" +
                             " inativa. Conta reativada!", usuarioDO.toString());
+                    return ;
                 } else {
                     final String msg = String.format("%s já existe!",
                             usuarioDO.toString());
@@ -121,10 +122,10 @@ public class UsuarioServiceHandler {
             final UsuarioDO usuarioDO = this.dao.procurar(codigo);
             if (usuarioDO == null) {
                 this.criaExcecao(String.format("Usuário codigo %d " +
-                        "não encontrado", codigo));
+                        "não encontrado", codigo), "procurar");
             } else if (usuarioDO.isCongelado()) {
                 this.criaExcecao(String.format("Usuário codigo %d " +
-                        "encontra-se congelada", codigo));
+                        "encontra-se congelada", codigo), "procurar");
             }
 
             return new Usuario(usuarioDO);
@@ -143,8 +144,22 @@ public class UsuarioServiceHandler {
      * @param msg  Mensagem da excecao
      * @throws EntidadeNaoEncontradaException
      */
-    private void criaExcecao(String msg) throws EntidadeNaoEncontradaException {
-        LOGGER.error("procurar :: {}", msg);
+    private void criaExcecao(String msg, String metodo) throws
+            EntidadeNaoEncontradaException {
+        LOGGER.error("{} :: {}", metodo, msg);
         throw new EntidadeNaoEncontradaException(msg);
     }
+
+    // TODO: estaAtiva(), congelaConta()
+//    public void congelaConta(Usuario usuario) {
+//        try {
+//            final UsuarioDO usuarioDO = this.dao.procurar(usuario.getCodigo());
+//            if (usuarioDO == null) {
+//                this.criaExcecao();
+//            }
+//
+//        } catch (Exception e) {
+//
+//        }
+//    }
 }

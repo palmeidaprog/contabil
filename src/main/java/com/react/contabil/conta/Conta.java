@@ -2,6 +2,7 @@ package com.react.contabil.conta;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.datalayer.dataobject.ContaDO;
 import com.react.contabil.usuario.Usuario;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -31,6 +32,16 @@ public class Conta {
     private String descricao;
 
     public Conta() { }
+
+    public Conta(ContaDO contaDO) {
+        this.codigo = contaDO.getCodigo();
+        this.contaPaiCodigo = contaDO.getContaPaiCodigo();
+        this.codigoUsuario = contaDO.getCodigoUsuario();
+        this.numero = contaDO.getNumero();
+        this.nome = contaDO.getNome();
+        this.saldo = contaDO.getSaldo();
+        this.descricao = contaDO.getDescricao();
+    }
 
     public Long getCodigo() {
         return codigo;
@@ -88,5 +99,27 @@ public class Conta {
         this.descricao = descricao;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Conta");
 
+        if (this.codigo != null) {
+            sb.append(" codigo: ").append(this.codigo);
+        }
+
+        return sb.append(" ").append(this.numero).append(" - ")
+                  .append(this.nome).toString();
+    }
+
+    public ContaDO toDataObject() {
+        final ContaDO contaDO = new ContaDO();
+        contaDO.setNumero(this.numero);
+        contaDO.setSaldo(this.saldo == null ? new BigDecimal(0) :
+                this.saldo);
+        contaDO.setNome(this.nome);
+        contaDO.setCodigo(this.codigo);
+        contaDO.setCodigoUsuario(this.codigoUsuario);
+
+        return contaDO;
+    }
 }
