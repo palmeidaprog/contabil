@@ -29,7 +29,7 @@ public class Usuario {
 
     public Usuario(UsuarioDO usuarioDO) {
         this.codigo = usuarioDO.getCodigo();
-        //this.login = usuarioDO.getLogin();
+        this.login = usuarioDO.getLogin();
         this.nome = usuarioDO.getNome();
         this.sobrenome = usuarioDO.getSobrenome();
         this.congelado = usuarioDO.isCongelado();
@@ -89,7 +89,7 @@ public class Usuario {
          usuarioDO.setCongelado(this.congelado);
          usuarioDO.setNome(this.nome);
          usuarioDO.setSobrenome(this.sobrenome);
-         //usuarioDO.setLogin(this.login);
+         usuarioDO.setLogin(this.login);
          usuarioDO.setCodigo(this.codigo);
 
          return usuarioDO;
