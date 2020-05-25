@@ -16,7 +16,7 @@ public class Usuario {
 
     @Size(max = 16, message="O login do usuário não pode ser maior que {max}")
     @NotBlank(message="O login do usuário não pode ser nulo")
-    private Long login;
+    private String login;
 
     @NotBlank(message="O nome do usuário não pode ser nulo")
     private String nome;
@@ -43,11 +43,11 @@ public class Usuario {
         this.codigo = codigo;
     }
 
-    public Long getLogin() {
+    public String getLogin() {
         return login;
     }
 
-    public void setLogin(Long login) {
+    public void setLogin(String login) {
         this.login = login;
     }
 
