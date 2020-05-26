@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "lancamento")
-public class LancamentoDO {
+public class LancamentoDO implements Entidade {
     @Id
     @Column(name = "codigo", nullable = false)
     private Long codigo;

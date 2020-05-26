@@ -1,5 +1,6 @@
 package com.react.contabil.datalayer.dao;
 
+import com.react.contabil.datalayer.dataobject.Entidade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import javax.persistence.Persistence;
  * @param <T> Tipo da entidade que o DAO será para
  * @param <K> Tipo da primary key
  */
-public abstract class DaoGenerico<T, K> {
+public abstract class DaoGenerico<T extends Entidade, K> {
 
     private static final Logger LOGGER = LoggerFactory
     			.getLogger(DaoGenerico.class);
@@ -49,6 +50,22 @@ public abstract class DaoGenerico<T, K> {
 
     public void update(T obj) {
         this.em.merge(obj);
+    }
+
+    /**
+     * Remove pelo Objeto
+     * @param obj
+     */
+    public void delete(T obj) {
+        this.em.remove(obj);
+    }
+
+    /**
+     * Remove pela chave
+     * @param chave pk
+     */
+    public void delete(K chave) {
+        this.em.remove(chave);
     }
 
     /**

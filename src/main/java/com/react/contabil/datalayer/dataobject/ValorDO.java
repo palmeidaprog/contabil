@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "valor")
-public class ValorDO {
+public class ValorDO implements Entidade {
     @Id
     @Column(name = "codigo", nullable = false)
     private Long codigo;

@@ -1,17 +1,12 @@
 package com.react.contabil.datalayer.dataobject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "conta")
-public class ContaDO {
+public class ContaDO implements Entidade {
     @Id
     @Column(name = "codigo", nullable = false)
     private Long codigo;
@@ -47,6 +42,18 @@ public class ContaDO {
     )
     private ContaDO contaPai;
 
+    @OneToMany(
+        mappedBy = "conta",
+        fetch = FetchType.LAZY
+    )
+    private List<ValorDO> valores;
+
+    @OneToMany(
+        mappedBy = "contaPai",
+        fetch = FetchType.LAZY
+    )
+    private List<ContaDO> contasFilhas;
+
     @Column(name = "saldo", columnDefinition = "float(18,2)")
     private BigDecimal saldo;
 
@@ -54,6 +61,14 @@ public class ContaDO {
     private String descricao;
 
     public ContaDO() { }
+
+    public List<ContaDO> getContasFilhas() {
+        return contasFilhas;
+    }
+
+    public void setContasFilhas(List<ContaDO> contasFilhas) {
+        this.contasFilhas = contasFilhas;
+    }
 
     public Long getCodigo() {
         return codigo;
@@ -117,6 +132,14 @@ public class ContaDO {
 
     public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
+    }
+
+    public List<ValorDO> getValores() {
+        return valores;
+    }
+
+    public void setValores(List<ValorDO> valores) {
+        this.valores = valores;
     }
 
     public Long getCodigoUsuario() {

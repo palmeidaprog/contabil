@@ -2,7 +2,7 @@ package com.react.contabil.datalayer.dao;
 
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
-import com.react.contabil.util.StringUtil;
+import com.react.contabil.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +83,12 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
             sb.append(id);
         }
 
-        if (StringUtil.isNotBlank(login)) {
+        if (Util.isNotBlank(login)) {
             sb.append("login ");
             sb.append(login);
         }
 
-        if (StringUtil.isNotBlank(nome)) {
+        if (Util.isNotBlank(nome)) {
             sb.append("nome ");
             sb.append(nome);
         }

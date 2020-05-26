@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuario")
-public class UsuarioDO {
+public class UsuarioDO implements Entidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo", nullable = false)

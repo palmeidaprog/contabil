@@ -99,6 +99,10 @@ public class Conta {
         this.descricao = descricao;
     }
 
+    public int getNivelConta() {
+        return this.numero.split("\\.").length;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Conta");

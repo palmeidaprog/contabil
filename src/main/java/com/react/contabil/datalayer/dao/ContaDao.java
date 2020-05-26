@@ -50,4 +50,20 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
             throw new BancoDadosException(erro, e);
         }
     }
+
+    /**
+     * Remover conta por código
+     * @param codigo codigo da conta
+     * @throws BancoDadosException Erro de banco
+     */
+    public void remover(Long codigo) throws BancoDadosException {
+        try {
+            this.delete(codigo);
+        } catch (Exception e) {
+            final String erro = String.format("Ocorreu um erro de banco de" +
+                    " dados ao remover Conta de código %d", codigo);
+            LOGGER.error("remover :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new BancoDadosException(erro, e);
+        }
+    }
 }
