@@ -1,11 +1,15 @@
 package com.react.contabil.conta;
 
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.excecao.BancoDadosException;
+import com.react.contabil.excecao.ContabilException;
+import com.react.contabil.excecao.EntidadeExistenteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Status;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -58,9 +62,9 @@ public class ContaService {
 
     @GET
     @Path("/get/{codigo}")
-    public Conta get(@PathParam("codigo") Long codigo) {
-        //this.handler.procurar(conta);
-        return new Conta();
+    public Response get(@PathParam("codigo") Long codigo) {
+            //this.handler.procurar(codigo);
+            return Response.ok().build();
     }
 
 
