@@ -4,6 +4,7 @@ package com.react.contabil.lancamento;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.conta.Conta;
+import com.react.contabil.datalayer.dataobject.ValorDO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -30,7 +31,17 @@ public class Valor {
     @NotBlank(message="O lançamento não pode ser nulo")
     private Long codigoLancamento;
 
+    private ValorDO valorDO;
+
     public Valor() {  }
+
+    public Valor(ValorDO valorDO) {
+        this.valorDO = valorDO;
+    }
+
+    public ValorDO toDataObject() {
+        return valorDO;
+    }
 
     public Long getCodigo() {
         return codigo;

@@ -2,6 +2,7 @@ package com.react.contabil.lancamento;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.datalayer.dataobject.LancamentoDO;
 import com.react.contabil.usuario.Usuario;
 
 import javax.validation.constraints.NotBlank;
@@ -28,7 +29,17 @@ public class Lancamento {
 
     private List<Valor> valores;
 
+    private LancamentoDO lancamentoDO;
+
     public Lancamento() { }
+
+    public Lancamento(LancamentoDO lancamentoDO) {
+        this.lancamentoDO = lancamentoDO;
+    }
+
+    public LancamentoDO toDataObject() {
+        return lancamentoDO;
+    }
 
     public Long getCodigo() {
         return codigo;
