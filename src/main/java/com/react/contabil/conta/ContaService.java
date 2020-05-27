@@ -27,18 +27,21 @@ public class ContaService {
     private ContaServiceHandler handler;
 
     public ContaService() {
-        System.out.println("y17");
+
     }
 
     @POST
     @Path("/adicionar")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response adicionar(Conta conta) {
-        //LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando nova conta login: {}", conta.getLogin());
+        //LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando nova conta login: {}",
+        // conta.getLogin());
 
         //this.handler.adicionar(conta);
 
-        //LOGGER.info("adicionar :: Acessando /conta/adiciona Conta login: {} adicionado com sucesso", conta.getLogin());
+        //LOGGER.info("adicionar :: Acessando /conta/adiciona Conta login: {} adicionado com sucesso",
+        // conta.getLogin());
 
         return Response.ok("Test").build();
     }
@@ -46,15 +49,21 @@ public class ContaService {
     @POST
     @Path("/remover")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response remover(Conta conta) {
         return Response.ok("Test").build();
     }
 
-     public Response atualizar(Conta conta) {
+    @POST
+    @Path("/atualizar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response atualizar(Conta conta) {
         return Response.ok("Teste").build();
     }
 
     @GET
+    @Path("/listar/{codigoUsuario}/{codigo}")
     public List<Conta> listar(@QueryParam("codigo") Long codigo, @QueryParam("numero") String numero,
                              @QueryParam("nome") String nome) {
         return new ArrayList<>();
