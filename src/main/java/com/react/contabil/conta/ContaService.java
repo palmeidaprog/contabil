@@ -4,6 +4,7 @@ import com.react.contabil.datalayer.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ContabilException;
 import com.react.contabil.excecao.EntidadeExistenteException;
+import org.jboss.logging.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,47 +34,84 @@ public class ContaService {
     @POST
     @Path("/adicionar")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response adicionar(Conta conta) {
-        //LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando nova conta login: {}",
-        // conta.getLogin());
+        /*try {
+            LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando nova conta login: {}",
+            conta.getCodigo());
 
-        //this.handler.adicionar(conta);
+            this.handler.adicionar(conta);
 
-        //LOGGER.info("adicionar :: Acessando /conta/adiciona Conta login: {} adicionado com sucesso",
-        // conta.getLogin());
+            LOGGER.info("adicionar :: Acessando /conta/adiciona Conta login: {} adicionado com sucesso",
+            conta.getCodigo());
 
-        return Response.ok("Test").build();
+            return Response.ok().build();
+
+        } catch (EntidadeExistenteException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (BancoDadosException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        } catch (ContabilException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }*/
+
+        return Response.ok().build();
     }
 
     @POST
     @Path("/remover")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response remover(Conta conta) {
-        return Response.ok("Test").build();
+       /* try {
+            this.handler.remover(conta);
+            return Response.ok().build();
+        } catch (EntidadeExistenteException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (BancoDadosException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        } catch (ContabilException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }*/
+        return Response.ok().build();
     }
 
     @POST
     @Path("/atualizar")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response atualizar(Conta conta) {
-        return Response.ok("Teste").build();
+        /*try {
+            this.handler.atualizar(conta);
+            return Response.ok().build();
+        } catch (EntidadeExistenteException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (BancoDadosException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        } catch (ContabilException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }*/
+        return Response.ok().build();
     }
 
     @GET
-    @Path("/listar/{codigoUsuario}/{codigo}")
-    public List<Conta> listar(@QueryParam("codigo") Long codigo, @QueryParam("numero") String numero,
-                             @QueryParam("nome") String nome) {
+    @Path("/listar/{codigoUsuario}")
+    public List<Conta> listar(@PathParam("codigoUsuario") Long codigoUsuario, @QueryParam("numero") String numero,
+                              @QueryParam("nome") String nome) {
         return new ArrayList<>();
     }
 
     @GET
     @Path("/get/{codigo}")
     public Response get(@PathParam("codigo") Long codigo) {
-            //this.handler.procurar(codigo);
+        /*try {
+            this.handler.procurar(codigo);
             return Response.ok().build();
+        } catch (EntidadeExistenteException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (BancoDadosException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        } catch (ContabilException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }*/
+        return Response.ok().build();
     }
 
 
