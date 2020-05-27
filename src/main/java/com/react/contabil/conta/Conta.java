@@ -3,6 +3,7 @@ package com.react.contabil.conta;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.dataobject.ContaDO;
+import com.react.contabil.util.Util;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -123,6 +124,31 @@ public class Conta {
         contaDO.setNome(this.nome);
         contaDO.setCodigo(this.codigo);
         contaDO.setCodigoUsuario(this.codigoUsuario);
+
+        return contaDO;
+    }
+
+    /**
+     * Atualiza o objeto DO
+     * @param contaDO
+     * @return Objeto atualizado
+     */
+    public ContaDO update(ContaDO contaDO) {
+        if (this.contaPaiCodigo != null) {
+            contaDO.setContaPaiCodigo(this.contaPaiCodigo);
+        }
+
+        if (Util.isNotBlank(this.numero)) {
+            contaDO.setNumero(this.numero);
+        }
+
+        if (Util.isNotBlank(this.nome)) {
+            contaDO.setNome(this.nome);
+        }
+
+        if (Util.isNotBlank(this.descricao)) {
+            contaDO.setDescricao(this.descricao);
+        }
 
         return contaDO;
     }

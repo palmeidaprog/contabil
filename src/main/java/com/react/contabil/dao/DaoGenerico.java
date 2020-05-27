@@ -27,7 +27,7 @@ public abstract class DaoGenerico<T extends Entidade, K> {
     private EntityManagerFactory emf;
 
     @Inject
-    private EntityManager em;
+    protected EntityManager em;
 
     public DaoGenerico(Class<T> type) {
         this.type = type;
@@ -47,7 +47,7 @@ public abstract class DaoGenerico<T extends Entidade, K> {
         this.em.persist(obj);
     }
 
-    public void update(T obj) {
+    public void merge(T obj) {
         this.em.merge(obj);
     }
 

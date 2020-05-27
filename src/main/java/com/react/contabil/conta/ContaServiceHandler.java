@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ContaServiceHandler {
@@ -111,6 +113,34 @@ public class ContaServiceHandler {
     }
 
     /**
+     * Atualiza conta
+     * @param conta Conta a ser atualizada
+     * @throws ContabilException
+     */
+    public void atualizar(Conta conta) throws ContabilException {
+        try {
+            LOGGER.info("atualizar :: Atualizando {}", conta.toString());
+            final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
+            if (contaDO == null) {
+                final String erro = String.format("%s não existe",
+                        conta.toString());
+                LOGGER.error("atualizar :: {}", conta.toString());
+                throw new EntidadeNaoEncontradaException(erro);
+            }
+            this.dao.atualizar(conta.update(contaDO));
+            LOGGER.info("atualizar :: Atualizaçào de {} efetuada com sucesso",
+                    conta.toString());
+        } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
+            throw e;
+        } catch (Exception e) {
+            final String erro = String.format("Ocorreu um erro desconhecido" +
+                    " ao adicionar %s", conta.toString());
+            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
+
+    /**
      * Valida remoçào da conta
      * @param conta conta DTO
      * @param contaDO Conta data object
@@ -147,9 +177,35 @@ public class ContaServiceHandler {
         }
     }
 
+    /**
+     * Procura lista de contas baseado nos filtros
+     * @param codigoUsuario codigo usuario
+     * @param numero numero da conta (ou parte dela)
+     * @param nome nome da conta (ou parte dela)
+     * @return lista de contas
+     * @throws BancoDadosException erro de banco
+     * @throws ContabilException erro desconhecido
+     */
+    public List<Conta> listar(Long codigoUsuario, String numero, String nome)
+                throws BancoDadosException, ContabilException {
 
+        final String msg = String.format("filtros codigo usuário: %d%s%s",
+                codigoUsuario, numero == null ? "" : " numero: " + numero,
+                nome == null ? "" : " nome: " + nome);
 
-
-
-
+        try {
+            LOGGER.info("listar :: Procurando lista de contas {}", msg);
+            final List<Conta> contas = this.dao.listar(codigoUsuario, numero, nome)
+                    .stream().map(Conta::new).collect(Collectors.toList());
+            LOGGER.info("listar :: Lista encontrada com sucesso ({})", msg);
+            return contas;
+        } catch (BancoDadosException e) {
+            throw e;
+        } catch (Exception e) {
+            final String erro = String.format("Ocorreu um erro desconhecido" +
+                    " ao procurar lista com %s", msg);
+            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
 }

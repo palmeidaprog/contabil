@@ -59,7 +59,7 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
      */
     public void  atualizar(UsuarioDO usuarioDo) throws BancoDadosException {
         try {
-            this.update(usuarioDo);
+            this.merge(usuarioDo);
         } catch (Exception e) {
             final String msg = String.format("Ocorreu um erro ao atualizar" +
                     " {}", usuarioDo.toString());

@@ -1,6 +1,8 @@
 package com.react.contabil.lancamento;
 
 import com.react.contabil.conta.Conta;
+import org.apache.http.HttpException;
+import org.apache.http.client.HttpResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +83,8 @@ public class LancamentoService {
         } catch (ContabilException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }*/
-        return Response.ok().build();
+
+        return Response.ok(new ArrayList<>()).build();
 
     }
 
