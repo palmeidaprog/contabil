@@ -208,4 +208,30 @@ public class ContaServiceHandler {
             throw new ContabilException(erro, e);
         }
     }
+
+    public Conta procurar(Long codigo) throws EntidadeNaoEncontradaException,
+            BancoDadosException, ContabilException {
+        final String msg = String.format("conta com código: %d", codigo);
+        try {
+            LOGGER.info("procurar :: Procurando {}", msg);
+            final ContaDO contaDO = this.dao.procurar(codigo);
+            if (contaDO == null) {
+                final String erro = String.format("Conta com código %d não existe",
+                        codigo);
+                LOGGER.error("procurar :: {}", erro);
+                throw new EntidadeNaoEncontradaException(erro);
+            }
+
+            LOGGER.info("procurar :: Procura de {} efetuada com sucesso",
+                    msg);
+            return new Conta(contaDO);
+        } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
+            throw e;
+        } catch (Exception e) {
+            final String erro = String.format("Ocorreu um erro desconhecido" +
+                    " ao procurar %s", msg);
+            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
 }

@@ -29,7 +29,6 @@ public class UsuarioService {
     @POST
     @Path("/adicionar")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response adicionar(Usuario usuario) {
         try {
             LOGGER.info("adicionar :: Acessando /usuario/adiciona Adicionando novo usuario: {}",

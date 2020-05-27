@@ -53,7 +53,6 @@ public class LancamentoService {
     @POST
     @Path("/remover")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response remover(Lancamento lancamento) {
         /*try {
             this.handler.remover(lancamento);
@@ -71,7 +70,6 @@ public class LancamentoService {
     @POST
     @Path("/atualizar")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response atualizar(Lancamento lancamento) {
         /*try {
             this.handler.atualizar(lancamento);
