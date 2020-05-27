@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.datalayer.dataobject.ContaDO;
 import com.react.contabil.usuario.Usuario;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -18,13 +19,13 @@ public class Conta {
     @Size(max = 15, message="O codigo da conta pai não pode ser maior que {max}")
     private Long contaPaiCodigo;
 
-    @NotBlank(message="O código do usuário não pode ser nulo")
+    @NotNull(message="O código do usuário não pode ser nulo")
     private Long codigoUsuario;
 
-    @NotBlank(message="O número da conta não pode ser nulo")
+    @NotNull(message="O número da conta não pode ser nulo")
     private String numero;
 
-    @NotBlank(message="O nome da conta não pode ser nulo")
+    @NotNull(message="O nome da conta não pode ser nulo")
     private String nome;
 
     private BigDecimal saldo;

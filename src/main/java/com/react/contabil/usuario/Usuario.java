@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.datalayer.dataobject.UsuarioDO;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,10 +16,10 @@ public class Usuario {
     private Long codigo;
 
     @Size(max = 16, message="O login do usuário não pode ser maior que {max}")
-    @NotBlank(message="O login do usuário não pode ser nulo")
+    @NotNull(message="O login do usuário não pode ser nulo")
     private String login;
 
-    @NotBlank(message="O nome do usuário não pode ser nulo")
+    @NotNull(message="O nome do usuário não pode ser nulo")
     private String nome;
 
     private String sobrenome;

@@ -7,6 +7,7 @@ import com.react.contabil.conta.Conta;
 import com.react.contabil.datalayer.dataobject.ValorDO;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -17,29 +18,37 @@ public class Valor {
     @Size(max = 15, message="O codigo do valor não pode ser maior que {max}")
     private Long codigo;
 
-    @NotBlank(message="O tipo não pode ser nulo")
+    @NotNull(message="O tipo não pode ser nulo")
     private String tipo;
 
     @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
-    @NotBlank(message="O codigo da conta não pode ser nulo")
+    @NotNull(message="O codigo da conta não pode ser nulo")
     private Long codigoConta;
 
-    @NotBlank(message="O saldo da conta não pode ser nulo")
+    @NotNull(message="O saldo da conta não pode ser nulo")
     private BigDecimal saldoConta;
 
     @Size(max = 15, message="O codigo do lançamento não pode ser maior que {max}")
-    @NotBlank(message="O lançamento não pode ser nulo")
+    @NotNull(message="O lançamento não pode ser nulo")
     private Long codigoLancamento;
-
-    private ValorDO valorDO;
 
     public Valor() {  }
 
     public Valor(ValorDO valorDO) {
-        this.valorDO = valorDO;
+        this.codigo = valorDO.getCodigo();
+        this.tipo = valorDO.getTipo();
+        this.codigoConta = valorDO.getConta().getCodigo();
+        this.saldoConta = valorDO.getSaldoConta();
+        this.codigoLancamento = valorDO.getLancamento().getCodigo();
     }
 
     public ValorDO toDataObject() {
+        final ValorDO valorDO = new ValorDO();
+        valorDO.getLancamento().setCodigo(this.codigoLancamento);
+        valorDO.setSaldoConta(this.saldoConta);
+        valorDO.getConta().setCodigo(this.codigoConta);
+        valorDO.setTipo(this.tipo);
+        valorDO.setCodigo(this.codigo);
         return valorDO;
     }
 

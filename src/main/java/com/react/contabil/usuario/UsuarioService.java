@@ -29,11 +29,14 @@ public class UsuarioService {
     @POST
     @Path("/adicionar")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response adicionar(Usuario usuario) {
         try {
-            LOGGER.info("adicionar :: Acessando /usuario/adiciona Adicionando novo usuario: {}", usuario.getLogin());
+            LOGGER.info("adicionar :: Acessando /usuario/adiciona Adicionando novo usuario: {}",
+                    usuario.getLogin());
             this.handler.adicionar(usuario);
-            LOGGER.info("adicionar :: Acessando /usuario/adiciona Usuario: {} adicionado com sucesso", usuario.getLogin());
+            LOGGER.info("adicionar :: Acessando /usuario/adiciona Usuario: {} adicionado com sucesso",
+                    usuario.getLogin());
             return Response.ok().build();
         } catch (EntidadeExistenteException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e).build();

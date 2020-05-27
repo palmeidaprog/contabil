@@ -3,9 +3,9 @@ package com.react.contabil.lancamento;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.datalayer.dataobject.LancamentoDO;
-import com.react.contabil.usuario.Usuario;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
@@ -18,13 +18,13 @@ public class Lancamento {
     private Long codigo;
 
     @Size(max = 15, message="O codigo do usuário não pode ser maior que {max}")
-    @NotBlank(message="O código do usuário não pode ser nulo")
+    @NotNull(message="O código do usuário não pode ser nulo")
     private Long codigoUsuario;
 
-    @NotBlank(message="A data não pode ser nula")
+    @NotNull(message="A data não pode ser nula")
     private Date data;
 
-    @NotBlank(message="O histórico não pode ser nulo")
+    @NotNull(message="O histórico não pode ser nulo")
     private String historico;
 
     private List<Valor> valores;
@@ -34,10 +34,18 @@ public class Lancamento {
     public Lancamento() { }
 
     public Lancamento(LancamentoDO lancamentoDO) {
-        this.lancamentoDO = lancamentoDO;
+        this.codigo = lancamentoDO.getCodigo();
+        this.codigoUsuario = lancamentoDO.getUsuario().getCodigo();
+        this.data = lancamentoDO.getData();
+        this.historico = lancamentoDO.getHistorico();
     }
 
     public LancamentoDO toDataObject() {
+        final LancamentoDO lancamentoDO = new LancamentoDO();
+        lancamentoDO.setHistorico(this.historico);
+        lancamentoDO.setData(this.data);
+        lancamentoDO.getUsuario().setCodigo(this.codigoUsuario);
+        lancamentoDO.setCodigo(this.codigo);
         return lancamentoDO;
     }
 
