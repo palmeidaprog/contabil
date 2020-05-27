@@ -2,9 +2,8 @@ package com.react.contabil.lancamento;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.react.contabil.datalayer.dataobject.LancamentoDO;
+import com.react.contabil.dataobject.LancamentoDO;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;

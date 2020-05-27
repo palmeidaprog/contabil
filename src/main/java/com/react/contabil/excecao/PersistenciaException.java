@@ -1,4 +1,4 @@
-package com.react.contabil.datalayer.excecao;
+package com.react.contabil.excecao;
 
 import com.react.contabil.excecao.ContabilException;
 

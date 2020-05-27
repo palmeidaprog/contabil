@@ -8,10 +8,10 @@
    <persistence-unit name="primary">
 <!--      <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
       <jta-data-source>java:jboss/datasources/ContabilDS</jta-data-source>
-<!--      <class>com.react.contabil.datalayer.dataobject.UsuarioDO</class>-->
-<!--      <class>com.react.contabil.datalayer.dataobject.ContaDO</class>-->
-<!--      <class>com.react.contabil.datalayer.dataobject.ValorDO</class>-->
-<!--      <class>com.react.contabil.datalayer.dataobject.LancamentoDO</class>-->
+<!--      <class>UsuarioDO</class>-->
+<!--      <class>ContaDO</class>-->
+<!--      <class>ValorDO</class>-->
+<!--      <class>LancamentoDO</class>-->
 
       <properties>
 

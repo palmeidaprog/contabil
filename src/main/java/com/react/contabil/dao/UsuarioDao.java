@@ -1,6 +1,6 @@
-package com.react.contabil.datalayer.dao;
+package com.react.contabil.dao;
 
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;

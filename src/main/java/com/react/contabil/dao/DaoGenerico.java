@@ -1,6 +1,6 @@
-package com.react.contabil.datalayer.dao;
+package com.react.contabil.dao;
 
-import com.react.contabil.datalayer.dataobject.Entidade;
+import com.react.contabil.dataobject.Entidade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 
 /**
  * Classe de repositorio genérico

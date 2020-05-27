@@ -1,9 +1,8 @@
 package com.react.contabil.usuario;
 
-import com.react.contabil.conta.Conta;
-import com.react.contabil.datalayer.dao.UsuarioDao;
-import com.react.contabil.datalayer.dataobject.ContaDO;
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.dao.UsuarioDao;
+import com.react.contabil.dataobject.ContaDO;
+import com.react.contabil.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ContabilException;
 import com.react.contabil.excecao.EntidadeExistenteException;

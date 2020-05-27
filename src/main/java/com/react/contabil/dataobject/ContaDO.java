@@ -1,4 +1,4 @@
-package com.react.contabil.datalayer.dataobject;
+package com.react.contabil.dataobject;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

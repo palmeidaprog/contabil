@@ -1,15 +1,10 @@
 package com.react.contabil.conta;
 
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
-import com.react.contabil.excecao.BancoDadosException;
-import com.react.contabil.excecao.ContabilException;
-import com.react.contabil.excecao.EntidadeExistenteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Status;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

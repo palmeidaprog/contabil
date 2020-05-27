@@ -2,9 +2,8 @@ package com.react.contabil.usuario;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.dataobject.UsuarioDO;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 

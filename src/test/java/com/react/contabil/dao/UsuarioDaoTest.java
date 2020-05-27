@@ -1,17 +1,10 @@
-package com.react.contabil.datalayer.dao;
+package com.react.contabil.dao;
 
 import com.react.contabil.TestUtils;
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
-import org.apache.http.util.EntityUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class UsuarioDaoTest {

@@ -2,9 +2,8 @@ package com.react.contabil.conta;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.react.contabil.datalayer.dataobject.ContaDO;
-import com.react.contabil.usuario.Usuario;
-import javax.validation.constraints.NotBlank;
+import com.react.contabil.dataobject.ContaDO;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;

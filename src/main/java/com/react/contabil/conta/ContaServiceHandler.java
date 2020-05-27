@@ -1,7 +1,7 @@
 package com.react.contabil.conta;
 
-import com.react.contabil.datalayer.dao.ContaDao;
-import com.react.contabil.datalayer.dataobject.ContaDO;
+import com.react.contabil.dao.ContaDao;
+import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
