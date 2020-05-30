@@ -1,6 +1,7 @@
 package com.react.contabil.configuracao;
 
 import com.react.contabil.conta.ContaService;
+import com.react.contabil.usuario.UsuarioService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,8 @@ public class ConfiguracaoWebService extends Application {
             LoggerFactory.getLogger(ConfiguracaoWebService.class.getName());
 
     public ConfiguracaoWebService() {
-        LOGGER.error("x17");
-//        classes.add(ContaService.class);
-//        classes.add(AtendimentoService.class);
+        classes.add(ContaService.class);
+        classes.add(UsuarioService.class);
     }
 
     /**
@@ -33,6 +33,7 @@ public class ConfiguracaoWebService extends Application {
         LOGGER.error("GETCLASS");
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(ContaService.class);
+        classes.add(UsuarioService.class);
         return classes;
     }
 

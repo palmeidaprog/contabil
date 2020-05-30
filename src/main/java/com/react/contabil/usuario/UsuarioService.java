@@ -25,6 +25,12 @@ public class UsuarioService {
         System.out.println("v3");
     }
 
+    @GET
+    @Path("/test")
+    public Response test() {
+        LOGGER.info("test :: Teste.... ");
+        return Response.ok().build();
+    }
 
     @POST
     @Path("/adicionar")
