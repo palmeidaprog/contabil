@@ -1,14 +1,6 @@
 package com.react.contabil.dataobject;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -16,13 +8,19 @@ import java.util.List;
 @Table(name = "lancamento")
 public class LancamentoDO implements Entidade {
     @Id
-    @Column(name = "codigo", nullable = false)
+    @Column(name = "codigo", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
+
+    @Column(name = "codigo_usuario", updatable = false, nullable = false)
+    private Long codigoUsuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name="codigo_usuario",
         referencedColumnName = "codigo",
+        insertable = false,
+        updatable = false,
         nullable = false
     )
     private UsuarioDO usuario;
@@ -73,5 +71,27 @@ public class LancamentoDO implements Entidade {
 
     public void setHistorico(String historico) {
         this.historico = historico;
+    }
+
+    public Long getCodigoUsuario() {
+        return codigoUsuario;
+    }
+
+    public void setCodigoUsuario(Long codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
+    }
+
+    public List<ValorDO> getValores() {
+        return valores;
+    }
+
+    public void setValores(List<ValorDO> valores) {
+        this.valores = valores;
+    }
+
+    @Override
+    public String toString() {
+        return "Lancamento código: " + this.codigo + " do usuário código: " +
+                this.codigoUsuario;
     }
 }

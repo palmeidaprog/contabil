@@ -1,23 +1,19 @@
 package com.react.contabil.dataobject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "valor")
 public class ValorDO implements Entidade {
     @Id
-    @Column(name = "codigo", nullable = false)
+    @Column(name = "codigo", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
 
     @Column(name = "tipo", nullable = false, columnDefinition = "char(7)")
-    private String tipo;
+    @Enumerated(EnumType.STRING)
+    private TipoValor tipo;
 
     @Column(name = "valor", nullable = false, columnDefinition = "float(18,2)")
     private BigDecimal valor;
@@ -25,11 +21,15 @@ public class ValorDO implements Entidade {
     @Column(name = "saldo_conta", nullable = false, columnDefinition = "float(18,2)")
     private BigDecimal saldoConta;
 
+    @Column(name = "lancamento_codigo", nullable = false)
+    private Long codigoLancamento;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "lancamento_codigo",
         referencedColumnName = "codigo",
-        nullable = false
+        insertable = false,
+        updatable = false
     )
     private LancamentoDO lancamento;
 
@@ -51,11 +51,11 @@ public class ValorDO implements Entidade {
         this.codigo = codigo;
     }
 
-    public String getTipo() {
+    public TipoValor getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoValor tipo) {
         this.tipo = tipo;
     }
 
@@ -89,5 +89,21 @@ public class ValorDO implements Entidade {
 
     public void setConta(ContaDO conta) {
         this.conta = conta;
+    }
+
+    public Long getCodigoLancamento() {
+        return codigoLancamento;
+    }
+
+    public void setCodigoLancamento(Long codigoLancamento) {
+        this.codigoLancamento = codigoLancamento;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Valor código: ");
+        sb.append(this.codigo).append(" tipo: ").append(this.tipo.getTipo())
+                .append(" do lançamento código: ").append(this.codigoLancamento);
+        return sb.toString();
     }
 }

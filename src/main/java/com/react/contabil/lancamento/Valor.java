@@ -1,33 +1,45 @@
 package com.react.contabil.lancamento;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.dataobject.LancamentoDO;
+import com.react.contabil.dataobject.TipoValor;
 import com.react.contabil.dataobject.ValorDO;
-
+import com.react.contabil.util.Constantes;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Valor {
 
-    @Size(max = 15, message="O codigo do valor não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = Constantes.Valor.CODIGO_DIGITS)
     private Long codigo;
 
-    @NotNull(message="O tipo não pode ser nulo")
-    private String tipo;
+    @NotNull(message = Constantes.Valor.TIPO_NOT_NULL)
+    private TipoValor tipo;
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
-    @NotNull(message="O codigo da conta não pode ser nulo")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = Constantes.Valor.CODIGO_CONTA_DIGITS)
+    @NotNull(message = Constantes.Valor.CODIGO_CONTA_NOT_NULL)
     private Long codigoConta;
 
-    @NotNull(message="O saldo da conta não pode ser nulo")
+    private Date data;
+
+    private String historico;
+
+    @NotNull(message = Constantes.Valor.SALDO_CONTA_NOT_NULL)
     private BigDecimal saldoConta;
 
-    @Size(max = 15, message="O codigo do lançamento não pode ser maior que {max}")
-    @NotNull(message="O lançamento não pode ser nulo")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = Constantes.Valor.CODIGO_LANCAMENTO_DIGITS)
+    @NotNull(message = Constantes.Valor.CODIGO_LANCAMENTO_NOT_NULL)
     private Long codigoLancamento;
 
     public Valor() {  }
@@ -37,16 +49,33 @@ public class Valor {
         this.tipo = valorDO.getTipo();
         this.codigoConta = valorDO.getConta().getCodigo();
         this.saldoConta = valorDO.getSaldoConta();
-        this.codigoLancamento = valorDO.getLancamento().getCodigo();
+        this.codigoLancamento = valorDO.getCodigoLancamento();
+        this.historico = valorDO.getLancamento().getHistorico();
+        this.data = valorDO.getLancamento().getData();
     }
 
+    public Valor(ValorDO valorDO, LancamentoDO lancamentoDO) {
+        this.codigo = valorDO.getCodigo();
+        this.tipo = valorDO.getTipo();
+        this.codigoConta = valorDO.getConta().getCodigo();
+        this.saldoConta = valorDO.getSaldoConta();
+        this.codigoLancamento = valorDO.getCodigoLancamento();
+        this.historico = lancamentoDO.getHistorico();
+        this.data = lancamentoDO.getData();
+    }
+
+    /**
+     * Converte do DTO para o objeto da persistencia
+     * @return Objeto da persistencia
+     */
     public ValorDO toDataObject() {
         final ValorDO valorDO = new ValorDO();
-        valorDO.getLancamento().setCodigo(this.codigoLancamento);
+        valorDO.setCodigoLancamento(this.codigoLancamento);
         valorDO.setSaldoConta(this.saldoConta);
         valorDO.getConta().setCodigo(this.codigoConta);
         valorDO.setTipo(this.tipo);
         valorDO.setCodigo(this.codigo);
+
         return valorDO;
     }
 
@@ -58,11 +87,11 @@ public class Valor {
         this.codigo = codigo;
     }
 
-    public String getTipo() {
+    public TipoValor getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoValor tipo) {
         this.tipo = tipo;
     }
 
@@ -90,4 +119,27 @@ public class Valor {
         this.codigoLancamento = codigoLancamento;
     }
 
+    public Date getData() {
+        return data;
+    }
+
+    public void setData(Date data) {
+        this.data = data;
+    }
+
+    public String getHistorico() {
+        return historico;
+    }
+
+    public void setHistorico(String historico) {
+        this.historico = historico;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Valor código: ");
+        sb.append(this.codigo).append(" tipo: ").append(this.tipo.getTipo())
+          .append(" do lançamento código: ").append(this.codigoLancamento);
+        return sb.toString();
+    }
 }

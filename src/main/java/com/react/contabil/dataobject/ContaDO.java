@@ -8,7 +8,8 @@ import java.util.List;
 @Table(name = "conta")
 public class ContaDO implements Entidade {
     @Id
-    @Column(name = "codigo", nullable = false)
+    @Column(name = "codigo", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
 
     @ManyToOne(fetch = FetchType.LAZY)

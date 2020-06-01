@@ -3,9 +3,11 @@ package com.react.contabil.lancamento;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.dataobject.LancamentoDO;
+import com.react.contabil.dataobject.ValorDO;
+import com.react.contabil.util.Constantes;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,38 +15,52 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Lancamento {
 
-    @Size(max = 15, message="O codigo do lançamento não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = Constantes.Lancamento.CODIGO_DIGITS)
     private Long codigo;
 
-    @Size(max = 15, message="O codigo do usuário não pode ser maior que {max}")
-    @NotNull(message="O código do usuário não pode ser nulo")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = Constantes.Lancamento.CODIGO_USUARIO_DIGITS)
+    @NotNull(message = Constantes.Lancamento.CODIGO_USUARIO_NOT_NULL)
     private Long codigoUsuario;
 
-    @NotNull(message="A data não pode ser nula")
+    @NotNull(message = Constantes.Lancamento.DATA_NOT_NULL)
     private Date data;
 
-    @NotNull(message="O histórico não pode ser nulo")
+    @NotBlank(message = Constantes.Lancamento.HISTORICO_NOT_BLANK)
     private String historico;
 
+    @NotEmpty(message = Constantes.Lancamento.VALORES_NOT_EMTPY)
     private List<Valor> valores;
-
-    private LancamentoDO lancamentoDO;
 
     public Lancamento() { }
 
     public Lancamento(LancamentoDO lancamentoDO) {
         this.codigo = lancamentoDO.getCodigo();
-        this.codigoUsuario = lancamentoDO.getUsuario().getCodigo();
+        this.codigoUsuario = lancamentoDO.getCodigoUsuario();
         this.data = lancamentoDO.getData();
         this.historico = lancamentoDO.getHistorico();
+        this.valores = new ArrayList<>();
+        for (final ValorDO valor : lancamentoDO.getValores()) {
+            this.valores.add(new Valor(valor));
+        }
     }
 
     public LancamentoDO toDataObject() {
         final LancamentoDO lancamentoDO = new LancamentoDO();
         lancamentoDO.setHistorico(this.historico);
         lancamentoDO.setData(this.data);
-        lancamentoDO.getUsuario().setCodigo(this.codigoUsuario);
+        lancamentoDO.setCodigoUsuario(this.codigoUsuario);
         lancamentoDO.setCodigo(this.codigo);
+
+        final List<ValorDO> valoresDO = new ArrayList<>();
+        for (final Valor valor : this.valores) {
+            valoresDO.add(valor.toDataObject());
+        }
+        lancamentoDO.setValores(valoresDO);
+
         return lancamentoDO;
     }
 
@@ -78,5 +94,19 @@ public class Lancamento {
 
     public void setHistorico(String historico) {
         this.historico = historico;
+    }
+
+    public List<Valor> getValores() {
+        return valores;
+    }
+
+    public void setValores(List<Valor> valores) {
+        this.valores = valores;
+    }
+
+    @Override
+    public String toString() {
+        return "Lancamento código: " + this.codigo + " do usuário código: " +
+                this.codigoUsuario;
     }
 }

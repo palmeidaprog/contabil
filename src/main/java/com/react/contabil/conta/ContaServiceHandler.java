@@ -92,6 +92,8 @@ public class ContaServiceHandler {
                 throw new EntidadeNaoEncontradaException(msg);
             }
 
+            // TODO: gera codigo baseado no pai
+
             LOGGER.debug("remover :: Validando a remoção da {}",
                     conta.toString());
             this.validaRemocao(conta, contaDO);
@@ -209,8 +211,15 @@ public class ContaServiceHandler {
         }
     }
 
-    public Conta procurar(Long codigo) throws EntidadeNaoEncontradaException,
-            BancoDadosException, ContabilException {
+    /**
+     * Procurar conta baseado no código
+     * @param codigo código da conta
+     * @return Conta achada
+     * @throws ContabilException Erros
+     */
+    public Conta procurar(Long codigo) throws
+            ContabilException {
+
         final String msg = String.format("conta com código: %d", codigo);
         try {
             LOGGER.info("procurar :: Procurando {}", msg);

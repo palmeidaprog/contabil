@@ -2,11 +2,19 @@ package com.react.contabil.dao;
 
 import com.react.contabil.dataobject.UsuarioDO;
 import com.react.contabil.excecao.BancoDadosException;
+import com.react.contabil.excecao.ParametrosInvalidosException;
+import com.react.contabil.usuario.Usuario;
 import com.react.contabil.util.Util;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 @Stateless
 public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
@@ -37,15 +45,69 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
     }
 
     /**
+     * Procura usuario por login ou codigo
+     * @param codigo codigo do usuario
+     * @param login login do usuario
+     * @return Usuario
+     * @throws BancoDadosException
+     */
+    public UsuarioDO procurar(Long codigo, String login) throws
+            BancoDadosException, ParametrosInvalidosException {
+
+        if (codigo == null && Util.isBlank(login)) {
+            final String msg = "Ao procurar usuário ou login ou" +
+                    " conta deve ser informado";
+            LOGGER.error("procurar :: {}", msg);
+            throw new ParametrosInvalidosException(msg);
+        }
+
+        try {
+            LOGGER.info("procurar :: Procurando usuário com código: {} " +
+                    "login: {} ...", codigo, login);
+            final CriteriaBuilder cb = this.em.getCriteriaBuilder();
+            final CriteriaQuery<UsuarioDO> cq = cb.createQuery(UsuarioDO.class);
+            final Root<UsuarioDO> usuario = cq.from(UsuarioDO.class);
+
+            if (codigo != null) {
+                cq.where(cb.equal(usuario.get("codigo"), codigo));
+                LOGGER.info("procurar :: Procurando usuário por código: {}",
+                        codigo);
+            } else {
+                cq.where(cb.equal(usuario.get("login"), login));
+                LOGGER.info("procurar :: Procurando usuário por login: {}",
+                        login);
+            }
+
+            TypedQuery<UsuarioDO> query = this.em.createQuery(cq);
+
+            final UsuarioDO usuarioDO = query.getSingleResult();
+            LOGGER.info("procurar :: {} encontrado com sucesso!",
+                    usuarioDO.toString());
+
+            return usuarioDO;
+        } catch (NoResultException e) {
+            final String erro = String.format("Não foi encontrado usuário" +
+                    " com código: %d login: %s", codigo, login);
+            LOGGER.info("procurar :: {}", erro);
+            return null;
+        } catch (Exception e) {
+            final String erro = String.format("Ocorreu um erro ao procurar" +
+                    " o usuário código: %d login: %s", codigo,  login);
+            LOGGER.error("procurar :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new BancoDadosException(erro, e);
+        }
+    }
+
+    /**
      * Inserir usuario
      * @param usuario usuario a ser inserido
      * @throws BancoDadosException
      */
-    public void inserir(UsuarioDO usuario) throws BancoDadosException {
+    public UsuarioDO inserir(UsuarioDO usuario) throws BancoDadosException {
         try {
-            this.create(usuario);
+            return this.create(usuario);
         } catch (Exception e) {
-            final String msg = String.format("Ocorreu um erro ao inserir {}",
+            final String msg = String.format("Ocorreu um erro ao inserir %s",
                     usuario.toString());
             LOGGER.error("inserir :: {} Erro: {}", msg, e.getMessage(), e);
             throw new BancoDadosException(msg, e);
@@ -57,9 +119,9 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
      * @param usuarioDo usuario
      * @throws BancoDadosException Excecao de banco
      */
-    public void  atualizar(UsuarioDO usuarioDo) throws BancoDadosException {
+    public UsuarioDO atualizar(UsuarioDO usuarioDo) throws BancoDadosException {
         try {
-            this.merge(usuarioDo);
+            return this.merge(usuarioDo);
         } catch (Exception e) {
             final String msg = String.format("Ocorreu um erro ao atualizar" +
                     " {}", usuarioDo.toString());

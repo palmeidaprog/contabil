@@ -1,17 +1,19 @@
 package com.react.contabil.conta;
 
-import com.react.contabil.excecao.BancoDadosException;
-import com.react.contabil.excecao.ContabilException;
-import com.react.contabil.excecao.EntidadeExistenteException;
+import com.react.contabil.excecao.*;
+import com.react.contabil.util.Constantes;
+import com.react.contabil.util.Util;
 import org.jboss.logging.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,86 +31,197 @@ public class ContaService {
 
     }
 
+    /**
+     * Adiciona nova conta
+     * @param conta Conta a ser adicionada
+     * @return Response com codigo 200 ou excecao
+     */
     @POST
     @Path("/adicionar")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response adicionar(Conta conta) {
         try {
             LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando" +
                             " nova {}", conta.toString());
             this.handler.adicionar(conta);
-            LOGGER.info("adicionar :: Acessando /conta/adiciona {} adicionado com sucesso",
-            conta.toString());
+            LOGGER.info("adicionar :: Acessando /conta/adiciona {} " +
+                            "adicionada com sucesso!", conta.toString());
 
             return Response.ok().build();
         } catch (EntidadeExistenteException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+            LOGGER.error("adicionar :: Respondendo BAD_REQUEST, {} já existe!",
+                    conta.toString());
+            return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (ContabilException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            LOGGER.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                          "ocorreu um erro ao adicionar {} Erro: {}",
+                           conta.toString(), e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
         }
-
-//        return Response.ok().build();
     }
 
+    @GET
+    @Path("/getNumero/{codigoUsuario}/{contaPai}")
+    public Response getNumero(@PathParam("codigoUsuario") Long codigoUsuario,
+                              @PathParam("contaPai") String numeroContaPai) {
+        return Response.ok().build();
+    }
+
+    /**
+     * Remover conta
+     * @param conta conta a ser removida
+     * @return 200 para ok ou exceção e codigo de erro
+     */
     @POST
     @Path("/remover")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response remover(Conta conta) {
-       try {
+        try {
+            LOGGER.info("remover :: /conta/remover Removendo a {} ...",
+                    conta.toString());
             this.handler.remover(conta);
+            LOGGER.info("remover :: /conta/remover {} removida com sucesso",
+                    conta.toString());
+
             return Response.ok().build();
-        } catch (EntidadeExistenteException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (EntidadeNaoEncontradaException e) {
+            LOGGER.error("remover :: Respondendo BAD_REQUEST, {} não existe!",
+                    conta.toString());
+            return Response.status(Status.BAD_REQUEST).entity(e).build();
+        } catch (EntitadeNaoRemovivelException e) {
+            LOGGER.error("remover :: Respondendo BAD_REQUEST, {} não pode " +
+                    "ser removida. Erro: {}", conta.toString(), e.getMessage());
+            return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (BancoDadosException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            LOGGER.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "encontrado erro de banco ao remover {} Erro: {}",
+                    conta.toString(), e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
         } catch (ContabilException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            LOGGER.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+                            "encontrado erro ao remover {} Erro: {}",
+                    conta.toString(), e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
         }
-//        return Response.ok().build();
     }
 
     @POST
     @Path("/atualizar")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response atualizar(Conta conta) {
         try {
             this.handler.atualizar(conta);
             return Response.ok().build();
-        } catch (EntidadeExistenteException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+        } catch (EntidadeNaoEncontradaException e) {
+            return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (BancoDadosException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
         } catch (ContabilException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
         //return Response.ok().build();
     }
 
+    /**
+     * Lista contas do usuário
+     * @param codigoUsuario Código do usuário
+     * @param numero (Opcional) Número da conta/Centro de custo
+     * @param nome (Opcional) Nome ou parte do nome da conta
+     * @return Http Code com lista de Contas
+     */
     @GET
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
     @Path("/listar/{codigoUsuario}")
-    public List<Conta> listar(@PathParam("codigoUsuario") Long codigoUsuario,
-                              @QueryParam("numero") String numero,
-                              @QueryParam("nome") String nome) {
+    public Response listar(@PathParam("codigoUsuario") Long codigoUsuario,
+                           @QueryParam("numero") String numero,
+                           @QueryParam("nome") String nome) {
 
-        //this.handler.listar(codigoUsuario, numero, nome);
-        return new ArrayList<>();
+        final String msg = this.log(codigoUsuario, numero, nome);
+
+        try {
+            LOGGER.info("listar :: /conta/listar/{} Procurando {}",
+                    codigoUsuario, msg);
+            final List<Conta> contas = this.handler.listar(codigoUsuario,
+                                                           numero, nome);
+            LOGGER.info("listar :: /conta/listar/{} {} encontrada com " +
+                    "sucesso!", codigoUsuario, msg);
+
+            return Response.ok(contas).build();
+        } catch (BancoDadosException e) {
+            LOGGER.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
+                    "devido a um erro de banco ocorrido ao procurar {}", msg);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        } catch (ContabilException e) {
+            LOGGER.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
+                    "devido a um erro ocorrido ao procurar {}", msg);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
     }
 
+    /**
+     * retorna dados da conta
+     * @param codigo Codigo da conta
+     * @return Http Code com Conta ou Excecao em caso de erro
+     */
     @GET
     @Path("/get/{codigo}")
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response get(@PathParam("codigo") Long codigo) {
+        final String msg = String.format("conta com código %d", codigo);
+
         try {
-            this.handler.procurar(codigo);
-            return Response.ok().build();
-        } catch (EntidadeExistenteException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+            LOGGER.info("get :: /conta/get/{} Procurando {} ...", codigo, msg);
+            final Conta conta = this.handler.procurar(codigo);
+            LOGGER.info("get :: /conta/get/{} Conta {} encontrada", codigo,
+                    conta.toString());
+
+            return Response.ok(conta).build();
+        } catch (EntidadeNaoEncontradaException e) {
+            LOGGER.error("get :: Retornando BAD_REQUEST para procura de {}",
+                    msg);
+            return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (BancoDadosException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            LOGGER.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
+                    "procura de {}", msg);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
         } catch (ContabilException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            LOGGER.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
+                    "procura de {}", msg);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
         }
-//        return Response.ok().build();
     }
 
+    /**
+     * Monta mensagem de log
+     * @param codigoUsuario
+     * @param numero
+     * @param nome
+     * @return
+     */
+    private String log(@NotNull Long codigoUsuario, String numero,
+                       String nome) {
+        final StringBuilder sb = new StringBuilder("Lista de contas do ");
+        sb.append("usuário código: ").append(codigoUsuario);
+
+        if (Util.isNotBlank(numero)) {
+            sb.append(" numero: ").append(numero);
+        }
+
+        if (Util.isNotBlank(nome)) {
+            sb.append(" nome: ").append(nome);
+        }
+
+        return sb.toString();
+    }
 
 }

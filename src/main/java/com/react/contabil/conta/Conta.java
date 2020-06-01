@@ -22,7 +22,6 @@ public class Conta {
     @NotNull(message="O código do usuário não pode ser nulo")
     private Long codigoUsuario;
 
-    @NotNull(message="O número da conta não pode ser nulo")
     private String numero;
 
     @NotNull(message="O nome da conta não pode ser nulo")

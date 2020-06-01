@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,26 +32,29 @@ public class UsuarioServiceHandler {
     /**
      * Adiciona novo usuario e cria sua estrutura basica de contas
      * @param usuario usuario a ser adicionado
+     * @returns Usuario adicinado
      * @throws BancoDadosException Erro de Banco
      * @throws EntidadeExistenteException Usuario ja existre
      * @throws ContabilException Erro desconhecido
      */
     @Transactional
-    public void adicionar(Usuario usuario) throws BancoDadosException, 
+    public Usuario adicionar(Usuario usuario) throws BancoDadosException,
             EntidadeExistenteException, ContabilException {
         
         try {
             LOGGER.debug("adicionar :: Adicionando usuário login {}",
                     usuario.getLogin());
-            UsuarioDO usuarioDO = this.dao.procurar(usuario.getCodigo());
-            if (usuarioDO != null) {
-                if (usuarioDO.isCongelado()) { // ativo usuario inativo
+            UsuarioDO usuarioDO = this.dao.procurar(null,
+                                                    usuario.getLogin());
+
+            if (usuarioDO != null) { // verifica existencia do usuario
+                if (usuarioDO.isCongelado()) { // ativa usuario inativo
                     usuario.setCongelado(false);
                     this.dao.atualizar(usuarioDO);
                     LOGGER.info("adicionar :: {} já existia, porém estava" +
                             " inativa. Conta reativada!", usuarioDO.toString());
-                    return ;
-                } else {
+                    return new Usuario(usuarioDO);
+                } else { // usuario existente e ativo
                     final String msg = String.format("%s já existe!",
                             usuarioDO.toString());
                     LOGGER.error("adicionar :: {}", msg);
@@ -59,10 +63,13 @@ public class UsuarioServiceHandler {
             }
             
             usuarioDO = usuario.toDataObject();
+            usuarioDO = this.dao.inserir(usuarioDO);
             usuarioDO.setContas(this.criaContasBasicas(usuarioDO));
-            this.dao.inserir(usuarioDO);
+            this.dao.atualizar(usuarioDO);
             LOGGER.info("adicionar :: {} adicionado com sucesso!",
                     usuarioDO.toString());
+
+            return new Usuario(usuarioDO);
         } catch (BancoDadosException | EntidadeExistenteException e) {
             throw e;
         } catch (Exception e) {
@@ -96,13 +103,12 @@ public class UsuarioServiceHandler {
      * @param numero Numero daconta (ex: 01.02)
      * @return ContaDO
      */
-    private ContaDO criaConta(UsuarioDO usuarioDO, String nome, String numero
-            ) {
+    private ContaDO criaConta(UsuarioDO usuarioDO, String nome, String numero) {
         final ContaDO contaDO = new ContaDO();
         contaDO.setNome(nome);
         contaDO.setNumero(numero);
         contaDO.setSaldo(new BigDecimal(0));
-        contaDO.setUsuario(usuarioDO);
+        contaDO.setCodigoUsuario(usuarioDO.getCodigo());
 
         return contaDO;
     }
@@ -115,10 +121,10 @@ public class UsuarioServiceHandler {
      * @throws EntidadeNaoEncontradaException Usuário nao encontrado ou congelado
      * @throws ContabilException Erro desconhecido
      */
-    public Usuario procurar(Long codigo) throws BancoDadosException,
-            EntidadeNaoEncontradaException, ContabilException {
+    public Usuario procurar(Long codigo, String login) throws
+            ContabilException {
         try {
-            final UsuarioDO usuarioDO = this.dao.procurar(codigo);
+            final UsuarioDO usuarioDO = this.dao.procurar(codigo, login);
             if (usuarioDO == null) {
                 this.criaExcecao(String.format("Usuário codigo %d " +
                         "não encontrado", codigo), "procurar");

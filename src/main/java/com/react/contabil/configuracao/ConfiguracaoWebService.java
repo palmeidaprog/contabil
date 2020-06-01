@@ -20,6 +20,7 @@ public class ConfiguracaoWebService extends Application {
             LoggerFactory.getLogger(ConfiguracaoWebService.class.getName());
 
     public ConfiguracaoWebService() {
+        LOGGER.info("ConfiguracaoWebService :: Inicializando web service /contabil ...");
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
     }
@@ -30,7 +31,6 @@ public class ConfiguracaoWebService extends Application {
      * @return Retorna a lista de classes
      */
     public Set<Class<?>> getClasses() {
-        LOGGER.error("GETCLASS");
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
@@ -45,7 +45,6 @@ public class ConfiguracaoWebService extends Application {
     public Set<Object> getSingletons() {
         Set<Object> providers = new HashSet<>();
         CorsFilter corsFilter = new CorsFilter();
-        LOGGER.error("GETSINGLETON");
         corsFilter.getAllowedOrigins().add("*");
         corsFilter.setAllowedMethods("OPTIONS, GET, POST, DELETE, PUT, PATCH");
         providers.add(corsFilter);

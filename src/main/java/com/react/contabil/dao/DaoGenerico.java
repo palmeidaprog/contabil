@@ -43,12 +43,12 @@ public abstract class DaoGenerico<T extends Entidade, K> {
     }
 
 
-    public void create(T obj) {
-        this.em.persist(obj);
+    public T create(T obj) {
+        return this.em.merge(obj);
     }
 
-    public void merge(T obj) {
-        this.em.merge(obj);
+    public T merge(T obj) {
+        return this.em.merge(obj);
     }
 
     /**

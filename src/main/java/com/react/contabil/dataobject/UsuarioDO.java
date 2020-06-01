@@ -16,7 +16,7 @@ import java.util.List;
 public class UsuarioDO implements Entidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "codigo", nullable = false)
+    @Column(name = "codigo", updatable = false, nullable = false)
     private Long codigo;
 
     @Column(name = "nome", nullable = false)
