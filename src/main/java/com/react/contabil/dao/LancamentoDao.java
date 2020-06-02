@@ -2,17 +2,17 @@ package com.react.contabil.dao;
 
 import com.react.contabil.dataobject.LancamentoDO;
 import com.react.contabil.excecao.BancoDadosException;
-import com.react.contabil.lancamento.Lancamento;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 @Stateless
 public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
 
-    private static final Logger LOGGER = LoggerFactory
-                .getLogger(LancamentoDao.class);
+    @Inject
+    private Logger logger;
 
     /**
      * Adiciona lançamento no banco de dados
@@ -23,17 +23,17 @@ public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
     public LancamentoDO inserir(LancamentoDO lancamentoDO) throws
             BancoDadosException {
         try {
-            LOGGER.debug("adicionar :: Adicionando {} no banco de dados...",
+            logger.debug("adicionar :: Adicionando {} no banco de dados...",
                     lancamentoDO.toString());
             lancamentoDO = this.create(lancamentoDO);
-            LOGGER.debug("adicionar :: {} adicionado no banco com sucesso!",
+            logger.debug("adicionar :: {} adicionado no banco com sucesso!",
                     lancamentoDO.toString());
 
             return lancamentoDO;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco " +
                     "ao adicionar %s", lancamentoDO.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }

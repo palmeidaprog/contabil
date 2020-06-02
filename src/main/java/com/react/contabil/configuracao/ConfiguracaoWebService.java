@@ -1,11 +1,13 @@
 package com.react.contabil.configuracao;
 
 import com.react.contabil.conta.ContaService;
+import com.react.contabil.lancamento.LancamentoService;
 import com.react.contabil.usuario.UsuarioService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -16,13 +18,14 @@ import java.util.Set;
 public class ConfiguracaoWebService extends Application {
     private Set<Class<?>> classes = new HashSet<>();
 
-    private final static Logger LOGGER =
-            LoggerFactory.getLogger(ConfiguracaoWebService.class.getName());
+    @Inject
+    private Logger LOGGER;
 
     public ConfiguracaoWebService() {
         LOGGER.info("ConfiguracaoWebService :: Inicializando web service /contabil ...");
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
+        classes.add(LancamentoService.class);
     }
 
     /**
@@ -30,10 +33,12 @@ public class ConfiguracaoWebService extends Application {
      * endpoint
      * @return Retorna a lista de classes
      */
+    @Override
     public Set<Class<?>> getClasses() {
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
+        classes.add(LancamentoService.class);
         return classes;
     }
 

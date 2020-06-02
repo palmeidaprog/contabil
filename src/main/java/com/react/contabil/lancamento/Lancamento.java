@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.dataobject.LancamentoDO;
 import com.react.contabil.dataobject.ValorDO;
 import com.react.contabil.util.Constantes;
-
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.Date;

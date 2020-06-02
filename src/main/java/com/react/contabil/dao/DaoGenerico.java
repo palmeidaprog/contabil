@@ -16,8 +16,8 @@ import javax.persistence.EntityTransaction;
  */
 public abstract class DaoGenerico<T extends Entidade, K> {
 
-    private static final Logger LOGGER = LoggerFactory
-    			.getLogger(DaoGenerico.class);
+    @Inject
+    private Logger logger;
 
     private Class<T> type;
 
@@ -35,7 +35,7 @@ public abstract class DaoGenerico<T extends Entidade, K> {
 
     protected T find(K key) {
         if (key == null) {
-            LOGGER.error("procurar :: Chave {} do Objeto nao pode ser " +
+            logger.error("procurar :: Chave {} do Objeto nao pode ser " +
                     "nulo", key.getClass().getSimpleName());
             return null;
         }
@@ -65,26 +65,6 @@ public abstract class DaoGenerico<T extends Entidade, K> {
      */
     public void delete(K chave) {
         this.em.remove(chave);
-    }
-
-    /**
-     * Da roll back e fecha entity manager
-     * @param em Entity Manager
-     * @param et Transação
-     * @param objName Nome do tipo do objeto
-     */
-    public static void close(EntityManager em, EntityTransaction et,
-                       String objName) {
-        if (et != null && et.isActive()) {
-            et.rollback();
-            LOGGER.debug("close :: Transação ROLLBACK para objeto {}",
-                    objName);
-        }
-
-        if (em != null && em.isOpen()) {
-            em.close();
-            LOGGER.debug("close :: Fechando o entity manager");
-        }
     }
 
 

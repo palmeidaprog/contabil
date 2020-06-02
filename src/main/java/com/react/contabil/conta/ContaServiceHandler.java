@@ -5,7 +5,7 @@ import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ContaServiceHandler {
 
-    private static final Logger LOGGER = LoggerFactory
-                .getLogger(ContaServiceHandler.class);
+    @Inject
+    private Logger logger;
 
     @Inject
     private ContaDao dao;
@@ -36,19 +36,19 @@ public class ContaServiceHandler {
     public void adicionar(Conta conta) throws EntidadeExistenteException,
             BancoDadosException, ContabilException {
         try {
-            LOGGER.debug("adicionar :: Adicionando {} ...", conta.toString());
+            logger.debug("adicionar :: Adicionando {} ...", conta.toString());
 
             this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
             final ContaDO contaDO = conta.toDataObject();
             this.dao.inserir(contaDO);
-            LOGGER.info("adicionar :: {} adicionada com sucesso!",
+            logger.info("adicionar :: {} adicionada com sucesso!",
                     conta.toString());
         } catch (EntidadeExistenteException | BancoDadosException e) {
             throw e;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao adicionar %s", conta.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -66,7 +66,7 @@ public class ContaServiceHandler {
         if (contaDO != null) {
             final String msg = String.format("A conta codigo %d já existe!",
                     codigo);
-            LOGGER.error("{} :: {}", nomeMetodo, msg);
+            logger.error("{} :: {}", nomeMetodo, msg);
             throw new EntidadeExistenteException(msg);
         }
         return contaDO;
@@ -83,25 +83,25 @@ public class ContaServiceHandler {
     public void remover(Conta conta) throws EntidadeNaoEncontradaException,
             BancoDadosException, ContabilException {
         try {
-            LOGGER.debug("remover :: Removendo {}", conta.toString());
+            logger.debug("remover :: Removendo {}", conta.toString());
             final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
             if (contaDO == null) { // valida existencia
                 final String msg = String.format("%s não existe",
                         conta.toString());
-                LOGGER.error("remover :: {}", msg);
+                logger.error("remover :: {}", msg);
                 throw new EntidadeNaoEncontradaException(msg);
             }
 
             // TODO: gera codigo baseado no pai
 
-            LOGGER.debug("remover :: Validando a remoção da {}",
+            logger.debug("remover :: Validando a remoção da {}",
                     conta.toString());
             this.validaRemocao(conta, contaDO);
-            LOGGER.debug("remover :: {} valida para remoção",
+            logger.debug("remover :: {} valida para remoção",
                     conta.toString());
 
             this.dao.remover(contaDO.getCodigo());
-            LOGGER.info("remover :: {} removida com sucesso",
+            logger.info("remover :: {} removida com sucesso",
                     conta.toString());
         } catch (EntidadeNaoEncontradaException | EntitadeNaoRemovivelException
                     | BancoDadosException e) {
@@ -109,7 +109,7 @@ public class ContaServiceHandler {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao adicionar %s", conta.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -121,23 +121,23 @@ public class ContaServiceHandler {
      */
     public void atualizar(Conta conta) throws ContabilException {
         try {
-            LOGGER.info("atualizar :: Atualizando {}", conta.toString());
+            logger.info("atualizar :: Atualizando {}", conta.toString());
             final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
             if (contaDO == null) {
                 final String erro = String.format("%s não existe",
                         conta.toString());
-                LOGGER.error("atualizar :: {}", conta.toString());
+                logger.error("atualizar :: {}", conta.toString());
                 throw new EntidadeNaoEncontradaException(erro);
             }
             this.dao.atualizar(conta.update(contaDO));
-            LOGGER.info("atualizar :: Atualizaçào de {} efetuada com sucesso",
+            logger.info("atualizar :: Atualizaçào de {} efetuada com sucesso",
                     conta.toString());
         } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
             throw e;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao adicionar %s", conta.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -156,7 +156,7 @@ public class ContaServiceHandler {
         if (conta.getNivelConta() == 1) { // valida se é removivel
             final String msg = String.format("%s é nível primário e " +
                     "não pode ser removida", conta.toString());
-            LOGGER.error("remover :: {}", msg);
+            logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }
 
@@ -165,7 +165,7 @@ public class ContaServiceHandler {
             final String msg = String.format("%s contém valores. " +
                             "Apenas contas vazias podem ser removidas",
                     conta.toString());
-            LOGGER.error("remover :: {}", msg);
+            logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }
 
@@ -174,7 +174,7 @@ public class ContaServiceHandler {
             final String msg = String.format("%s contém contas filhas. " +
                             "Remova as contas filhas primeiro",
                     conta.toString());
-            LOGGER.error("remover :: {}", msg);
+            logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }
     }
@@ -196,17 +196,17 @@ public class ContaServiceHandler {
                 nome == null ? "" : " nome: " + nome);
 
         try {
-            LOGGER.info("listar :: Procurando lista de contas {}", msg);
+            logger.info("listar :: Procurando lista de contas {}", msg);
             final List<Conta> contas = this.dao.listar(codigoUsuario, numero, nome)
                     .stream().map(Conta::new).collect(Collectors.toList());
-            LOGGER.info("listar :: Lista encontrada com sucesso ({})", msg);
+            logger.info("listar :: Lista encontrada com sucesso ({})", msg);
             return contas;
         } catch (BancoDadosException e) {
             throw e;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao procurar lista com %s", msg);
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -222,16 +222,16 @@ public class ContaServiceHandler {
 
         final String msg = String.format("conta com código: %d", codigo);
         try {
-            LOGGER.info("procurar :: Procurando {}", msg);
+            logger.info("procurar :: Procurando {}", msg);
             final ContaDO contaDO = this.dao.procurar(codigo);
             if (contaDO == null) {
                 final String erro = String.format("Conta com código %d não existe",
                         codigo);
-                LOGGER.error("procurar :: {}", erro);
+                logger.error("procurar :: {}", erro);
                 throw new EntidadeNaoEncontradaException(erro);
             }
 
-            LOGGER.info("procurar :: Procura de {} efetuada com sucesso",
+            logger.info("procurar :: Procura de {} efetuada com sucesso",
                     msg);
             return new Conta(contaDO);
         } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
@@ -239,7 +239,7 @@ public class ContaServiceHandler {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao procurar %s", msg);
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }

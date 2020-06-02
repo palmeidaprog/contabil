@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -18,14 +19,11 @@ import java.util.List;
 @RequestScoped
 public class LancamentoService {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(LancamentoService.class);
+    @Inject
+    private Logger logger;
 
-    //private LancamentoServiceHandler handler;
-
-    public LancamentoService() {
-        System.out.println("s2");
-    }
+    @Inject
+    private LancamentoServiceHandler handler;
 
     @POST
     @Path("/adicionar")

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -18,8 +19,8 @@ import java.util.List;
 @Stateless
 public class ContaDao extends DaoGenerico<ContaDO, Long> {
 
-    private static final Logger LOGGER = LoggerFactory
-                .getLogger(ContaDao.class);
+    @Inject
+    private Logger logger;
 
     public ContaDao() {
         super(ContaDO.class);
@@ -36,7 +37,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao adicionar %s", contaDO.toString());
-            LOGGER.error("inserir :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("inserir :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }
@@ -53,7 +54,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao procurar Conta de código %d", codigo);
-            LOGGER.error("inserir :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("inserir :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }
@@ -69,7 +70,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao remover Conta de código %d", codigo);
-            LOGGER.error("remover :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("remover :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }
@@ -85,7 +86,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao atualizar %s", contaDO.toString());
-            LOGGER.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }
@@ -130,7 +131,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao listar contas com %s", msg);
-            LOGGER.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }
     }

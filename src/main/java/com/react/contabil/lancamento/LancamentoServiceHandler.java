@@ -1,6 +1,8 @@
 package com.react.contabil.lancamento;
 
+import com.react.contabil.dao.ContaDao;
 import com.react.contabil.dao.LancamentoDao;
+import com.react.contabil.dao.ValorDao;
 import com.react.contabil.dataobject.LancamentoDO;
 import com.react.contabil.dataobject.TipoValor;
 import com.react.contabil.dataobject.ValorDO;
@@ -10,7 +12,6 @@ import com.react.contabil.excecao.LancamentoInvalidoException;
 import com.react.contabil.util.Constantes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -21,13 +22,17 @@ import java.util.List;
 @ApplicationScoped
 public class LancamentoServiceHandler {
 
-    private static final Logger LOGGER = LoggerFactory
-                .getLogger(LancamentoServiceHandler.class);
+    @Inject
+    private Logger logger;
 
     @Inject
     private LancamentoDao dao;
 
-    public LancamentoServiceHandler() { }
+    @Inject
+    private ContaDao contaDao;
+
+    @Inject
+    private ValorDao valorDao;
 
     /**
      * Adiciona novo lancamento
@@ -40,33 +45,31 @@ public class LancamentoServiceHandler {
 
         try {
             LancamentoDO lancamentoDO = lancamento.toDataObject();
-            LOGGER.info("adicionar :: Validando os {} valores de {} ...",
-                    lancamentoDO.getValores().size(), lancamento.toString());
+            logger.info("adicionar :: Validando os {} valores de {} ...",
+                    lancamentoDO.getValores().size(), lancamento);
             this.validaValores(lancamentoDO);
-            LOGGER.info("adicionar :: Adicionando {} ...", lancamento
-                    .toString());
+            logger.info("adicionar :: Adicionando {} ...", lancamento);
 
             lancamentoDO = this.dao.inserir(lancamentoDO);
-            LOGGER.error("adicionar :: {} adicionado com sucesso!",
-                    lancamento.toString());
+            logger.info("adicionar :: {} adicionado com sucesso!",
+                    lancamento);
 
             return new Lancamento(lancamentoDO);
         } catch (LancamentoInvalidoException e) {
-            LOGGER.error("adicionar :: {}", e.getMessage());
+            logger.error("adicionar :: {}", e.getMessage());
             throw e;
         } catch (BancoDadosException e) {
             final String erro = String.format("Ocorreu um erro de banco de " +
                     "dados ao adicionar %s", lancamento.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage());
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage());
             throw e;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao adicionar %s", lancamento.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
-
 
     /**
      * Valida se o total de débitos e créditos que compoem o lançamento são
@@ -80,7 +83,6 @@ public class LancamentoServiceHandler {
         double debitos = 0;
         double creditos = 0;
 
-        //final BigDecimal creditos = new BigDecimal(0);
         for (final ValorDO valor : lancamentoDO.getValores()) {
             if (valor.getTipo() == TipoValor.DEBITO) {
                 debitos += valor.getValor().doubleValue();
@@ -97,4 +99,16 @@ public class LancamentoServiceHandler {
     }
 
 
+    // TODO: atualiza saldo do lançamento
+//    private void atualizaSaldos(List<ValorDO> lista) {
+//        for (final ValorDO valor : lista) {
+//            valor.getValor().multiply()
+//        }
+//    }
+//
+//    private BigDecimal modifier(ValorDO valorDO) {
+//        if (valorDO.getConta()) {
+//
+//        }
+//    }
 }

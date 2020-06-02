@@ -3,9 +3,7 @@ package com.react.contabil.conta;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Constantes;
 import com.react.contabil.util.Util;
-import org.jboss.logging.Param;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -14,21 +12,20 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("/conta")
 @RequestScoped
 public class ContaService {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ContaService.class);
+    @Inject
+    private Logger logger;
 
     @Inject
     private ContaServiceHandler handler;
 
     public ContaService() {
-
+        // construtor padrão
     }
 
     /**
@@ -42,19 +39,19 @@ public class ContaService {
     @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response adicionar(Conta conta) {
         try {
-            LOGGER.info("adicionar :: Acessando /conta/adiciona Adicionando" +
+            logger.info("adicionar :: Acessando /conta/adiciona Adicionando" +
                             " nova {}", conta.toString());
             this.handler.adicionar(conta);
-            LOGGER.info("adicionar :: Acessando /conta/adiciona {} " +
+            logger.info("adicionar :: Acessando /conta/adiciona {} " +
                             "adicionada com sucesso!", conta.toString());
 
             return Response.ok().build();
         } catch (EntidadeExistenteException e) {
-            LOGGER.error("adicionar :: Respondendo BAD_REQUEST, {} já existe!",
+            logger.error("adicionar :: Respondendo BAD_REQUEST, {} já existe!",
                     conta.toString());
             return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (ContabilException e) {
-            LOGGER.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
                           "ocorreu um erro ao adicionar {} Erro: {}",
                            conta.toString(), e.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -80,29 +77,29 @@ public class ContaService {
     @Produces(Constantes.APPLICATION_JSON_UTF8)
     public Response remover(Conta conta) {
         try {
-            LOGGER.info("remover :: /conta/remover Removendo a {} ...",
+            logger.info("remover :: /conta/remover Removendo a {} ...",
                     conta.toString());
             this.handler.remover(conta);
-            LOGGER.info("remover :: /conta/remover {} removida com sucesso",
+            logger.info("remover :: /conta/remover {} removida com sucesso",
                     conta.toString());
 
             return Response.ok().build();
         } catch (EntidadeNaoEncontradaException e) {
-            LOGGER.error("remover :: Respondendo BAD_REQUEST, {} não existe!",
+            logger.error("remover :: Respondendo BAD_REQUEST, {} não existe!",
                     conta.toString());
             return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (EntitadeNaoRemovivelException e) {
-            LOGGER.error("remover :: Respondendo BAD_REQUEST, {} não pode " +
+            logger.error("remover :: Respondendo BAD_REQUEST, {} não pode " +
                     "ser removida. Erro: {}", conta.toString(), e.getMessage());
             return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (BancoDadosException e) {
-            LOGGER.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+            logger.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
                     "encontrado erro de banco ao remover {} Erro: {}",
                     conta.toString(), e.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
         } catch (ContabilException e) {
-            LOGGER.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+            logger.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
                             "encontrado erro ao remover {} Erro: {}",
                     conta.toString(), e.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -145,21 +142,21 @@ public class ContaService {
         final String msg = this.log(codigoUsuario, numero, nome);
 
         try {
-            LOGGER.info("listar :: /conta/listar/{} Procurando {}",
+            logger.info("listar :: /conta/listar/{} Procurando {}",
                     codigoUsuario, msg);
             final List<Conta> contas = this.handler.listar(codigoUsuario,
                                                            numero, nome);
-            LOGGER.info("listar :: /conta/listar/{} {} encontrada com " +
+            logger.info("listar :: /conta/listar/{} {} encontrada com " +
                     "sucesso!", codigoUsuario, msg);
 
             return Response.ok(contas).build();
         } catch (BancoDadosException e) {
-            LOGGER.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
+            logger.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
                     "devido a um erro de banco ocorrido ao procurar {}", msg);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
         } catch (ContabilException e) {
-            LOGGER.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
+            logger.error("listar :: Retornando INTERNAL_SERVER_ERROR " +
                     "devido a um erro ocorrido ao procurar {}", msg);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
@@ -178,23 +175,23 @@ public class ContaService {
         final String msg = String.format("conta com código %d", codigo);
 
         try {
-            LOGGER.info("get :: /conta/get/{} Procurando {} ...", codigo, msg);
+            logger.info("get :: /conta/get/{} Procurando {} ...", codigo, msg);
             final Conta conta = this.handler.procurar(codigo);
-            LOGGER.info("get :: /conta/get/{} Conta {} encontrada", codigo,
+            logger.info("get :: /conta/get/{} Conta {} encontrada", codigo,
                     conta.toString());
 
             return Response.ok(conta).build();
         } catch (EntidadeNaoEncontradaException e) {
-            LOGGER.error("get :: Retornando BAD_REQUEST para procura de {}",
+            logger.error("get :: Retornando BAD_REQUEST para procura de {}",
                     msg);
             return Response.status(Status.BAD_REQUEST).entity(e).build();
         } catch (BancoDadosException e) {
-            LOGGER.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
+            logger.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
                     "procura de {}", msg);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
         } catch (ContabilException e) {
-            LOGGER.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
+            logger.error("get :: Retornando INTERNAL_SERVER_ERROR para " +
                     "procura de {}", msg);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
