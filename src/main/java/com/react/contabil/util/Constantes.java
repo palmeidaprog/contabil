@@ -10,6 +10,12 @@ public interface Constantes {
         String NOT_NULL = "Usuário não pode ser vazio ou nulo";
     }
 
+    interface Conta {
+        String COD_DIGITS = "O código da conta não pode ter mais de 15 digitos";
+
+
+    }
+
     interface Lancamento {
         String NOT_NULL = "Lançamento não pode ser nulo";
 
@@ -31,6 +37,10 @@ public interface Constantes {
     }
 
     interface Valor {
+        String LISTA_NOT_EMPTY = "Lista de Valores não pode ser nula ou vazia";
+
+        String NOT_NULL = "O valor não pode ser nulo";
+
         String CODIGO_DIGITS = "O codigo do valor não pode ter mais que " +
                 "15 digitos";
 
@@ -50,6 +60,20 @@ public interface Constantes {
         String CODIGO_LANCAMENTO_NOT_NULL = "O código do lançamento não" +
                 " pode ser nulo";
 
+    }
+
+    interface FiltroLancamentos {
+        String COD_USUARIO_NOT_EMPY = "O código usuário não pode ser nulo ou vazio";
+
+        String COD_USUARIO_DIGITS = "O código usuário não pode ter mais de 15 digitos";
+
+        String DATA_NO_FUTURO = "A data não pode estar no futuro";
+
+        String DATA_INICIO_NOT_NULL = "A data início não pode estar no futuro";
+
+        String DATA_FINAL_NOT_NULL = "A data final não pode estar no futuro";
+
+        String NUMERO_CONTA_INVALIDA = "O formato da conta é inválido. Ex formato: 01.03.02";
     }
 
 }

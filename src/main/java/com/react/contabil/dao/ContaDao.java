@@ -1,11 +1,10 @@
 package com.react.contabil.dao;
 
+import com.react.contabil.conta.Conta;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
@@ -13,6 +12,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @param contaDO conta
      * @throws BancoDadosException Erro de banco
      */
-    public void inserir(ContaDO contaDO) throws BancoDadosException {
+    public void inserir(@Valid @NotNull ContaDO contaDO) throws BancoDadosException {
         try {
             this.create(contaDO);
         } catch (Exception e) {
@@ -48,7 +49,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @return Conta (null se nào existir)
      * @throws BancoDadosException Erro de banco
      */
-    public ContaDO procurar(Long codigo) throws BancoDadosException {
+    public ContaDO procurar(@NotNull Long codigo) throws BancoDadosException {
         try {
             return this.find(codigo);
         } catch (Exception e) {
@@ -64,7 +65,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @param codigo codigo da conta
      * @throws BancoDadosException Erro de banco
      */
-    public void remover(Long codigo) throws BancoDadosException {
+    public void remover(@NotNull Long codigo) throws BancoDadosException {
         try {
             this.delete(codigo);
         } catch (Exception e) {
@@ -80,7 +81,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @param contaDO Atualiza conta
      * @throws BancoDadosException
      */
-    public void atualizar(ContaDO contaDO) throws BancoDadosException {
+    public void atualizar(@Valid @NotNull ContaDO contaDO) throws BancoDadosException {
         try {
             this.merge(contaDO);
         } catch (Exception e) {
@@ -99,7 +100,8 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @return lista de usuarios
      * @throws BancoDadosException
      */
-    public List<ContaDO> listar(Long codigoUsuario, String numero, String nome) throws
+    public List<ContaDO> listar(@NotNull Long codigoUsuario, String numero,
+                                String nome) throws
             BancoDadosException {
         final String msg = String.format("filtros codigo usuário: %d%s%s",
                 codigoUsuario, numero == null ? "" : " numero: " + numero,
@@ -114,8 +116,7 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
             predicados.add(cb.equal(conta.get("codigoUsuario"), codigoUsuario));
 
             if (Util.isNotBlank(numero)) {
-                predicados.add(cb.like(cb.upper(conta.get("numero")),
-                        numero.toUpperCase().trim() + "%"));
+                predicados.add(cb.like(conta.get("numero"),numero.trim() + "%"));
             }
 
             if (Util.isNotBlank(nome)) {
@@ -133,6 +134,27 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
                     " dados ao listar contas com %s", msg);
             logger.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
+        }
+    }
+
+    /**
+     * Procurar conta por código
+     * @param codigo codigo da conta a ser procurado
+     * @return contaDo
+     * @throws BancoDadosException erro de banco encapsulado
+     */
+    public ContaDO buscar(@NotNull Long codigo) throws BancoDadosException {
+        try {
+            logger.info("buscar :: Buscando ContaDO código: {} ...", codigo);
+            final ContaDO contaDO = super.find(codigo);
+
+            logger.info("buscar :: {} adicionado com sucesso!", contaDO);
+            return contaDO;
+        } catch (Exception e) {
+            final String error = String.format("Ocorreu um erro no banco" +
+                    " ao procurar Conta código: %d", codigo);
+            logger.error("buscar :: {} Erro: {}", error, e.getMessage(), e);
+            throw new BancoDadosException(error);
         }
     }
 }

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.util.Util;
-
+import static com.react.contabil.util.Constantes.Conta.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -13,7 +14,9 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Conta {
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = COD_DIGITS)
     private Long codigo;
 
     @Size(max = 15, message="O codigo da conta pai não pode ser maior que {max}")

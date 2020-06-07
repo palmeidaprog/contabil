@@ -34,7 +34,7 @@ public class LancamentoDO implements Entidade {
     @OneToMany(
         mappedBy = "lancamento",
         cascade = CascadeType.ALL,
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         orphanRemoval = true
     )
     private List<ValorDO> valores;

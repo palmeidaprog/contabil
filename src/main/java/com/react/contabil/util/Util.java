@@ -1,6 +1,8 @@
 package com.react.contabil.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 public class Util {
 
@@ -29,5 +31,27 @@ public class Util {
      */
     public static boolean isNotNullNorEmpty(Collection<?> collection) {
         return collection != null && collection.isEmpty();
+    }
+
+    /**
+     * Retorna a data como string no formato ano-mes-dia
+     * @param data data
+     * @return string
+     */
+    public static String converteDateParaSqlDate(Date data) {
+        final SimpleDateFormat fmt = new SimpleDateFormat(
+                "yyyy-MM-dd");
+        return fmt.format(data);
+    }
+
+    /**
+     * Retorna a data como string no formato dia/mes/ano
+     * @param data data
+     * @return string
+     */
+    public static String converteParaDiaMesAno(Date data) {
+        final SimpleDateFormat fmt = new SimpleDateFormat(
+                "dd/MM/yyyy");
+        return fmt.format(data);
     }
 }
