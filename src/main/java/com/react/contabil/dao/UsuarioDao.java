@@ -5,7 +5,6 @@ import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ParametrosInvalidosException;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;

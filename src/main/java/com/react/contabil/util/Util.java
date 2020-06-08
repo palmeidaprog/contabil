@@ -30,7 +30,7 @@ public class Util {
      * @return Verdadeiro se vazia ou nula
      */
     public static boolean isNotNullNorEmpty(Collection<?> collection) {
-        return collection != null && collection.isEmpty();
+        return collection != null && !collection.isEmpty();
     }
 
     /**

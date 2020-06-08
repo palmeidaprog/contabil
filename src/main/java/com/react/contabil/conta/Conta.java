@@ -19,11 +19,14 @@ public class Conta {
             message = COD_DIGITS)
     private Long codigo;
 
-    @Size(max = 15, message="O codigo da conta pai não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = COD_CONTA_PAI_DIGITS)
     private Long contaPaiCodigo;
 
-    @NotNull(message="O código do usuário não pode ser nulo")
+    @NotNull(message = COD_USUARIO_NOT_NULL)
     private Long codigoUsuario;
+
 
     private String numero;
 
@@ -126,6 +129,8 @@ public class Conta {
         contaDO.setNome(this.nome);
         contaDO.setCodigo(this.codigo);
         contaDO.setCodigoUsuario(this.codigoUsuario);
+        contaDO.setDescricao(this.descricao);
+        contaDO.setContaPaiCodigo(this.contaPaiCodigo);
 
         return contaDO;
     }

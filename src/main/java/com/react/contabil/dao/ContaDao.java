@@ -50,8 +50,19 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @throws BancoDadosException Erro de banco
      */
     public ContaDO procurar(@NotNull Long codigo) throws BancoDadosException {
+        final String jpql = "SELECT c FROM ContaDO c " +
+                "LEFT JOIN FETCH c.valores v " +
+                "WHERE c.codigo = :codigo ";
+
         try {
-            return this.find(codigo);
+            logger.debug("procurar :: Procurando conta código: {}", codigo);
+            final TypedQuery<ContaDO> query = this.em.createQuery(jpql,
+                    ContaDO.class);
+            query.setParameter("codigo", codigo);
+            final ContaDO contaDO = query.getSingleResult();
+            logger.debug("procurar :: {} encontrado com sucesso", contaDO);
+
+            return contaDO;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
                     " dados ao procurar Conta de código %d", codigo);
@@ -65,12 +76,12 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
      * @param codigo codigo da conta
      * @throws BancoDadosException Erro de banco
      */
-    public void remover(@NotNull Long codigo) throws BancoDadosException {
+    public void remover(@NotNull ContaDO conta) throws BancoDadosException {
         try {
-            this.delete(codigo);
+            this.delete(conta);
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco de" +
-                    " dados ao remover Conta de código %d", codigo);
+                    " dados ao remover Conta de código %d", conta);
             logger.error("remover :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }

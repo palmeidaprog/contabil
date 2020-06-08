@@ -5,7 +5,6 @@ import com.react.contabil.lancamento.LancamentoService;
 import com.react.contabil.usuario.UsuarioService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
@@ -18,11 +17,8 @@ import java.util.Set;
 public class ConfiguracaoWebService extends Application {
     private Set<Class<?>> classes = new HashSet<>();
 
-    @Inject
-    private Logger LOGGER;
 
     public ConfiguracaoWebService() {
-        LOGGER.info("ConfiguracaoWebService :: Inicializando web service /contabil ...");
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
         classes.add(LancamentoService.class);

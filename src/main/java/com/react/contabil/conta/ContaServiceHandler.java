@@ -9,8 +9,13 @@ import org.slf4j.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.react.contabil.util.Util.isNotBlank;
 
 @ApplicationScoped
 public class ContaServiceHandler {
@@ -36,21 +41,80 @@ public class ContaServiceHandler {
     public void adicionar(Conta conta) throws EntidadeExistenteException,
             BancoDadosException, ContabilException {
         try {
-            logger.debug("adicionar :: Adicionando {} ...", conta.toString());
+            logger.debug("adicionar :: Adicionando {} ...", conta);
 
-            this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
+            if (conta.getCodigo() != null) {
+                this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
+            }
+
             final ContaDO contaDO = conta.toDataObject();
+            final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),
+                    "adicionar");
+
+            contaDO.setNumero(this.novoNumero(contaPai));
+
             this.dao.inserir(contaDO);
-            logger.info("adicionar :: {} adicionada com sucesso!",
-                    conta.toString());
+            logger.info("adicionar :: {} adicionada com sucesso!", conta);
+
+
         } catch (EntidadeExistenteException | BancoDadosException e) {
             throw e;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
-                    " ao adicionar %s", conta.toString());
+                    " ao adicionar %s", conta);
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
+    }
+
+    /**
+     * Gera o numero da nova conta
+     * @param contaPai
+     * @return
+     */
+    @NotNull
+    private String novoNumero(@NotNull @Valid ContaDO contaPai) {
+
+        //TODO: conta agregadora pode ter lancamentos? decidir design
+
+        if (contaPai.getContasFilhas().isEmpty()) {
+            return contaPai.getNumero() + ".01";
+        }
+
+        final List<ContaDO> filhas = contaPai.getContasFilhas();
+        final int nivel = contaPai.getNivelConta();
+        String numeroFinal = filhas.get(filhas.size()-1).getNumero()
+                .split("\\.")[nivel];
+        int numero = Integer.parseInt(numeroFinal) + 1;
+        numeroFinal = String.format("%02d", numero);
+
+        final String novoNumero = contaPai.getNumero() + "." + numeroFinal;
+        logger.info("novoNumero :: Novo numero gerado para conta {}",
+                novoNumero);
+
+        return novoNumero;
+    }
+
+    /**
+     * Pega conta baseado no código
+     * @param codigo codigo da conta
+     * @param nomeMetodo nome do metodo que chamou a funcao (para log)
+     * @return Conta achada
+     * @throws BancoDadosException Erro de banco
+     * @throws EntidadeNaoEncontradaException Conta nao encontrada
+     */
+    @NotNull @Valid
+    private ContaDO pegaConta(@NotNull Long codigo, String nomeMetodo)
+            throws BancoDadosException, EntidadeNaoEncontradaException {
+
+        final ContaDO contaDO = this.dao.procurar(codigo);
+        if (contaDO == null) { // valida existencia
+            final String msg = String.format("Conta código %d não existe",
+                    codigo);
+            logger.error("{} :: {}", nomeMetodo, msg);
+            throw new EntidadeNaoEncontradaException(msg);
+        }
+        return contaDO;
     }
 
     /**
@@ -62,6 +126,7 @@ public class ContaServiceHandler {
      */
     private ContaDO verificaExistenciaConta(Long codigo, String nomeMetodo)
             throws BancoDadosException, EntidadeExistenteException {
+
         final ContaDO contaDO = this.dao.procurar(codigo);
         if (contaDO != null) {
             final String msg = String.format("A conta codigo %d já existe!",
@@ -83,7 +148,7 @@ public class ContaServiceHandler {
     public void remover(Conta conta) throws EntidadeNaoEncontradaException,
             BancoDadosException, ContabilException {
         try {
-            logger.debug("remover :: Removendo {}", conta.toString());
+            logger.debug("remover :: Removendo {} ...", conta);
             final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
             if (contaDO == null) { // valida existencia
                 final String msg = String.format("%s não existe",
@@ -92,17 +157,12 @@ public class ContaServiceHandler {
                 throw new EntidadeNaoEncontradaException(msg);
             }
 
-            // TODO: gera codigo baseado no pai
+            logger.debug("remover :: Validando a remoção da {}", conta);
+            this.validaRemocao(contaDO);
+            logger.debug("remover :: {} valida para remoção", conta);
 
-            logger.debug("remover :: Validando a remoção da {}",
-                    conta.toString());
-            this.validaRemocao(conta, contaDO);
-            logger.debug("remover :: {} valida para remoção",
-                    conta.toString());
-
-            this.dao.remover(contaDO.getCodigo());
-            logger.info("remover :: {} removida com sucesso",
-                    conta.toString());
+            this.dao.remover(contaDO);
+            logger.info("remover :: {} removida com sucesso", conta);
         } catch (EntidadeNaoEncontradaException | EntitadeNaoRemovivelException
                     | BancoDadosException e) {
             throw e;
@@ -113,6 +173,8 @@ public class ContaServiceHandler {
             throw new ContabilException(erro, e);
         }
     }
+
+
 
     /**
      * Atualiza conta
@@ -144,18 +206,17 @@ public class ContaServiceHandler {
 
     /**
      * Valida remoçào da conta
-     * @param conta conta DTO
      * @param contaDO Conta data object
      * @throws EntitadeNaoRemovivelException Se nao for removivel
      */
-    private void validaRemocao(Conta conta, ContaDO contaDO) throws
+    private void validaRemocao(ContaDO contaDO) throws
             EntitadeNaoRemovivelException {
 
         // Valida se conta é nivel 1 (nao pode ser adicionada ou removida)
         // ex: 01 - Ativo
-        if (conta.getNivelConta() == 1) { // valida se é removivel
+        if (contaDO.getNivelConta() == 1) { // valida se é removivel
             final String msg = String.format("%s é nível primário e " +
-                    "não pode ser removida", conta.toString());
+                    "não pode ser removida", contaDO);
             logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }
@@ -164,7 +225,7 @@ public class ContaServiceHandler {
         if (Util.isNotNullNorEmpty(contaDO.getValores())) {
             final String msg = String.format("%s contém valores. " +
                             "Apenas contas vazias podem ser removidas",
-                    conta.toString());
+                    contaDO);
             logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }
@@ -173,7 +234,7 @@ public class ContaServiceHandler {
         if (Util.isNotNullNorEmpty(contaDO.getContasFilhas())) {
             final String msg = String.format("%s contém contas filhas. " +
                             "Remova as contas filhas primeiro",
-                    conta.toString());
+                    contaDO);
             logger.error("remover :: {}", msg);
             throw new EntitadeNaoRemovivelException(msg);
         }

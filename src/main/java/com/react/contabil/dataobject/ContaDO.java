@@ -53,6 +53,7 @@ public class ContaDO implements Entidade {
         mappedBy = "contaPai",
         fetch = FetchType.LAZY
     )
+    @OrderBy("numero")
     private List<ContaDO> contasFilhas;
 
     @Column(name = "saldo", columnDefinition = "float(18,2)")
@@ -62,6 +63,12 @@ public class ContaDO implements Entidade {
     private String descricao;
 
     public ContaDO() { }
+
+    @PrePersist
+    @PreUpdate
+    private void inicializaValoresPadroes() {
+        this.saldo = this.saldo == null ? BigDecimal.valueOf(0) : this.saldo;
+    }
 
     public List<ContaDO> getContasFilhas() {
         return contasFilhas;
@@ -149,6 +156,10 @@ public class ContaDO implements Entidade {
 
     public void setCodigoUsuario(Long codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
+    }
+
+    public int getNivelConta() {
+        return this.numero.split("\\.").length;
     }
 
     @Override
