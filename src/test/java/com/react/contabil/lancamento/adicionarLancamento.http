@@ -1,0 +1,26 @@
+POST http://localhost:8080/contabil/lancamento/adicionar
+Content-Type: application/json
+
+{
+  "codigoUsuario": 8,
+  "data": "2020-06-08T00:00:00",
+  "historico": "Lançamento teste do usuário paulo",
+  "valores": [
+    {
+      "tipo": "DEBITO",
+      "codigoConta": 8,
+      "data": "2020-06-08T00:00:00",
+      "historico": "Lançamento teste do usuário paulo",
+      "valor": 100.00
+    },
+    {
+      "tipo": "CREDITO",
+      "codigoConta": 11,
+      "data": "2020-06-08T00:00:00",
+      "historico": "Lançamento teste do usuário paulo",
+      "valor": 100.00
+    }
+  ]
+}
+
+###
