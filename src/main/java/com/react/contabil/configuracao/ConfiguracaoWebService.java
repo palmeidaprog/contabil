@@ -1,10 +1,9 @@
 package com.react.contabil.configuracao;
 
 import com.react.contabil.conta.ContaService;
+import com.react.contabil.lancamento.LancamentoService;
+import com.react.contabil.usuario.UsuarioService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -15,13 +14,11 @@ import java.util.Set;
 public class ConfiguracaoWebService extends Application {
     private Set<Class<?>> classes = new HashSet<>();
 
-    private final static Logger LOGGER =
-            LoggerFactory.getLogger(ConfiguracaoWebService.class.getName());
 
     public ConfiguracaoWebService() {
-        LOGGER.error("x17");
-//        classes.add(ContaService.class);
-//        classes.add(AtendimentoService.class);
+        classes.add(ContaService.class);
+        classes.add(UsuarioService.class);
+        classes.add(LancamentoService.class);
     }
 
     /**
@@ -29,10 +26,12 @@ public class ConfiguracaoWebService extends Application {
      * endpoint
      * @return Retorna a lista de classes
      */
+    @Override
     public Set<Class<?>> getClasses() {
-        LOGGER.error("GETCLASS");
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(ContaService.class);
+        classes.add(UsuarioService.class);
+        classes.add(LancamentoService.class);
         return classes;
     }
 
@@ -44,7 +43,6 @@ public class ConfiguracaoWebService extends Application {
     public Set<Object> getSingletons() {
         Set<Object> providers = new HashSet<>();
         CorsFilter corsFilter = new CorsFilter();
-        LOGGER.error("GETSINGLETON");
         corsFilter.getAllowedOrigins().add("*");
         corsFilter.setAllowedMethods("OPTIONS, GET, POST, DELETE, PUT, PATCH");
         providers.add(corsFilter);

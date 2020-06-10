@@ -1,0 +1,4 @@
+GET http://localhost:8080/contabil/conta/listar/8
+Accept: application/json
+
+###

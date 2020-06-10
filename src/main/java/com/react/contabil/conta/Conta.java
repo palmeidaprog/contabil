@@ -2,9 +2,11 @@ package com.react.contabil.conta;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.react.contabil.datalayer.dataobject.ContaDO;
-import com.react.contabil.usuario.Usuario;
-import javax.validation.constraints.NotBlank;
+import com.react.contabil.dataobject.ContaDO;
+import com.react.contabil.util.Util;
+import static com.react.contabil.util.Constantes.Conta.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -12,19 +14,23 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Conta {
 
-    @Size(max = 15, message="O codigo da conta não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = COD_DIGITS)
     private Long codigo;
 
-    @Size(max = 15, message="O codigo da conta pai não pode ser maior que {max}")
+    @Digits(integer = 15,
+            fraction = 0,
+            message = COD_CONTA_PAI_DIGITS)
     private Long contaPaiCodigo;
 
-    @NotBlank(message="O código do usuário não pode ser nulo")
+    @NotNull(message = COD_USUARIO_NOT_NULL)
     private Long codigoUsuario;
 
-    @NotBlank(message="O número da conta não pode ser nulo")
+
     private String numero;
 
-    @NotBlank(message="O nome da conta não pode ser nulo")
+    @NotNull(message="O nome da conta não pode ser nulo")
     private String nome;
 
     private BigDecimal saldo;
@@ -99,6 +105,10 @@ public class Conta {
         this.descricao = descricao;
     }
 
+    public int getNivelConta() {
+        return this.numero.split("\\.").length;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Conta");
@@ -119,6 +129,33 @@ public class Conta {
         contaDO.setNome(this.nome);
         contaDO.setCodigo(this.codigo);
         contaDO.setCodigoUsuario(this.codigoUsuario);
+        contaDO.setDescricao(this.descricao);
+        contaDO.setContaPaiCodigo(this.contaPaiCodigo);
+
+        return contaDO;
+    }
+
+    /**
+     * Atualiza o objeto DO
+     * @param contaDO
+     * @return Objeto atualizado
+     */
+    public ContaDO update(ContaDO contaDO) {
+        if (this.contaPaiCodigo != null) {
+            contaDO.setContaPaiCodigo(this.contaPaiCodigo);
+        }
+
+        if (Util.isNotBlank(this.numero)) {
+            contaDO.setNumero(this.numero);
+        }
+
+        if (Util.isNotBlank(this.nome)) {
+            contaDO.setNome(this.nome);
+        }
+
+        if (Util.isNotBlank(this.descricao)) {
+            contaDO.setDescricao(this.descricao);
+        }
 
         return contaDO;
     }

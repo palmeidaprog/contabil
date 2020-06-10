@@ -1,6 +1,6 @@
 package com.react.contabil;
 
-import com.react.contabil.datalayer.dataobject.UsuarioDO;
+import com.react.contabil.dataobject.UsuarioDO;
 
 public class TestUtils {
 
