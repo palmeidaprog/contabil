@@ -75,7 +75,7 @@ public class Lancamento {
         return codigoUsuario;
     }
 
-    public void setCodigoUsuario(Long usuario) {
+    public void setCodigoUsuario(Long codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
     }
 

@@ -1,5 +1,6 @@
 package com.react.contabil.lancamento;
 
+import com.react.contabil.dao.ContaDao;
 import com.react.contabil.dao.FiltroLancamentos;
 import com.react.contabil.dao.LancamentoDao;
 import com.react.contabil.dao.ValorDao;
@@ -23,8 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import static com.react.contabil.util.Constantes.Lancamento.NOT_NULL;
+import static com.react.contabil.util.Util.isBlank;
+
 
 @ApplicationScoped
 public class LancamentoServiceHandler {
@@ -37,6 +39,9 @@ public class LancamentoServiceHandler {
 
     @Inject
     private ValorDao valorDao;
+
+    @Inject
+    private ContaDao contaDao;
 
     /**
      * Adiciona novo lancamento
@@ -172,11 +177,9 @@ public class LancamentoServiceHandler {
         } catch (Exception e) {
             final String erro = String.format("Erro ao remover %s", lancamento);
             logger.error("remover :: {} Erro: {}", erro, e.getMessage(), e);
-            throw e;
+            throw new ContabilException(erro, e);
         }
     }
-
-
 
     /**
      * Verifica se houve mudanças nos valores
@@ -226,7 +229,7 @@ public class LancamentoServiceHandler {
             if (valor.getTipo() == TipoValor.DEBITO) {
                 debitos += valor.getValor().doubleValue();
             } else {
-                creditos += valor.getCodigo().doubleValue();
+                creditos += valor.getValor().doubleValue();
             }
         }
 
@@ -244,15 +247,22 @@ public class LancamentoServiceHandler {
      * @throws BancoDadosException erro de banco
      */
     private void atualizaSaldos(@NotEmpty List<ValorDO> lista, Date data,
-                                boolean remover) throws BancoDadosException {
+                                boolean remover) throws Exception {
         for (final ValorDO valor : lista) {
             double adicionar = valor.getValor().multiply(
                     this.modificador(valor)).doubleValue();
             this.valorDao.atualizaSaldo(valor, data, adicionar, remover);
 
-            final ContaDO contaDO = valor.getConta();
-            contaDO.setSaldo(contaDO.getSaldo().add(BigDecimal.valueOf(
-                    adicionar)));
+            final ContaDO contaDO = this.contaDao.procurar(valor.getConta()
+                    .getCodigo());
+            if (contaDO.getSaldo() == null) {
+                contaDO.setSaldo(BigDecimal.valueOf(adicionar));
+            } else {
+                contaDO.setSaldo(contaDO.getSaldo().add(BigDecimal.valueOf(
+                        adicionar)));
+            }
+
+            this.contaDao.atualizar(contaDO);
         }
     }
 
@@ -262,8 +272,13 @@ public class LancamentoServiceHandler {
      * @param valorDO valor
      * @return 1 ou -1
      */
-    private BigDecimal modificador(ValorDO valorDO) {
-        final String numero = valorDO.getConta().getNumero();
+    private BigDecimal modificador(ValorDO valorDO) throws Exception {
+        ContaDO contaDO = valorDO.getConta();
+        if (contaDO != null && isBlank(contaDO.getNumero())) {
+            contaDO = this.contaDao.procurar(contaDO.getCodigo());
+        }
+
+        final String numero = contaDO.getNumero();
         if (numero.startsWith("01") || numero.startsWith("03")) {
             return new BigDecimal(valorDO.getTipo() == TipoValor.CREDITO ?
                     -1 : 1);
@@ -304,7 +319,6 @@ public class LancamentoServiceHandler {
             logger.error("listar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
-
     }
 
     /**
@@ -334,6 +348,5 @@ public class LancamentoServiceHandler {
             logger.error("procurar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
-
     }
 }

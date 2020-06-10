@@ -1,15 +1,10 @@
 package com.react.contabil.lancamento;
 
-import com.react.contabil.conta.Conta;
 import com.react.contabil.dao.FiltroLancamentos;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ContabilException;
 import com.react.contabil.excecao.EntidadeExistenteException;
-import org.apache.http.HttpException;
-import org.apache.http.client.HttpResponseException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -17,7 +12,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +24,10 @@ public class LancamentoService {
 
     @Inject
     private LancamentoServiceHandler handler;
+
+    public LancamentoService() {
+        // construtor padrào para JAXRS
+    }
 
     @POST
     @Path("/adicionar")
@@ -52,8 +50,6 @@ public class LancamentoService {
         } catch (ContabilException e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
-        
-
     }
 
     @POST

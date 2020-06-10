@@ -4,9 +4,6 @@ import com.react.contabil.conta.ContaService;
 import com.react.contabil.lancamento.LancamentoService;
 import com.react.contabil.usuario.UsuarioService;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.slf4j.Logger;
-
-import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;

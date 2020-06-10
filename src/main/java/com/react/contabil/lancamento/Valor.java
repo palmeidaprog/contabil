@@ -2,6 +2,7 @@ package com.react.contabil.lancamento;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.dataobject.LancamentoDO;
 import com.react.contabil.dataobject.TipoValor;
 import com.react.contabil.dataobject.ValorDO;
@@ -10,6 +11,8 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
+import static com.react.contabil.util.Constantes.Valor.*;
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,24 +20,27 @@ public class Valor {
 
     @Digits(integer = 15,
             fraction = 0,
-            message = Constantes.Valor.CODIGO_DIGITS)
+            message = CODIGO_DIGITS)
     private Long codigo;
 
-    @NotNull(message = Constantes.Valor.TIPO_NOT_NULL)
+    @NotNull(message = TIPO_NOT_NULL)
     private TipoValor tipo;
 
     @Digits(integer = 15,
             fraction = 0,
-            message = Constantes.Valor.CODIGO_CONTA_DIGITS)
-    @NotNull(message = Constantes.Valor.CODIGO_CONTA_NOT_NULL)
+            message = CODIGO_CONTA_DIGITS)
+    @NotNull(message = CODIGO_CONTA_NOT_NULL)
     private Long codigoConta;
 
     private Date data;
 
     private String historico;
 
-    @NotNull(message = Constantes.Valor.SALDO_CONTA_NOT_NULL)
+//    @NotNull(message = Constantes.Valor.SALDO_CONTA_NOT_NULL)
     private BigDecimal saldoConta;
+
+    @NotNull(message = SALDO_CONTA_NOT_NULL)
+    private BigDecimal valor;
 
     @Digits(integer = 15,
             fraction = 0,
@@ -52,6 +58,7 @@ public class Valor {
         this.codigoLancamento = valorDO.getCodigoLancamento();
         this.historico = valorDO.getLancamento().getHistorico();
         this.data = valorDO.getLancamento().getData();
+        this.valor = valorDO.getValor();
     }
 
     public Valor(ValorDO valorDO, LancamentoDO lancamentoDO) {
@@ -62,6 +69,7 @@ public class Valor {
         this.codigoLancamento = valorDO.getCodigoLancamento();
         this.historico = lancamentoDO.getHistorico();
         this.data = lancamentoDO.getData();
+        this.valor = valorDO.getValor();
     }
 
     /**
@@ -72,9 +80,13 @@ public class Valor {
         final ValorDO valorDO = new ValorDO();
         valorDO.setCodigoLancamento(this.codigoLancamento);
         valorDO.setSaldoConta(this.saldoConta);
-        valorDO.getConta().setCodigo(this.codigoConta);
+        final ContaDO contaDO = new ContaDO();
+        contaDO.setCodigo(this.codigoConta);
+        valorDO.setConta(contaDO);
+
         valorDO.setTipo(this.tipo);
         valorDO.setCodigo(this.codigo);
+        valorDO.setValor(this.valor);
 
         return valorDO;
     }
@@ -99,8 +111,8 @@ public class Valor {
         return codigoConta;
     }
 
-    public void setCodigoConta(Long conta) {
-        this.codigo = codigoConta;
+    public void setCodigoConta(Long codigoConta) {
+        this.codigoConta = codigoConta;
     }
 
     public BigDecimal getSaldoConta() {
@@ -133,6 +145,14 @@ public class Valor {
 
     public void setHistorico(String historico) {
         this.historico = historico;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
     }
 
     @Override

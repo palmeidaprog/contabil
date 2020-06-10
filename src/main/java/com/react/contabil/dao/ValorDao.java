@@ -35,23 +35,25 @@ public class ValorDao extends DaoGenerico<ValorDO, Long> {
 
         adicionar = remover ? adicionar * -1 : adicionar;
         final String acao = remover ? "remover" : "inserir";
-        String sql = "UPDATE v " +
+        String sql = "UPDATE valor v " +
+                "INNER JOIN lancamento l ON v.lancamento_codigo = l.codigo " +
+                "INNER JOIN conta con ON con.codigo = v.conta_codigo " +
                 "SET v.saldo_conta = v.saldo_conta + :adicionar " +
-                "FROM valor v INNER JOIN lancamento l " +
-                "ON v.lancamento_codigo = l.codigo " +
-                "WHERE l.data > :data";
+                "WHERE con.codigo = :conta AND ";
 
         if (remover) {
-            sql += " OR (l.data = :data AND v.codigo > :codigo')'";
+            sql += "(l.data > :data OR (l.data = :data AND v.codigo > :codigo))";
+        } else {
+            sql += "l.data > :data";
         }
-
-
 
         try {
             logger.debug("atualizaSaldoInsercao :: Atualizando valores de " +
                     "saldo das contas antes de {} {}", acao, valor);
             final Query query = this.em.createNativeQuery(sql);
+            query.setParameter("conta", valor.getConta().getCodigo());
             query.setParameter("adicionar", adicionar);
+            logger.info("atualizaSaldo :: Data: {}", converteDateParaSqlDate(data));
             query.setParameter("data", converteDateParaSqlDate(data));
 
             if (remover) {
@@ -63,8 +65,8 @@ public class ValorDao extends DaoGenerico<ValorDO, Long> {
                     "para {} de {}", modificados, acao, valor);
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro no banco ao" +
-                    " atualizar o saldo da conta nos valores para {} " +
-                    "de {}", acao, valor);
+                    " atualizar o saldo da conta nos valores para %s " +
+                    "de %s", acao, valor);
             logger.error("atualizaSaldoInsercao :: {} Erro: {}", erro,
                     e.getMessage(), e);
             throw new BancoDadosException(erro, e);

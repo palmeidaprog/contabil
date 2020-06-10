@@ -1,6 +1,7 @@
 package com.react.contabil.dao;
 
 import com.react.contabil.dataobject.LancamentoDO;
+import com.react.contabil.dataobject.ValorDO;
 import com.react.contabil.excecao.BancoDadosException;
 import org.slf4j.Logger;
 import javax.ejb.Stateless;
@@ -27,11 +28,17 @@ public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
         try {
             logger.debug("adicionar :: Adicionando {} no banco de dados...",
                     lancamentoDO.toString());
-            lancamentoDO = this.create(lancamentoDO);
+            final List<ValorDO> valores = lancamentoDO.getValores();
+            lancamentoDO.setValores(null);
+            final LancamentoDO lancamentoManaged = this.create(lancamentoDO);
+            valores.stream().forEach(valor -> valor.setCodigoLancamento(
+                    lancamentoManaged.getCodigo()));
+            lancamentoManaged.setValores(valores);
             logger.debug("adicionar :: {} adicionado no banco com sucesso!",
-                    lancamentoDO.toString());
+                    lancamentoManaged);
+            this.em.flush(); // força o insert dos valores
 
-            return lancamentoDO;
+            return lancamentoManaged;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro de banco " +
                     "ao adicionar %s", lancamentoDO.toString());
