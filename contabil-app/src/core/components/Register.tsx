@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
+import { RegisterForm } from '../../components/FormRegister';
 
 class Registry{
     username: string;
@@ -84,126 +85,28 @@ export default class RegisterPage extends React.Component {
         this.state.registryUser.rootAccount = e;
         this.forceUpdate();
     }
-    private get isSubmitDisabled() {
+    private get isSubmitDisabled() : boolean{
         return this.state.registryUser.username == "" || this.state.registryUser.password == "";
     }
     render() {
         return (
-            <div className="login-container">
+            <div className="register-container">
                 <Grid container style={{ height: "100%" }}>
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <div className="login-banner"></div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6} className="d-flex">
-                        <form className="form-container" noValidate autoComplete="off">
-                            <Card className="card">
-                                <div className="header">
-                                    <span className="title">Register</span>
-                                    <i className="lock"></i>
-                                </div>
-                                <CardContent>
-                                    <div className="row">
-                                        <div className="col">
-                                            <TextField
-                                                variant="outlined"
-                                                error={this.state.error}
-                                                fullWidth
-                                                id="accountName"
-                                                type="string"
-                                                label="Account Name"
-                                                placeholder="Account Name"
-                                                margin="normal"
-                                                onChange={e => this.handleEnterAccountName(e.target.value)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-6">
-                                            <TextField
-                                                    variant="outlined"
-                                                    error={this.state.error}
-                                                    fullWidth
-                                                    id="accountNumber"
-                                                    type="text"
-                                                    label="Account Number"
-                                                    placeholder="Account Number"
-                                                    margin="normal"
-                                                    helperText={this.state.helperText}
-                                                    onChange={e => this.handleEnterAccountNumber(e.target.value)}
-                                                    onKeyPress={e => this.handleKeyPress(e)}
-                                                />
-                                        </div>
-                                        <div className="col-md-6">
-                                            <Autocomplete   
-                                                options={["1.Ativo", "1.1.Imediato", "1.1.1.Caixa"]}
-                                                getOptionLabel={option => option}
-                                                className="w-100"
-                                                noOptionsText={"Loading..."}
-                                                multiple={false}
-                                                onChange={(e, v) => this.handleEnterRootAccount(v)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                                renderInput={params =>(
-                                                    <TextField 
-                                                    {...params}
-                                                    fullWidth
-                                                    variant="outlined"
-                                                    error={this.state.error}
-                                                    id="rootAccount"
-                                                    margin="normal"
-                                                    helperText={this.state.helperText}
-                                                    placeholder="Super Account"
-                                                    />
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col">
-                                            <TextField
-                                                variant="outlined"
-                                                error={this.state.error}
-                                                fullWidth
-                                                id="username"
-                                                type="email"
-                                                label="Username"
-                                                placeholder="Username"
-                                                margin="normal"
-                                                onChange={e => this.handleEnterUsername(e.target.value)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col">
-                                            <TextField
-                                                variant="outlined"
-                                                error={this.state.error}
-                                                fullWidth
-                                                id="password"
-                                                type="password"
-                                                label="Password"
-                                                placeholder="Password"
-                                                margin="normal"
-                                                helperText={this.state.helperText}
-                                                onChange={e => this.handleEnterPassword(e.target.value)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardActions>
-                                    <Button
-                                        variant="contained"
-                                        size="large"
-                                        color="secondary"
-                                        className="loginBtn"
-                                        onClick={() => this.handleRegister()}
-                                        disabled={this.isSubmitDisabled}
-                                    >Register</Button>
-                                </CardActions>
-                            </Card>
-                        </form>
+                        <RegisterForm 
+                            state={this.state}
+                            handleEnterAccountName={(val) => this.handleEnterAccountName(val)}
+                            handleEnterPassword={(val) => this.handleEnterPassword(val)}
+                            handleEnterAccountNumber={(val) => this.handleEnterAccountNumber(val)}
+                            handleEnterRootAccount={(val) => this.handleEnterRootAccount(val)}
+                            handleEnterUsername={(val) => this.handleEnterUsername(val)}
+                            handleKeyPress={(val) => this.handleKeyPress(val)}
+                            handleRegister={this.handleRegister}
+                            isSubmitDisabled={this.isSubmitDisabled}
+                        />
                     </Grid>
                 </Grid>
 

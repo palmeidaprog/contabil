@@ -7,13 +7,6 @@ import Button from "@material-ui/core/Button";
 import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
-import autobind from 'autobind-decorator';
-import { Auth0Authentication } from './auth/Auth0Authentication';
-
-
-export interface HomeProps {
-    auth: Auth0Authentication;
-  }
 
 class InternalState {
     username: string;
@@ -30,17 +23,10 @@ class InternalState {
 
     }
 }
-export default class LoginPage extends Component<HomeProps, {}> {
+export default class LoginPage extends Component {
     public state: InternalState = new InternalState();
     public redirectService: RedirectService = new RedirectService();
 
-
-    @autobind
-    login() {
-        this.props.auth.login();
-    }
-
-    /**
     private handleLogin() {
         
         if (this.state.username === "abc@email.com" && this.state.password === "password") {
@@ -54,10 +40,10 @@ export default class LoginPage extends Component<HomeProps, {}> {
         this.forceUpdate();
 
     }
-    */
+
     private handleKeyPress(e: any) {
         if (e.keyCode === 13 || e.which === 13) {
-            this.state.isButtonDisabled && this.login();
+            this.state.isButtonDisabled && this.handleLogin();
         }
     }
     private handleEnterUsername(e: any) {
@@ -81,10 +67,10 @@ export default class LoginPage extends Component<HomeProps, {}> {
                         <div className="login-banner"></div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6} className="d-flex">
-                        <form className="form-container" noValidate autoComplete="off">
+                        <form className="form-container" noValidate autoComplete="off" onSubmit={()=>this.handleLogin()}>
                             <Card className="card">
                                 <div className="header">
-                                    <span className="title">Sign in</span>
+                                    <span className="title">Entrar</span>
                                     <i className="lock"></i>
                                 </div>
                                 <CardContent>
@@ -93,10 +79,10 @@ export default class LoginPage extends Component<HomeProps, {}> {
                                             variant="outlined"
                                             error={this.state.error}
                                             fullWidth
-                                            id="username"
+                                            id="id-usuario"
                                             type="email"
-                                            label="Username"
-                                            placeholder="Username"
+                                            label="Usuário"
+                                            placeholder="Usuário"
                                             margin="normal"
                                             onChange={e => this.handleEnterUsername(e.target.value)}
                                             onKeyPress={e => this.handleKeyPress(e)}
@@ -105,10 +91,10 @@ export default class LoginPage extends Component<HomeProps, {}> {
                                             variant="outlined"
                                             error={this.state.error}
                                             fullWidth
-                                            id="password"
+                                            id="id-senha"
                                             type="password"
-                                            label="Password"
-                                            placeholder="Password"
+                                            label="Senha"
+                                            placeholder="Senha"
                                             margin="normal"
                                             helperText={this.state.helperText}
                                             onChange={e => this.handleEnterPassword(e.target.value)}
@@ -122,9 +108,9 @@ export default class LoginPage extends Component<HomeProps, {}> {
                                         size="large"
                                         color="secondary"
                                         className="loginBtn"
-                                        onClick={this.login}
+                                        type="submit"
                                         disabled={this.isSubmitDisabled}
-                                    >Login</Button>
+                                    >Entrar</Button>
                                 </CardActions>
                             </Card>
                         </form>

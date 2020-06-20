@@ -31,6 +31,8 @@
             list-style: none;
             width: 100%;
             padding: 0;
+            max-height: 36.3em;
+            overflow-y: auto;
             li{
                 border-bottom: 0.1em solid $navLines;
                 padding: 2em;

@@ -1,9 +1,12 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+// src/index.js
+
+import React from "react";
+import ReactDOM from "react-dom";
 import App from './components/App';
 import './assets/config.scss';
 
-ReactDOM.render (
+ReactDOM.render(
     <App />,
-      document.getElementById("root-app")
-    );
+  document.getElementById("root-app")
+);
+

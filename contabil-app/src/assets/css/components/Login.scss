@@ -1,5 +1,37 @@
 @import '../_variables.scss';
-.login-container{
+.edit-register-container{
+    margin-left: -7em;
+    .edit-form{
+        width: 40em !important;
+        flex-flow: column;
+        .card{
+            width: 100%;
+        }
+        .MuiCardContent-root{
+            width: 100%;
+            .edit-register-releases{
+                .releases-title{
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    color: $defaultColor;
+                }
+                .releases-section{
+                    display: flex;
+                    word-break: break-all;
+                    border: .2em solid $defaultColor;
+                    max-height: 10em;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    padding: 1em;
+                }
+            }
+        }
+        .MuiCardActions-root{
+            width: 100%;
+        }
+    }
+}
+.login-container, .register-container, .edit-register-container{
     .login-banner{
         background-image: url('https://www.credit.com/wp-content/uploads/2017/02/opening-bank-account-2.jpg');
         background-repeat: no-repeat;

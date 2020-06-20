@@ -14,16 +14,22 @@ export default class Navigation extends React.Component {
                 <div className ="row links">
                     <ul>
                         <li>
-                            <Link to="/">Home</Link>
+                            <Link to="/">Início</Link>
                         </li>
                         <li>
-                            <Link to="/login">Login</Link>
+                            <Link to="/entrar">Entrar</Link>
                         </li>
                         <li>
-                            <Link to="/register">Register</Link>
+                            <Link to="/registrar">Registrar</Link>
                         </li>
                         <li>
-                            <Link to="/about">About</Link>
+                            <Link to="/editar">Editar Conta</Link>
+                        </li>
+                        <li>
+                            <Link to="/balancete">Balancete</Link>
+                        </li>
+                        <li>
+                            <Link to="/sobre">Sobre nós</Link>
                         </li>
                     </ul>
                 </div>

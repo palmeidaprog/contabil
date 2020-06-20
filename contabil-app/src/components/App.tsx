@@ -4,17 +4,33 @@ import Navigation from '../core/components/Navigation';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Redirect
 } from "react-router-dom";
 import LoginPage from '../core/components/Login';
 import RegisterPage from '../core/components/Register';
+import EditRegisterPage from '../core/components/EditRegister';
+import BalancePage from '../core/components/Balance';
+
+const RouteWrapper = ({component: Component, restricted, ...rest}) => {
+  return (
+      // restricted = false meaning public route
+      // restricted = true meaning restricted route
+      <Route {...rest} render={props => (
+          restricted ?
+              <Redirect to="/entrar" />
+          : <Content><Component {...props} /></Content>
+      )} />
+  );
+};
+
 
 function Home() {
-  return <h2>Home</h2>;
+  return <h2>Inicio</h2>;
 }
 
 function About() {
-  return <h2>About</h2>;
+  return <h2>Sobre</h2>;
 }
 function Content(props : {classProps? : any, children : any}){
   return (
@@ -24,31 +40,21 @@ function Content(props : {classProps? : any, children : any}){
   );
 }
 export default class App extends React.Component {
+
+  private get isAuthenticated(){
+    return false;
+  }
   render() {
     return (
       <div className="app-page">
         <Router>
-        <Navigation />
-          <Route exact path="/" component={Home}>
-            <Content>
-              <Home />
-            </Content>
-          </Route>
-          <Route exact path="/about" component={About}>
-            <Content>
-              <About />
-            </Content>
-          </Route>
-          <Route exact path="/login" component={LoginPage}>
-            <Content classProps="full-content">
-              <LoginPage />
-            </Content>
-          </Route>
-          <Route exact path="/register" component={RegisterPage}>
-            <Content classProps="full-content">
-              <RegisterPage />
-            </Content>
-          </Route>
+          <Navigation />
+          <RouteWrapper exact path="/" component={Home} restricted={!this.isAuthenticated} />
+          <RouteWrapper exact path="/sobre" component={About} restricted={!this.isAuthenticated} />
+          <RouteWrapper exact path="/entrar" component={LoginPage} restricted={false} />
+          <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={false} />
+          <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={false} />
+          <RouteWrapper exact path="/balancete" component={BalancePage} restricted={false} />
         </Router>
       </div>
     );
