@@ -1,0 +1,22 @@
+GET {{host}}/usuario/get?codigo=9
+Accept: application/json
+
+###
+
+GET {{host}}/usuario/get?login=teste2
+Accept: application/json
+
+###
+
+POST {{host}}/usuario/adicionar
+Content-Type: application/json
+
+{
+  "login": "teste2",
+  "nome": "Paulo",
+  "sobrenome": "Tester"
+}
+
+###
+
+

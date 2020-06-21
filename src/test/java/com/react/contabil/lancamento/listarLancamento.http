@@ -1,0 +1,4 @@
+GET {{host}}/lancamento/listar/8/{{dataInicio}}/{{dataFinal}}
+Accept: application/json
+
+###

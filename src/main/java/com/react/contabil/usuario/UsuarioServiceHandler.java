@@ -1,5 +1,7 @@
 package com.react.contabil.usuario;
 
+import com.react.contabil.dao.SequencialDao;
+import com.react.contabil.dao.Tabela;
 import com.react.contabil.dao.UsuarioDao;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.dataobject.UsuarioDO;
@@ -8,11 +10,9 @@ import com.react.contabil.excecao.ContabilException;
 import com.react.contabil.excecao.EntidadeExistenteException;
 import com.react.contabil.excecao.EntidadeNaoEncontradaException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,14 @@ import java.util.List;
 @ApplicationScoped
 public class UsuarioServiceHandler {
 
-    private static final Logger LOGGER = LoggerFactory
-                .getLogger(UsuarioServiceHandler.class);
+    @Inject
+    private Logger logger;
 
     @Inject
     private UsuarioDao dao;
+
+    @Inject
+    private SequencialDao sequencialDao;
 
     public UsuarioServiceHandler() {
     }
@@ -42,8 +45,10 @@ public class UsuarioServiceHandler {
             EntidadeExistenteException, ContabilException {
         
         try {
-            LOGGER.debug("adicionar :: Adicionando usuário login {}",
+            logger.debug("adicionar :: Adicionando usuário login {}",
                     usuario.getLogin());
+
+
             UsuarioDO usuarioDO = this.dao.procurar(null,
                                                     usuario.getLogin());
 
@@ -51,22 +56,23 @@ public class UsuarioServiceHandler {
                 if (usuarioDO.isCongelado()) { // ativa usuario inativo
                     usuario.setCongelado(false);
                     this.dao.atualizar(usuarioDO);
-                    LOGGER.info("adicionar :: {} já existia, porém estava" +
+                    logger.info("adicionar :: {} já existia, porém estava" +
                             " inativa. Conta reativada!", usuarioDO.toString());
                     return new Usuario(usuarioDO);
                 } else { // usuario existente e ativo
                     final String msg = String.format("%s já existe!",
                             usuarioDO.toString());
-                    LOGGER.error("adicionar :: {}", msg);
+                    logger.error("adicionar :: {}", msg);
                     throw new EntidadeExistenteException(msg);
                 }
             }
-            
+
             usuarioDO = usuario.toDataObject();
+            usuarioDO.setCodigo(this.sequencialDao.proximoCodigo(Tabela.USUARIO, 1));
             usuarioDO = this.dao.inserir(usuarioDO);
             usuarioDO.setContas(this.criaContasBasicas(usuarioDO));
             this.dao.atualizar(usuarioDO);
-            LOGGER.info("adicionar :: {} adicionado com sucesso!",
+            logger.info("adicionar :: {} adicionado com sucesso!",
                     usuarioDO.toString());
 
             return new Usuario(usuarioDO);
@@ -75,7 +81,7 @@ public class UsuarioServiceHandler {
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro desconhecido" +
                     " ao adicionar %s", usuario.toString());
-            LOGGER.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -85,13 +91,21 @@ public class UsuarioServiceHandler {
      * @param usuarioDO Usuário dono da conta
      * @return Lista de contas básicas
      */
-    private List<ContaDO> criaContasBasicas(UsuarioDO usuarioDO) {
+    private List<ContaDO> criaContasBasicas(UsuarioDO usuarioDO) throws ContabilException {
+        long id;
+        try {
+            id = this.sequencialDao.proximoCodigo(Tabela.CONTA, 5);
+        } catch (Exception e) {
+            String erro = String.format("Ocorreu um erro ao gerar códido para contas para %s", usuarioDO);
+            logger.error("criaContasBasicas :: {} Erro: {} ", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
         final List<ContaDO> contas = new ArrayList<>();
-        contas.add(this.criaConta(usuarioDO, "Ativo", "01"));
-        contas.add(this.criaConta(usuarioDO, "Passivo", "02"));
-        contas.add(this.criaConta(usuarioDO, "Patrimônio Líquido", "03"));
-        contas.add(this.criaConta(usuarioDO, "Receitas", "04"));
-        contas.add(this.criaConta(usuarioDO, "Despesas e Custos", "05"));
+        contas.add(this.criaConta(id, usuarioDO, "Ativo", "01"));
+        contas.add(this.criaConta(id + 1, usuarioDO, "Passivo", "02"));
+        contas.add(this.criaConta(id + 2, usuarioDO, "Patrimônio Líquido", "03"));
+        contas.add(this.criaConta(id + 3, usuarioDO, "Receitas", "04"));
+        contas.add(this.criaConta(id + 4, usuarioDO, "Despesas e Custos", "05"));
 
         return contas;
     }
@@ -103,8 +117,9 @@ public class UsuarioServiceHandler {
      * @param numero Numero daconta (ex: 01.02)
      * @return ContaDO
      */
-    private ContaDO criaConta(UsuarioDO usuarioDO, String nome, String numero) {
+    private ContaDO criaConta(Long codigo, UsuarioDO usuarioDO, String nome, String numero) {
         final ContaDO contaDO = new ContaDO();
+        contaDO.setCodigo(codigo);
         contaDO.setNome(nome);
         contaDO.setNumero(numero);
         contaDO.setSaldo(new BigDecimal(0));
@@ -139,7 +154,7 @@ public class UsuarioServiceHandler {
         } catch (Exception e) {
             final String erro = String.format("Occorreu um erro desconhecido" +
                     " ao procurar usuário código %d", codigo);
-            LOGGER.error("procurar :: {} Erro: {}", erro, e.getMessage(), e);
+            logger.error("procurar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
     }
@@ -151,7 +166,7 @@ public class UsuarioServiceHandler {
      */
     private void criaExcecao(String msg, String metodo) throws
             EntidadeNaoEncontradaException {
-        LOGGER.error("{} :: {}", metodo, msg);
+        logger.error("{} :: {}", metodo, msg);
         throw new EntidadeNaoEncontradaException(msg);
     }
 
