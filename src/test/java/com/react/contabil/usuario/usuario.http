@@ -12,9 +12,9 @@ POST {{host}}/usuario/adicionar
 Content-Type: application/json
 
 {
-  "login": "teste2",
+  "login": "paulo2",
   "nome": "Paulo",
-  "sobrenome": "Tester"
+  "sobrenome": "Almeida"
 }
 
 ###

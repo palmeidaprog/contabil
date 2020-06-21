@@ -2,6 +2,7 @@ package com.react.contabil.dataobject;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,7 +52,9 @@ public class ContaDO implements Entidade {
 
     @OneToMany(
         mappedBy = "contaPai",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @OrderBy("numero")
     private List<ContaDO> contasFilhas;
@@ -62,7 +65,22 @@ public class ContaDO implements Entidade {
     @Column(name = "descricao", columnDefinition = "TEXT(500)")
     private String descricao;
 
-    public ContaDO() { }
+    public ContaDO() {
+        this.inicializaValoresPadroes();
+    }
+
+    public ContaDO(Long codigo, Long codigoUsuario, String numero, String nome) {
+        this();
+        this.codigo = codigo;
+        this.codigoUsuario = codigoUsuario;
+        this.numero = numero;
+        this.nome = nome;
+    }
+
+    public ContaDO(Long codigo, Long codigoUsuario, String numero, String nome, Long contaPaiCodigo) {
+        this(codigo, codigoUsuario, numero, nome);
+        this.contaPaiCodigo = contaPaiCodigo;
+    }
 
     @PrePersist
     @PreUpdate
@@ -76,6 +94,19 @@ public class ContaDO implements Entidade {
 
     public void setContasFilhas(List<ContaDO> contasFilhas) {
         this.contasFilhas = contasFilhas;
+    }
+
+    /**
+     * Adiciona conta como filha
+     * @param conta Conta a ser adicionada
+     */
+    public void adicionaContaFilha(ContaDO conta) {
+        if (this.contasFilhas == null) {
+            this.contasFilhas = new ArrayList<>();
+        }
+
+        conta.setContaPaiCodigo(this.codigo);
+        this.contasFilhas.add(conta);
     }
 
     public Long getCodigo() {

@@ -1,5 +1,6 @@
 package com.react.contabil.usuario;
 
+import com.react.contabil.conta.Conta;
 import com.react.contabil.dao.SequencialDao;
 import com.react.contabil.dao.Tabela;
 import com.react.contabil.dao.UsuarioDao;
@@ -72,8 +73,7 @@ public class UsuarioServiceHandler {
             usuarioDO = this.dao.inserir(usuarioDO);
             usuarioDO.setContas(this.criaContasBasicas(usuarioDO));
             this.dao.atualizar(usuarioDO);
-            logger.info("adicionar :: {} adicionado com sucesso!",
-                    usuarioDO.toString());
+            logger.info("adicionar :: {} adicionado com sucesso!", usuarioDO);
 
             return new Usuario(usuarioDO);
         } catch (BancoDadosException | EntidadeExistenteException e) {
@@ -94,38 +94,47 @@ public class UsuarioServiceHandler {
     private List<ContaDO> criaContasBasicas(UsuarioDO usuarioDO) throws ContabilException {
         long id;
         try {
-            id = this.sequencialDao.proximoCodigo(Tabela.CONTA, 5);
+            id = this.sequencialDao.proximoCodigo(Tabela.CONTA, 19);
         } catch (Exception e) {
             String erro = String.format("Ocorreu um erro ao gerar códido para contas para %s", usuarioDO);
             logger.error("criaContasBasicas :: {} Erro: {} ", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
         final List<ContaDO> contas = new ArrayList<>();
-        contas.add(this.criaConta(id, usuarioDO, "Ativo", "01"));
-        contas.add(this.criaConta(id + 1, usuarioDO, "Passivo", "02"));
-        contas.add(this.criaConta(id + 2, usuarioDO, "Patrimônio Líquido", "03"));
-        contas.add(this.criaConta(id + 3, usuarioDO, "Receitas", "04"));
-        contas.add(this.criaConta(id + 4, usuarioDO, "Despesas e Custos", "05"));
+        final Long cod = usuarioDO.getCodigo();
+
+        final ContaDO ativo =  new ContaDO(id, cod, "Ativo", "01");
+        contas.add(ativo);
+        final ContaDO passivo =  new ContaDO(id+1, cod, "Passivo", "02");
+        contas.add(passivo);
+        final ContaDO patrimonio = new ContaDO(id+2, cod, "Patrimônio Líquido", "03");
+        contas.add(patrimonio);
+        final ContaDO receita = new ContaDO(id+3, cod, "Receita", "04");
+        contas.add(receita);
+        final ContaDO despesas = new ContaDO(id+4, cod, "Despesas e Custos", "05");
+        contas.add(despesas);
+        usuarioDO = this.dao.atualizar(usuarioDO);
+        contas.add(new ContaDO(id+5, cod, "Circulante", "01.01", ativo.getCodigo()));
+        contas.add(new ContaDO(id+6, cod, "Não Circulante", "01.02", ativo.getCodigo()));
+        contas.add(new ContaDO(id+7, cod, "Realizavel a Longo Prazo", "01.03", ativo.getCodigo()));
+        contas.add(new ContaDO(id+8, cod, "Investimentos", "01.04", ativo.getCodigo()));
+        contas.add(new ContaDO(id+9, cod, "Imobilizado", "01.05", ativo.getCodigo()));
+        contas.add(new ContaDO(id+10, cod, "Intangível", "01.06", ativo.getCodigo()));
+
+
+        contas.add(new ContaDO(id+11, cod, "Circulante", "02.01", passivo.getCodigo()));
+        contas.add(new ContaDO(id+12, cod, "Não Circulante", "02.02", passivo.getCodigo()));
+
+        contas.add(new ContaDO(id+13, cod, "Capital", "03.01", patrimonio.getCodigo()));
+
+        contas.add(new ContaDO(id+15, cod, "Receita Bruta", "04.01", receita.getCodigo()));
+        contas.add(new ContaDO(id+16, cod, "Outras Receitas Operacionais",
+                "04.02", receita.getCodigo()));
+
+        contas.add(new ContaDO(id+17, cod, "Despesas", "05.01", despesas.getCodigo()));
+        contas.add(new ContaDO(id+18, cod, "Custos", "05.02", despesas.getCodigo()));
 
         return contas;
-    }
-
-    /**
-     * Cria conta
-     * @param usuarioDO usuario
-     * @param nome Nome da conta
-     * @param numero Numero daconta (ex: 01.02)
-     * @return ContaDO
-     */
-    private ContaDO criaConta(Long codigo, UsuarioDO usuarioDO, String nome, String numero) {
-        final ContaDO contaDO = new ContaDO();
-        contaDO.setCodigo(codigo);
-        contaDO.setNome(nome);
-        contaDO.setNumero(numero);
-        contaDO.setSaldo(new BigDecimal(0));
-        contaDO.setCodigoUsuario(usuarioDO.getCodigo());
-
-        return contaDO;
     }
 
     /**

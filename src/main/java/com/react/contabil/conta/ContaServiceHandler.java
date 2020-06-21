@@ -1,6 +1,8 @@
 package com.react.contabil.conta;
 
 import com.react.contabil.dao.ContaDao;
+import com.react.contabil.dao.SequencialDao;
+import com.react.contabil.dao.Tabela;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Util;
@@ -24,6 +26,9 @@ public class ContaServiceHandler {
     @Inject
     private ContaDao dao;
 
+    @Inject
+    private SequencialDao sequencialDao;
+
 
     public ContaServiceHandler() {
     }
@@ -40,12 +45,14 @@ public class ContaServiceHandler {
             BancoDadosException, ContabilException {
         try {
             logger.debug("adicionar :: Adicionando {} ...", conta);
+            final ContaDO contaDO = conta.toDataObject();
 
             if (conta.getCodigo() != null) {
                 this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
+            } else {
+                contaDO.setCodigo(this.sequencialDao.proximoCodigo(Tabela.CONTA, 1));
             }
 
-            final ContaDO contaDO = conta.toDataObject();
             final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),
                     "adicionar");
 
@@ -53,7 +60,6 @@ public class ContaServiceHandler {
 
             this.dao.inserir(contaDO);
             logger.info("adicionar :: {} adicionada com sucesso!", conta);
-
 
         } catch (EntidadeExistenteException | BancoDadosException e) {
             throw e;
