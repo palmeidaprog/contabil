@@ -16,6 +16,8 @@ public interface Constantes {
         String COD_CONTA_PAI_DIGITS = "O código da conta não pode ter mais de 15 digitos";
 
         String COD_USUARIO_NOT_NULL = "O código do usuário não pode ser nulo";
+
+        String BALANCETE_NOT_NULL_RETURN = "A lista de contas no retorno não pode ser nula";
     }
 
     interface Lancamento {

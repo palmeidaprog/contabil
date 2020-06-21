@@ -12,6 +12,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -303,5 +305,60 @@ public class ContaServiceHandler {
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
+    }
+
+    /**
+     * Monta balanacete para o usuário informado
+     * @param codigoUsuario codigo do usuário
+     * @return Lista de Conta do usuario para montar o balancete
+     * @throws ContabilException Erro desconhecido ou BancoDadosException
+     */
+    @NotNull
+    public List<Conta> balancete(@NotNull Long codigoUsuario) throws ContabilException {
+        try {
+            logger.info("balancete :: Buscando contas do usuário código {} para montar o balancete" +
+                    " ...", codigoUsuario);
+            final List<ContaDO> contas = this.dao.listar(codigoUsuario, null, null);
+
+            logger.info("balancete :: Busca de contas do usuário código {} para montar o balancete" +
+                    " executada com sucesso!", codigoUsuario);
+
+            final List<Conta> retorno = this.converteParaDTO(contas, "listar balancetes");
+            retorno.sort(Comparator.comparing(Conta::getNumero));
+
+            return retorno;
+        } catch (BancoDadosException e) {
+            throw e;
+        } catch (Exception e) {
+            String erro = String.format("Ocorreu um erro desconhecido ao montar o balancete para" +
+                    " o usuário código %d", codigoUsuario);
+            logger.error("balancete :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
+
+    /**
+     * Converte lista de contaDO em contas
+     * @param contas lista de contaDO
+     * @param acao String acao
+     * @return Lista de conta (DTO) convertidas
+     */
+    private List<Conta> converteParaDTO(List<ContaDO> contas, String acao) {
+        logger.info("converteParaDTO :: Convertendo lista de ContaDO para Conta para {}", acao);
+        final List<Conta> contasConvertidas = new ArrayList<>();
+
+        for (final ContaDO contaDO : contas) {
+            try {
+                contasConvertidas.add(new Conta(contaDO));
+            } catch (Exception e) {
+                logger.error("converteParaDTO :: Ocorreu um erro ao converter {} em DTO para {}",
+                        contaDO, acao, e);
+            }
+        }
+
+        logger.info("converteParaDTO :: Lista de ContaDO convertida para Conta com sucesso para" +
+                " {}", acao);
+
+        return contasConvertidas;
     }
 }

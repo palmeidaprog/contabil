@@ -168,4 +168,5 @@ public class ContaDao extends DaoGenerico<ContaDO, Long> {
             throw new BancoDadosException(error);
         }
     }
+
 }

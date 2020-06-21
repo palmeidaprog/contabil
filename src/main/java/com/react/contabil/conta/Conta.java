@@ -7,7 +7,6 @@ import com.react.contabil.util.Util;
 import static com.react.contabil.util.Constantes.Conta.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
