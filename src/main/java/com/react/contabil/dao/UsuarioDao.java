@@ -120,8 +120,7 @@ public class UsuarioDao extends DaoGenerico<UsuarioDO, Long> {
         try {
             return this.merge(usuarioDo);
         } catch (Exception e) {
-            final String msg = String.format("Ocorreu um erro ao atualizar" +
-                    " {}", usuarioDo.toString());
+            final String msg = String.format("Ocorreu um erro ao atualizar %s", usuarioDo.toString());
             logger.error("atualizar :: {} Erro: {}", msg, e.getMessage(), e);
             throw new BancoDadosException(msg, e);
         }

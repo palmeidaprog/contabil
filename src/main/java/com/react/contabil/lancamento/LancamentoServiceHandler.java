@@ -3,6 +3,8 @@ package com.react.contabil.lancamento;
 import com.react.contabil.dao.ContaDao;
 import com.react.contabil.dao.FiltroLancamentos;
 import com.react.contabil.dao.LancamentoDao;
+import com.react.contabil.dao.SequencialDao;
+import com.react.contabil.dao.Tabela;
 import com.react.contabil.dao.ValorDao;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.dataobject.LancamentoDO;
@@ -43,6 +45,9 @@ public class LancamentoServiceHandler {
     @Inject
     private ContaDao contaDao;
 
+    @Inject
+    private SequencialDao sequencialDao;
+
     /**
      * Adiciona novo lancamento
      *
@@ -61,8 +66,14 @@ public class LancamentoServiceHandler {
             this.validaValores(lancamentoDO);
             logger.info("adicionar :: Adicionando {} ...", lancamento);
 
-            logger.info("adicionar :: Atualizando saldos das contas para o " +
-                    "{}", lancamento);
+            logger.info("adicionar :: Gerando códigos para {} e seus respectivos valores", lancamentoDO);
+            lancamentoDO.setCodigo(this.sequencialDao.proximoCodigo(Tabela.LANCAMENTO));
+            final List<ValorDO> valores = lancamentoDO.getValores();
+            for (final ValorDO valorDO : valores) {
+                valorDO.setCodigoLancamento(lancamentoDO.getCodigo());
+            }
+
+            logger.info("adicionar :: Atualizando saldos das contas para o {}", lancamento);
             this.atualizaSaldos(lancamentoDO.getValores(), lancamento.getData(),
                     false);
             logger.info("adicionar :: Saldo de {} atualizados com sucesso!",
@@ -253,8 +264,7 @@ public class LancamentoServiceHandler {
                     this.modificador(valor)).doubleValue();
             this.valorDao.atualizaSaldo(valor, data, adicionar, remover);
 
-            final ContaDO contaDO = this.contaDao.procurar(valor.getConta()
-                    .getCodigo());
+            final ContaDO contaDO = this.contaDao.procurar(valor.getConta().getCodigo());
             if (contaDO.getSaldo() == null) {
                 contaDO.setSaldo(BigDecimal.valueOf(adicionar));
             } else {

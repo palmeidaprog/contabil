@@ -42,6 +42,10 @@ public abstract class DaoGenerico<T extends Entidade, K> {
         return this.em.find(this.type, key);
     }
 
+    public T persist(T obj) {
+        this.em.persist(obj);
+        return obj;
+    }
 
     public T create(T obj) {
         return this.em.merge(obj);

@@ -17,6 +17,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.react.contabil.util.Util.comparaCodigos;
+
 @ApplicationScoped
 public class ContaServiceHandler {
 
@@ -28,10 +30,6 @@ public class ContaServiceHandler {
 
     @Inject
     private SequencialDao sequencialDao;
-
-
-    public ContaServiceHandler() {
-    }
 
     /**
      * Adicionar conta
@@ -47,13 +45,7 @@ public class ContaServiceHandler {
             logger.debug("adicionar :: Adicionando {} ...", conta);
             final ContaDO contaDO = conta.toDataObject();
 
-            if (conta.getCodigo() != null) {
-                this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
-            } else {
-                contaDO.setCodigo(this.sequencialDao.proximoCodigo(Tabela.CONTA, 1));
-            }
-
-            final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),
+            final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),contaDO.getCodigoUsuario(),
                     "adicionar");
 
             contaDO.setNumero(this.novoNumero(contaPai));
@@ -61,11 +53,11 @@ public class ContaServiceHandler {
             this.dao.inserir(contaDO);
             logger.info("adicionar :: {} adicionada com sucesso!", conta);
 
-        } catch (EntidadeExistenteException | BancoDadosException e) {
+        } catch (ContabilException e) {
+            logger.error("adicionar :: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            final String erro = String.format("Ocorreu um erro desconhecido" +
-                    " ao adicionar %s", conta);
+            final String erro = String.format("Ocorreu um erro desconhecido ao adicionar %s", conta);
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
@@ -88,7 +80,7 @@ public class ContaServiceHandler {
         final List<ContaDO> filhas = contaPai.getContasFilhas();
         final int nivel = contaPai.getNivelConta();
         String numeroFinal = filhas.get(filhas.size()-1).getNumero()
-                .split("\\.")[nivel];
+                .split("\\.")[nivel-1];
         int numero = Integer.parseInt(numeroFinal) + 1;
         numeroFinal = String.format("%02d", numero);
 
@@ -106,17 +98,22 @@ public class ContaServiceHandler {
      * @return Conta achada
      * @throws BancoDadosException Erro de banco
      * @throws EntidadeNaoEncontradaException Conta nao encontrada
+     * @throws UsuarioInvalidoException Conta nào pertence ao usuário
      */
     @NotNull @Valid
-    private ContaDO pegaConta(@NotNull Long codigo, String nomeMetodo)
-            throws BancoDadosException, EntidadeNaoEncontradaException {
+    private ContaDO pegaConta(@NotNull Long codigo, @NotNull Long codigoUsuario, String nomeMetodo)
+            throws BancoDadosException, EntidadeNaoEncontradaException, UsuarioInvalidoException {
 
         final ContaDO contaDO = this.dao.procurar(codigo);
         if (contaDO == null) { // valida existencia
-            final String msg = String.format("Conta código %d não existe",
-                    codigo);
+            String msg = String.format("Conta código %d não existe", codigo);
             logger.error("{} :: {}", nomeMetodo, msg);
             throw new EntidadeNaoEncontradaException(msg);
+        } else if (!contaDO.getCodigoUsuario().equals(codigoUsuario)) {
+            String msg = String.format("Conta pai código {} não pertence ao usuário código {}",
+                    codigo, codigoUsuario);
+            logger.error("{} :: {}", nomeMetodo, msg);
+            throw new UsuarioInvalidoException(msg);
         }
         return contaDO;
     }
@@ -195,6 +192,8 @@ public class ContaServiceHandler {
                 logger.error("atualizar :: {}", conta.toString());
                 throw new EntidadeNaoEncontradaException(erro);
             }
+
+            this.validaUsuarioConta(conta, contaDO);
             this.dao.atualizar(conta.update(contaDO));
             logger.info("atualizar :: Atualizaçào de {} efetuada com sucesso",
                     conta.toString());
@@ -205,6 +204,21 @@ public class ContaServiceHandler {
                     " ao adicionar %s", conta.toString());
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
+        }
+    }
+
+    /**
+     * Verifica se a conta pertence ao usuario
+     * @param conta Conta recebida pelo endpoint
+     * @param contaDO Conta persistida a ser modificada
+     * @throws Exception
+     */
+    private void validaUsuarioConta(Conta conta, ContaDO contaDO) throws Exception {
+        if (comparaCodigos(conta.getCodigoUsuario(), contaDO.getCodigoUsuario())) {
+            String erro = String.format("Conta código %d não pertence ao usuário código %d",
+                    contaDO.getCodigo(), conta.getCodigoUsuario());
+            logger.error("validaUsuarioConta :: {}", erro);
+            throw new UsuarioInvalidoException(erro);
         }
     }
 

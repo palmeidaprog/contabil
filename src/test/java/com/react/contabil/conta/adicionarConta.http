@@ -2,9 +2,9 @@ POST http://127.0.0.1:8080/contabil/conta/adicionar
 Content-Type: application/json
 
 {
-  "contaPaiCodigo": 3,
-  "codigoUsuario": 8,
-  "nome": "Teste",
+  "contaPaiCodigo": 258,
+  "codigoUsuario": 46,
+  "nome": "Teste1",
   "saldo": 0
 }
 
@@ -14,11 +14,12 @@ POST http://127.0.0.1:8080/contabil/conta/adicionar
 Content-Type: application/json
 
 {
-  "contaPaiCodigo": 7,
-  "codigoUsuario": 8,
+  "contaPaiCodigo": 258,
+  "codigoUsuario": 46,
   "nome": "Bancos",
   "saldo": 0
 }
+
 ###
 POST http://127.0.0.1:8080/contabil/conta/adicionar
 Content-Type: application/json

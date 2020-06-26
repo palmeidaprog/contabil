@@ -69,7 +69,13 @@ public class ContaDO implements Entidade {
         this.inicializaValoresPadroes();
     }
 
-    public ContaDO(Long codigo, Long codigoUsuario, String numero, String nome) {
+    public ContaDO(Long codigoUsuario, String nome, String numero) {
+        this.codigoUsuario = codigoUsuario;
+        this.numero = numero;
+        this.nome = nome;
+    }
+
+    public ContaDO(Long codigo, Long codigoUsuario, String nome, String numero) {
         this();
         this.codigo = codigo;
         this.codigoUsuario = codigoUsuario;
@@ -77,8 +83,13 @@ public class ContaDO implements Entidade {
         this.nome = nome;
     }
 
-    public ContaDO(Long codigo, Long codigoUsuario, String numero, String nome, Long contaPaiCodigo) {
-        this(codigo, codigoUsuario, numero, nome);
+    public ContaDO(Long codigo, Long codigoUsuario, String nome, String numero, Long contaPaiCodigo) {
+        this(codigo, codigoUsuario, nome, numero);
+        this.contaPaiCodigo = contaPaiCodigo;
+    }
+
+    public ContaDO(Long codigoUsuario, String nome, String numero, Long contaPaiCodigo) {
+        this(codigoUsuario, nome, numero);
         this.contaPaiCodigo = contaPaiCodigo;
     }
 
@@ -105,7 +116,9 @@ public class ContaDO implements Entidade {
             this.contasFilhas = new ArrayList<>();
         }
 
-        conta.setContaPaiCodigo(this.codigo);
+        if (this.contaPaiCodigo == null) {
+            conta.setContaPaiCodigo(this.codigo);
+        }
         this.contasFilhas.add(conta);
     }
 
