@@ -1,0 +1,25 @@
+@import '../variables.scss';
+.balance-container{
+    display: flex;
+    justify-content: center;
+    margin-left: -7em;
+    width: 100%;
+    flex-wrap: wrap;
+    padding: 3em;
+    .balance-title{
+        display: flex;
+        color: $defaultColor;
+        font-weight: bold;
+        font-size: 2em;
+        border: .2em solid $defaultColor;
+        padding: 1.5em;
+        width: 70%;
+    }
+    .balance-content{
+        margin-top: 2em;
+        display: flex;
+        border: .2em solid $defaultColor;
+        padding: 1.5em;
+        width: 70%;
+    }
+}
