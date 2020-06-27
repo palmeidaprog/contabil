@@ -1,5 +1,5 @@
-export class Usuario {
-    codigo: number;
+export class UsuarioEntities {
+    codigo?: number;
     login: string;
     nome: string;
     sobrenome?: string;
