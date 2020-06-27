@@ -54,4 +54,19 @@ public class Util {
                 "dd/MM/yyyy");
         return fmt.format(data);
     }
+
+
+    /**
+     * Compara codigos Long
+     * @param long1 Primeiro long
+     * @param long2 Segundo long
+     * @return Verdadeiro se ambos são diferentes de nulo e iguais
+     */
+    public static boolean comparaCodigos(Long long1, Long long2) {
+        if (long1 == null || long2 == null) {
+            return false;
+        }
+
+        return long1.equals(long2);
+    }
 }

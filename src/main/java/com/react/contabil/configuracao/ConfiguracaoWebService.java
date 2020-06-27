@@ -32,6 +32,7 @@ public class ConfiguracaoWebService extends Application {
         classes.add(ContaService.class);
         classes.add(UsuarioService.class);
         classes.add(LancamentoService.class);
+
         return classes;
     }
 

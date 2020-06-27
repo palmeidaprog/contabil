@@ -14,7 +14,7 @@ create table if not exists conta(
     codigo_conta_pai bigint(15) unsigned,
     descricao text(500),
     saldo float(18,2) default 0,
-    constraint conta_usuario_unique unique(codigo, codigo_usuario),
+    constraint conta_usuario_unique unique(numero, codigo_usuario),
     constraint conta_pai_fk foreign key(codigo_conta_pai) references conta(codigo),
     constraint conta_usuario_fk foreign key(codigo_usuario) references usuario(codigo)
 );
@@ -36,3 +36,14 @@ create table if not exists valor(
     constraint valor_conta_fk foreign key(conta_codigo) references conta(codigo),
     constraint valor_lancamento_fk foreign key(lancamento_codigo) references lancamento(codigo)
 );
+
+
+create table if not exists sequencial(
+    tabela varchar(25) not null primary key,
+    sequencial bigint(15) unsigned not null default 1
+);
+
+insert into sequencial values('conta', 1);
+insert into sequencial values('lancamento', 1);
+insert into sequencial values('usuario', 1);
+insert into sequencial values('valor', 1);
