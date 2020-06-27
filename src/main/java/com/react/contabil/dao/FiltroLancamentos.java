@@ -7,7 +7,7 @@ import static com.react.contabil.util.Util.converteParaDiaMesAno;
 
 public class FiltroLancamentos {
 
-    @NotEmpty(message = COD_USUARIO_NOT_EMPY)
+    @NotNull(message = COD_USUARIO_NOT_NULL)
     @Digits(integer = 15,
             fraction = 0,
             message = COD_USUARIO_DIGITS)

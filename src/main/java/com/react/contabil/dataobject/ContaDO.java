@@ -1,7 +1,10 @@
 package com.react.contabil.dataobject;
 
+import com.react.contabil.dao.Saldo;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,23 +54,51 @@ public class ContaDO implements Entidade {
 
     @OneToMany(
         mappedBy = "contaPai",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @OrderBy("numero")
     private List<ContaDO> contasFilhas;
 
-    @Column(name = "saldo", columnDefinition = "float(18,2)")
-    private BigDecimal saldo;
+    @Transient
+    private Saldo saldo;
 
     @Column(name = "descricao", columnDefinition = "TEXT(500)")
     private String descricao;
 
-    public ContaDO() { }
+    public ContaDO() {
+        this.inicializaValoresPadroes();
+    }
+
+    public ContaDO(Long codigoUsuario, String nome, String numero) {
+        this.codigoUsuario = codigoUsuario;
+        this.numero = numero;
+        this.nome = nome;
+    }
+
+    public ContaDO(Long codigo, Long codigoUsuario, String nome, String numero) {
+        this();
+        this.codigo = codigo;
+        this.codigoUsuario = codigoUsuario;
+        this.numero = numero;
+        this.nome = nome;
+    }
+
+    public ContaDO(Long codigo, Long codigoUsuario, String nome, String numero, Long contaPaiCodigo) {
+        this(codigo, codigoUsuario, nome, numero);
+        this.contaPaiCodigo = contaPaiCodigo;
+    }
+
+    public ContaDO(Long codigoUsuario, String nome, String numero, Long contaPaiCodigo) {
+        this(codigoUsuario, nome, numero);
+        this.contaPaiCodigo = contaPaiCodigo;
+    }
 
     @PrePersist
     @PreUpdate
     private void inicializaValoresPadroes() {
-        this.saldo = this.saldo == null ? BigDecimal.valueOf(0) : this.saldo;
+        //this.saldo = this.saldo == null ? BigDecimal.valueOf(0) : this.saldo;
     }
 
     public List<ContaDO> getContasFilhas() {
@@ -76,6 +107,21 @@ public class ContaDO implements Entidade {
 
     public void setContasFilhas(List<ContaDO> contasFilhas) {
         this.contasFilhas = contasFilhas;
+    }
+
+    /**
+     * Adiciona conta como filha
+     * @param conta Conta a ser adicionada
+     */
+    public void adicionaContaFilha(ContaDO conta) {
+        if (this.contasFilhas == null) {
+            this.contasFilhas = new ArrayList<>();
+        }
+
+        if (this.contaPaiCodigo == null) {
+            conta.setContaPaiCodigo(this.codigo);
+        }
+        this.contasFilhas.add(conta);
     }
 
     public Long getCodigo() {
@@ -134,11 +180,11 @@ public class ContaDO implements Entidade {
         this.descricao = descricao;
     }
 
-    public BigDecimal getSaldo() {
+    public Saldo getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(BigDecimal saldo) {
+    public void setSaldo(Saldo saldo) {
         this.saldo = saldo;
     }
 

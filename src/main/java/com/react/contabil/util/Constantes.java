@@ -16,6 +16,8 @@ public interface Constantes {
         String COD_CONTA_PAI_DIGITS = "O código da conta não pode ter mais de 15 digitos";
 
         String COD_USUARIO_NOT_NULL = "O código do usuário não pode ser nulo";
+
+        String BALANCETE_NOT_NULL_RETURN = "A lista de contas no retorno não pode ser nula";
     }
 
     interface Lancamento {
@@ -65,7 +67,7 @@ public interface Constantes {
     }
 
     interface FiltroLancamentos {
-        String COD_USUARIO_NOT_EMPY = "O código usuário não pode ser nulo ou vazio";
+        String COD_USUARIO_NOT_NULL = "O código usuário não pode ser nulo";
 
         String COD_USUARIO_DIGITS = "O código usuário não pode ter mais de 15 digitos";
 
@@ -76,6 +78,10 @@ public interface Constantes {
         String DATA_FINAL_NOT_NULL = "A data final não pode estar no futuro";
 
         String NUMERO_CONTA_INVALIDA = "O formato da conta é inválido. Ex formato: 01.03.02";
+    }
+
+    interface Sequencial {
+        String PROX_SEQUENCIAL_NOT_EMPTY = "O nome da tabela não pode ser nulo ou vazio para procura do proximo sequencial";
     }
 
 }

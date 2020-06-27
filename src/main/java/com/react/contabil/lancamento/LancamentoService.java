@@ -34,7 +34,7 @@ public class LancamentoService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response adicionar(@Valid Lancamento lancamento) {
-        try {
+            try {
             logger.info("adicionar :: Acessando /lancamento/adiciona " +
                         "Adicionando novo lancamento: {}", lancamento
                         .getCodigo());

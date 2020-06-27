@@ -14,6 +14,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
+import static com.react.contabil.util.Constantes.Conta.BALANCETE_NOT_NULL_RETURN;
+
 @Path("/conta")
 @RequestScoped
 public class ContaService {
@@ -195,6 +197,31 @@ public class ContaService {
                     "procura de {}", msg);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
+        }
+    }
+
+    /**
+     * Recebe uma lista de contas do usuário para ser montado o balancete
+     * @param codigoUsuario codigo do usuário
+     * @return Lista de Contas
+     */
+    @GET
+    @Path("/balancete/{codigoUsuario}")
+    @Produces(Constantes.APPLICATION_JSON_UTF8)
+    @NotNull(message = BALANCETE_NOT_NULL_RETURN)
+    public Response balancete(@PathParam("codigoUsuario") Long codigoUsuario) {
+        final String msg = String.format("balancete do usuário código %d", codigoUsuario);
+
+        try {
+            logger.info("balancete :: /conta/balancete/{} Buscando {}", codigoUsuario, msg);
+            final List<Conta> balancete = this.handler.balancete(codigoUsuario);
+            logger.info("balancete :: /conta/balancete/{} Busca de {} executada com sucesso",
+                    codigoUsuario, msg);
+
+            return Response.ok(balancete).build();
+        } catch (ContabilException e) {
+            logger.error("get :: Retornando INTERNAL_SERVER_ERROR para procura de {}", msg);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 

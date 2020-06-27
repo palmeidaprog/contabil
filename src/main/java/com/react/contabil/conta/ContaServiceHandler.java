@@ -1,21 +1,27 @@
 package com.react.contabil.conta;
 
 import com.react.contabil.dao.ContaDao;
+import com.react.contabil.dao.Saldo;
+import com.react.contabil.dao.SequencialDao;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static com.react.contabil.util.Util.isNotBlank;
+import static com.react.contabil.util.Util.comparaCodigos;
 
 @ApplicationScoped
 public class ContaServiceHandler {
@@ -26,9 +32,8 @@ public class ContaServiceHandler {
     @Inject
     private ContaDao dao;
 
-
-    public ContaServiceHandler() {
-    }
+    @Inject
+    private SequencialDao sequencialDao;
 
     /**
      * Adicionar conta
@@ -42,13 +47,9 @@ public class ContaServiceHandler {
             BancoDadosException, ContabilException {
         try {
             logger.debug("adicionar :: Adicionando {} ...", conta);
-
-            if (conta.getCodigo() != null) {
-                this.verificaExistenciaConta(conta.getCodigo(), "adicionar");
-            }
-
             final ContaDO contaDO = conta.toDataObject();
-            final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),
+
+            final ContaDO contaPai = this.pegaConta(contaDO.getContaPaiCodigo(),contaDO.getCodigoUsuario(),
                     "adicionar");
 
             contaDO.setNumero(this.novoNumero(contaPai));
@@ -56,12 +57,11 @@ public class ContaServiceHandler {
             this.dao.inserir(contaDO);
             logger.info("adicionar :: {} adicionada com sucesso!", conta);
 
-
-        } catch (EntidadeExistenteException | BancoDadosException e) {
+        } catch (ContabilException e) {
+            logger.error("adicionar :: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            final String erro = String.format("Ocorreu um erro desconhecido" +
-                    " ao adicionar %s", conta);
+            final String erro = String.format("Ocorreu um erro desconhecido ao adicionar %s", conta);
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
@@ -84,7 +84,7 @@ public class ContaServiceHandler {
         final List<ContaDO> filhas = contaPai.getContasFilhas();
         final int nivel = contaPai.getNivelConta();
         String numeroFinal = filhas.get(filhas.size()-1).getNumero()
-                .split("\\.")[nivel];
+                .split("\\.")[nivel-1];
         int numero = Integer.parseInt(numeroFinal) + 1;
         numeroFinal = String.format("%02d", numero);
 
@@ -102,17 +102,22 @@ public class ContaServiceHandler {
      * @return Conta achada
      * @throws BancoDadosException Erro de banco
      * @throws EntidadeNaoEncontradaException Conta nao encontrada
+     * @throws UsuarioInvalidoException Conta nào pertence ao usuário
      */
     @NotNull @Valid
-    private ContaDO pegaConta(@NotNull Long codigo, String nomeMetodo)
-            throws BancoDadosException, EntidadeNaoEncontradaException {
+    private ContaDO pegaConta(@NotNull Long codigo, @NotNull Long codigoUsuario, String nomeMetodo)
+            throws BancoDadosException, EntidadeNaoEncontradaException, UsuarioInvalidoException {
 
-        final ContaDO contaDO = this.dao.procurar(codigo);
+        final ContaDO contaDO = this.dao.procurar(codigo, false);
         if (contaDO == null) { // valida existencia
-            final String msg = String.format("Conta código %d não existe",
-                    codigo);
+            String msg = String.format("Conta código %d não existe", codigo);
             logger.error("{} :: {}", nomeMetodo, msg);
             throw new EntidadeNaoEncontradaException(msg);
+        } else if (!contaDO.getCodigoUsuario().equals(codigoUsuario)) {
+            String msg = String.format("Conta pai código %s não pertence ao usuário código %s",
+                    codigo, codigoUsuario);
+            logger.error("{} :: {}", nomeMetodo, msg);
+            throw new UsuarioInvalidoException(msg);
         }
         return contaDO;
     }
@@ -127,7 +132,7 @@ public class ContaServiceHandler {
     private ContaDO verificaExistenciaConta(Long codigo, String nomeMetodo)
             throws BancoDadosException, EntidadeExistenteException {
 
-        final ContaDO contaDO = this.dao.procurar(codigo);
+        final ContaDO contaDO = this.dao.procurar(codigo, false);
         if (contaDO != null) {
             final String msg = String.format("A conta codigo %d já existe!",
                     codigo);
@@ -149,7 +154,7 @@ public class ContaServiceHandler {
             BancoDadosException, ContabilException {
         try {
             logger.debug("remover :: Removendo {} ...", conta);
-            final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
+            final ContaDO contaDO = this.dao.procurar(conta.getCodigo(), false);
             if (contaDO == null) { // valida existencia
                 final String msg = String.format("%s não existe",
                         conta.toString());
@@ -181,16 +186,19 @@ public class ContaServiceHandler {
      * @param conta Conta a ser atualizada
      * @throws ContabilException
      */
+    @Transactional
     public void atualizar(Conta conta) throws ContabilException {
         try {
             logger.info("atualizar :: Atualizando {}", conta.toString());
-            final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
+            final ContaDO contaDO = this.dao.procurar(conta.getCodigo(), false);
             if (contaDO == null) {
                 final String erro = String.format("%s não existe",
                         conta.toString());
                 logger.error("atualizar :: {}", conta.toString());
                 throw new EntidadeNaoEncontradaException(erro);
             }
+
+            this.validaUsuarioConta(conta, contaDO);
             this.dao.atualizar(conta.update(contaDO));
             logger.info("atualizar :: Atualizaçào de {} efetuada com sucesso",
                     conta.toString());
@@ -201,6 +209,21 @@ public class ContaServiceHandler {
                     " ao adicionar %s", conta.toString());
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
+        }
+    }
+
+    /**
+     * Verifica se a conta pertence ao usuario
+     * @param conta Conta recebida pelo endpoint
+     * @param contaDO Conta persistida a ser modificada
+     * @throws Exception
+     */
+    private void validaUsuarioConta(Conta conta, ContaDO contaDO) throws Exception {
+        if (comparaCodigos(conta.getCodigoUsuario(), contaDO.getCodigoUsuario())) {
+            String erro = String.format("Conta código %d não pertence ao usuário código %d",
+                    contaDO.getCodigo(), conta.getCodigoUsuario());
+            logger.error("validaUsuarioConta :: {}", erro);
+            throw new UsuarioInvalidoException(erro);
         }
     }
 
@@ -249,6 +272,7 @@ public class ContaServiceHandler {
      * @throws BancoDadosException erro de banco
      * @throws ContabilException erro desconhecido
      */
+    @Transactional
     public List<Conta> listar(Long codigoUsuario, String numero, String nome)
                 throws BancoDadosException, ContabilException {
 
@@ -278,13 +302,13 @@ public class ContaServiceHandler {
      * @return Conta achada
      * @throws ContabilException Erros
      */
-    public Conta procurar(Long codigo) throws
-            ContabilException {
+    @Transactional
+    public Conta procurar(Long codigo) throws ContabilException {
 
         final String msg = String.format("conta com código: %d", codigo);
         try {
             logger.info("procurar :: Procurando {}", msg);
-            final ContaDO contaDO = this.dao.procurar(codigo);
+            ContaDO contaDO = this.dao.procurar(codigo, true);
             if (contaDO == null) {
                 final String erro = String.format("Conta com código %d não existe",
                         codigo);
@@ -292,9 +316,12 @@ public class ContaServiceHandler {
                 throw new EntidadeNaoEncontradaException(erro);
             }
 
-            logger.info("procurar :: Procura de {} efetuada com sucesso",
-                    msg);
-            return new Conta(contaDO);
+            logger.info("procurar :: Atualizando saldo da {}", contaDO);
+            contaDO = this.calculaSaldo(contaDO);
+            final Conta conta = new Conta(contaDO);
+
+            logger.info("procurar :: Procura de {} efetuada com sucesso", msg);
+            return conta;
         } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
             throw e;
         } catch (Exception e) {
@@ -303,5 +330,97 @@ public class ContaServiceHandler {
             logger.error("adicionar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new ContabilException(erro, e);
         }
+    }
+
+    /**
+     * Monta balanacete para o usuário informado
+     * @param codigoUsuario codigo do usuário
+     * @return Lista de Conta do usuario para montar o balancete
+     * @throws ContabilException Erro desconhecido ou BancoDadosException
+     */
+    @Transactional @NotNull
+    public List<Conta> balancete(@NotNull Long codigoUsuario) throws ContabilException {
+        try {
+            logger.info("balancete :: Buscando contas do usuário código {} para montar o balancete" +
+                    " ...", codigoUsuario);
+            final List<ContaDO> contas = this.dao.listar(codigoUsuario, null, null);
+            final List<Conta> retorno = new ArrayList<>();
+            final Set<Conta> balancete = new TreeSet<>();
+            for (final ContaDO contaDO : contas) {
+                if (contaDO.getNumero().equals("01")) {
+                    this.calculaSaldo(contaDO);
+                    this.insereArvore(balancete, contaDO);
+                    retorno.addAll(balancete);
+                }
+            }
+
+            logger.info("balancete :: Busca de contas do usuário código {} para montar o balancete" +
+                    " executada com sucesso!", codigoUsuario);
+
+            return retorno;
+        } catch (BancoDadosException e) {
+            throw e;
+        } catch (Exception e) {
+            String erro = String.format("Ocorreu um erro desconhecido ao montar o balancete para" +
+                    " o usuário código %d", codigoUsuario);
+            logger.error("balancete :: {} Erro: {}", erro, e.getMessage(), e);
+            throw new ContabilException(erro, e);
+        }
+    }
+
+    private void insereArvore(final Set<Conta> balancete, ContaDO contaDO) {
+        balancete.add(new Conta(contaDO));
+        if (contaDO.getContasFilhas() != null) {
+            for (final ContaDO filha : contaDO.getContasFilhas()) {
+                this.insereArvore(balancete, filha);
+            }
+       }
+    }
+
+    private ContaDO calculaSaldo(ContaDO conta) throws Exception {
+        logger.info("calculaSaldo :: Calculando saldo {}", conta);
+        final Saldo saldo = new Saldo(new BigDecimal(0), new BigDecimal(0));
+        if (conta.getContasFilhas() != null) {
+            for (ContaDO contaFilha : conta.getContasFilhas()) {
+                contaFilha = this.calculaSaldo(contaFilha);
+                final Saldo saldoContaFilha = contaFilha.getSaldo();
+                saldo.setTotalCredito(saldo.getTotalCredito().add(saldoContaFilha.getTotalCredito()));
+                saldo.setTotalDebito(saldo.getTotalDebito().add(saldoContaFilha.getTotalDebito()));
+            }
+        }
+        final Saldo saldoLocal = this.dao.saldoLocalConta(conta.getCodigo());
+        saldo.setTotalCredito(saldo.getTotalCredito().add(saldoLocal.getTotalCredito()));
+        saldo.setTotalDebito(saldo.getTotalDebito().add(saldoLocal.getTotalDebito()));
+        saldo.calculaSaldo();
+        conta.setSaldo(saldo);
+        logger.info("calculaSaldo :: Saldo da conta {} encontrado com sucesso", conta);
+
+        return conta;
+    }
+
+
+    /**
+     * Converte lista de contaDO em contas
+     * @param contas lista de contaDO
+     * @param acao String acao
+     * @return Lista de conta (DTO) convertidas
+     */
+    private List<Conta> converteParaDTO(List<ContaDO> contas, String acao) {
+        logger.info("converteParaDTO :: Convertendo lista de ContaDO para Conta para {}", acao);
+        final List<Conta> contasConvertidas = new ArrayList<>();
+
+        for (final ContaDO contaDO : contas) {
+            try {
+                contasConvertidas.add(new Conta(contaDO));
+            } catch (Exception e) {
+                logger.error("converteParaDTO :: Ocorreu um erro ao converter {} em DTO para {}",
+                        contaDO, acao, e);
+            }
+        }
+
+        logger.info("converteParaDTO :: Lista de ContaDO convertida para Conta com sucesso para" +
+                " {}", acao);
+
+        return contasConvertidas;
     }
 }

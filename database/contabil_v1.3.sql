@@ -36,3 +36,14 @@ create table if not exists valor(
     constraint valor_conta_fk foreign key(conta_codigo) references conta(codigo),
     constraint valor_lancamento_fk foreign key(lancamento_codigo) references lancamento(codigo)
 );
+
+
+create table if not exists sequencial(
+    tabela varchar(25) not null primary key,
+    sequencial bigint(15) unsigned not null default 1
+);
+
+insert into sequencial values('conta', 1);
+insert into sequencial values('lancamento', 1);
+insert into sequencial values('usuario', 1);
+insert into sequencial values('valor', 1);

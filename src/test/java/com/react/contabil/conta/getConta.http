@@ -1,0 +1,4 @@
+GET {{host}}/conta/get/258
+Accept: application/json
+
+###

@@ -5,7 +5,6 @@ import com.react.contabil.util.Constantes;
 import com.react.contabil.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -13,7 +12,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.security.InvalidParameterException;
 
 @Path("/usuario")
 @RequestScoped

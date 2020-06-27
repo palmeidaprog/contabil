@@ -17,6 +17,7 @@ public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
     @Inject
     private Logger logger;
 
+
     /**
      * Adiciona lançamento no banco de dados
      * @param lancamentoDO Lançamento a ser adicionado
@@ -28,15 +29,15 @@ public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
         try {
             logger.debug("adicionar :: Adicionando {} no banco de dados...",
                     lancamentoDO.toString());
-            final List<ValorDO> valores = lancamentoDO.getValores();
-            lancamentoDO.setValores(null);
+//            final List<ValorDO> valores = lancamentoDO.getValores();
+//            lancamentoDO.setValores(null);
             final LancamentoDO lancamentoManaged = this.create(lancamentoDO);
-            valores.stream().forEach(valor -> valor.setCodigoLancamento(
-                    lancamentoManaged.getCodigo()));
-            lancamentoManaged.setValores(valores);
+//            valores.stream().forEach(valor -> valor.setCodigoLancamento(
+//                    lancamentoManaged.getCodigo()));
+//            lancamentoManaged.setValores(valores);
             logger.debug("adicionar :: {} adicionado no banco com sucesso!",
                     lancamentoManaged);
-            this.em.flush(); // força o insert dos valores
+//            this.em.flush(); // força o insert dos valores
 
             return lancamentoManaged;
         } catch (Exception e) {
