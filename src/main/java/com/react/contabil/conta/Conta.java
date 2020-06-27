@@ -13,10 +13,11 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Conta {
+public class Conta implements Comparable<Conta> {
 
     @Digits(integer = 15,
             fraction = 0,
@@ -52,6 +53,7 @@ public class Conta {
         this.numero = contaDO.getNumero();
         this.nome = contaDO.getNome();
         this.descricao = contaDO.getDescricao();
+        this.saldo = contaDO.getSaldo();
 
         if (contaDO.getValores() != null) {
             this.inicializaValores(contaDO.getValores());
@@ -151,7 +153,6 @@ public class Conta {
     public ContaDO toDataObject() {
         final ContaDO contaDO = new ContaDO();
         contaDO.setNumero(this.numero);
-        contaDO.setSaldo(new BigDecimal(0));
         contaDO.setNome(this.nome);
         contaDO.setCodigo(this.codigo);
         contaDO.setCodigoUsuario(this.codigoUsuario);
@@ -184,5 +185,33 @@ public class Conta {
         }
 
         return contaDO;
+    }
+
+    /**
+     * Para arvore red and black ordenar por numero da conta
+     */
+    @Override
+    public int compareTo(Conta o) {
+        return this.numero.compareTo(o.getNumero());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Conta)) return false;
+        Conta conta = (Conta) o;
+        return Objects.equals(codigo, conta.codigo) &&
+                Objects.equals(contaPaiCodigo, conta.contaPaiCodigo) &&
+                Objects.equals(codigoUsuario, conta.codigoUsuario) &&
+                Objects.equals(numero, conta.numero) &&
+                Objects.equals(nome, conta.nome) &&
+                Objects.equals(saldo, conta.saldo) &&
+                Objects.equals(descricao, conta.descricao) &&
+                Objects.equals(valores, conta.valores);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(codigo, contaPaiCodigo, codigoUsuario, numero, nome, saldo, descricao, valores);
     }
 }

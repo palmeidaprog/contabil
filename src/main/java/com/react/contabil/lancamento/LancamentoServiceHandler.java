@@ -265,10 +265,10 @@ public class LancamentoServiceHandler {
 
             final ContaDO contaDO = this.contaDao.procurar(valor.getConta().getCodigo(), false);
             if (contaDO.getSaldo() == null) {
-                contaDO.setSaldo(BigDecimal.valueOf(adicionar));
+//                contaDO.setSaldo(BigDecimal.valueOf(adicionar));
             } else {
-                contaDO.setSaldo(contaDO.getSaldo().add(BigDecimal.valueOf(
-                        adicionar)));
+//                contaDO.setSaldo(contaDO.getSaldo().add(BigDecimal.valueOf(
+//                        adicionar)));
             }
 
             this.contaDao.atualizar(contaDO);

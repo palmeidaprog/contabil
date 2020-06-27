@@ -1,5 +1,7 @@
 package com.react.contabil.dataobject;
 
+import com.react.contabil.dao.Saldo;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,8 +61,8 @@ public class ContaDO implements Entidade {
     @OrderBy("numero")
     private List<ContaDO> contasFilhas;
 
-    @Column(name = "saldo", columnDefinition = "float(18,2)")
-    private BigDecimal saldo;
+    @Transient
+    private Saldo saldo;
 
     @Column(name = "descricao", columnDefinition = "TEXT(500)")
     private String descricao;
@@ -96,7 +98,7 @@ public class ContaDO implements Entidade {
     @PrePersist
     @PreUpdate
     private void inicializaValoresPadroes() {
-        this.saldo = this.saldo == null ? BigDecimal.valueOf(0) : this.saldo;
+        //this.saldo = this.saldo == null ? BigDecimal.valueOf(0) : this.saldo;
     }
 
     public List<ContaDO> getContasFilhas() {
@@ -178,11 +180,11 @@ public class ContaDO implements Entidade {
         this.descricao = descricao;
     }
 
-    public BigDecimal getSaldo() {
+    public Saldo getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(BigDecimal saldo) {
+    public void setSaldo(Saldo saldo) {
         this.saldo = saldo;
     }
 

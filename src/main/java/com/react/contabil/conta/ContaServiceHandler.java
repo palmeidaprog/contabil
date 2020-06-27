@@ -3,7 +3,6 @@ package com.react.contabil.conta;
 import com.react.contabil.dao.ContaDao;
 import com.react.contabil.dao.Saldo;
 import com.react.contabil.dao.SequencialDao;
-import com.react.contabil.dao.Tabela;
 import com.react.contabil.dataobject.ContaDO;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Util;
@@ -15,8 +14,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static com.react.contabil.util.Util.comparaCodigos;
@@ -306,7 +308,7 @@ public class ContaServiceHandler {
         final String msg = String.format("conta com código: %d", codigo);
         try {
             logger.info("procurar :: Procurando {}", msg);
-            final ContaDO contaDO = this.dao.procurar(codigo, true);
+            ContaDO contaDO = this.dao.procurar(codigo, true);
             if (contaDO == null) {
                 final String erro = String.format("Conta com código %d não existe",
                         codigo);
@@ -315,8 +317,8 @@ public class ContaServiceHandler {
             }
 
             logger.info("procurar :: Atualizando saldo da {}", contaDO);
+            contaDO = this.calculaSaldo(contaDO);
             final Conta conta = new Conta(contaDO);
-            conta.setSaldo(this.calculaSaldo(contaDO));
 
             logger.info("procurar :: Procura de {} efetuada com sucesso", msg);
             return conta;
@@ -336,18 +338,24 @@ public class ContaServiceHandler {
      * @return Lista de Conta do usuario para montar o balancete
      * @throws ContabilException Erro desconhecido ou BancoDadosException
      */
-    @NotNull
+    @Transactional @NotNull
     public List<Conta> balancete(@NotNull Long codigoUsuario) throws ContabilException {
         try {
             logger.info("balancete :: Buscando contas do usuário código {} para montar o balancete" +
                     " ...", codigoUsuario);
             final List<ContaDO> contas = this.dao.listar(codigoUsuario, null, null);
+            final List<Conta> retorno = new ArrayList<>();
+            final Set<Conta> balancete = new TreeSet<>();
+            for (final ContaDO contaDO : contas) {
+                if (contaDO.getNumero().equals("01")) {
+                    this.calculaSaldo(contaDO);
+                    this.insereArvore(balancete, contaDO);
+                    retorno.addAll(balancete);
+                }
+            }
 
             logger.info("balancete :: Busca de contas do usuário código {} para montar o balancete" +
                     " executada com sucesso!", codigoUsuario);
-
-            final List<Conta> retorno = this.converteParaDTO(contas, "listar balancetes");
-            retorno.sort(Comparator.comparing(Conta::getNumero));
 
             return retorno;
         } catch (BancoDadosException e) {
@@ -360,12 +368,22 @@ public class ContaServiceHandler {
         }
     }
 
-    private Saldo calculaSaldo(ContaDO conta) throws Exception {
+    private void insereArvore(final Set<Conta> balancete, ContaDO contaDO) {
+        balancete.add(new Conta(contaDO));
+        if (contaDO.getContasFilhas() != null) {
+            for (final ContaDO filha : contaDO.getContasFilhas()) {
+                this.insereArvore(balancete, filha);
+            }
+       }
+    }
+
+    private ContaDO calculaSaldo(ContaDO conta) throws Exception {
         logger.info("calculaSaldo :: Calculando saldo {}", conta);
         final Saldo saldo = new Saldo(new BigDecimal(0), new BigDecimal(0));
         if (conta.getContasFilhas() != null) {
-            for (final ContaDO contaFilha : conta.getContasFilhas()) {
-                final Saldo saldoContaFilha = this.calculaSaldo(contaFilha);
+            for (ContaDO contaFilha : conta.getContasFilhas()) {
+                contaFilha = this.calculaSaldo(contaFilha);
+                final Saldo saldoContaFilha = contaFilha.getSaldo();
                 saldo.setTotalCredito(saldo.getTotalCredito().add(saldoContaFilha.getTotalCredito()));
                 saldo.setTotalDebito(saldo.getTotalDebito().add(saldoContaFilha.getTotalDebito()));
             }
@@ -374,9 +392,10 @@ public class ContaServiceHandler {
         saldo.setTotalCredito(saldo.getTotalCredito().add(saldoLocal.getTotalCredito()));
         saldo.setTotalDebito(saldo.getTotalDebito().add(saldoLocal.getTotalDebito()));
         saldo.calculaSaldo();
+        conta.setSaldo(saldo);
         logger.info("calculaSaldo :: Saldo da conta {} encontrado com sucesso", conta);
 
-        return saldo;
+        return conta;
     }
 
 

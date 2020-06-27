@@ -1,4 +1,4 @@
-GET http://localhost:8080/contabil/conta/balancete/8
+GET http://localhost:8080/contabil/conta/balancete/46
 Accept: application/json
 
 ###
