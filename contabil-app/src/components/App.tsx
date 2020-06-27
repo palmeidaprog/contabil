@@ -1,5 +1,6 @@
 import * as React from 'react';
 import "../assets/css/App.scss";
+
 import Navigation from '../core/components/Navigation';
 import {
   BrowserRouter as Router,
@@ -11,6 +12,7 @@ import LoginPage from '../core/components/Login';
 import RegisterPage from '../core/components/Register';
 import EditRegisterPage from '../core/components/EditRegister';
 import BalancePage from '../core/components/Balance';
+import SearchPage from '../core/components/Search';
 
 const RouteWrapper = ({component: Component, restricted, ...rest}) => {
   return (
@@ -55,6 +57,7 @@ export default class App extends React.Component {
           <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={false} />
           <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={false} />
           <RouteWrapper exact path="/balancete" component={BalancePage} restricted={false} />
+          <RouteWrapper exact path="/buscar" component={SearchPage} restricted={false} />
         </Router>
       </div>
     );

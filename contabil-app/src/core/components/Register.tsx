@@ -9,6 +9,7 @@ import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
 import { RegisterForm } from '../../components/FormRegister';
+import RegisterService from '../service/RegisterService';
 
 class Registry{
     username: string;
@@ -41,6 +42,8 @@ class InternalState {
 export default class RegisterPage extends React.Component {
     public state: InternalState = new InternalState();
     public redirectService: RedirectService = new RedirectService();
+    private registerService : RegisterService = new RegisterService();
+    
     private handleRegister() {
         
         if (this.state.registryUser.username !== "" && this.state.registryUser.password !== "" &&

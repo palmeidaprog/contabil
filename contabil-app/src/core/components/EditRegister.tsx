@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, TextField, CardContent, CardActions, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import '../../assets/css/components/Login.scss';
+import RegisterService from '../service/RegisterService';
 
 interface IUser{
     nomeUsuario : string,
@@ -10,7 +11,7 @@ interface IUser{
 }
 export default class EditRegisterPage extends React.Component {
     public state: { error: boolean, helperText: string, editUser :  IUser} = { error: false, helperText: "", editUser : {nomeUsuario : "", numeroConta : "", contaPai : null} }
-    
+    private registerService : RegisterService = new RegisterService();
     public handleKeyPress(e: any) {
         if (e.keyCode === 13 || e.which === 13) {
             console.log(this.state.editUser);

@@ -1,10 +1,10 @@
 import React from 'react';
-
+import '../assets/css/components/GenericTable.scss';
 interface IBalanceTable{
     labels : any[];
     datas : any[];
 }
-export default class BalanceTable extends React.Component<IBalanceTable>{
+export default class GenericTable extends React.Component<IBalanceTable>{
 
     public getItem(item : any){
         delete item.destacado;

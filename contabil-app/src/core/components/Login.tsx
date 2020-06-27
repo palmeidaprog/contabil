@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
+import LoginService from '../service/LoginService';
 
 class InternalState {
     username: string;
@@ -25,7 +26,8 @@ class InternalState {
 }
 export default class LoginPage extends Component {
     public state: InternalState = new InternalState();
-    public redirectService: RedirectService = new RedirectService();
+    private loginService : LoginService = new LoginService();
+    private redirectService : RedirectService = new RedirectService();
 
     private handleLogin() {
         
@@ -112,6 +114,9 @@ export default class LoginPage extends Component {
                                         disabled={this.isSubmitDisabled}
                                     >Entrar</Button>
                                 </CardActions>
+                                <div className="d-flex justify-content-center py-2">
+                                    <span>Não possui cadastro?</span>
+                                    <a className="ml-1" href="/registrar">Registrar</a></div>
                             </Card>
                         </form>
                     </Grid>

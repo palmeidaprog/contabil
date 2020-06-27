@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../assets/css/components/Balance.scss';
-import BalanceTable from '../../components/BalanceTable';
+import GenericTable from '../../components/GenericTable';
+import BalanceService from '../service/BalanceService';
 
 
 class InternalBalanceData{
@@ -81,7 +82,7 @@ class InternalBalanceData{
 
 export default class BalancePage extends React.Component{
     public state : InternalBalanceData = new InternalBalanceData();
-
+    private balanceService : BalanceService = new BalanceService();
 
     public render(){
         return(
@@ -90,7 +91,7 @@ export default class BalancePage extends React.Component{
                     Balancete
                 </div>
                 <div className="balance-content">
-                    <BalanceTable labels={this.state.labels} datas={this.state.datas}/>
+                    <GenericTable labels={this.state.labels} datas={this.state.datas}/>
                 </div>
             </div>
         );
