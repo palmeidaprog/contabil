@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +55,8 @@ public class LancamentoServiceHandler {
      * @param lancamento lançamento a ser adicionado
      * @return Lançamento adicionado
      */
-    @Transactional @Valid @NotNull
-    public Lancamento adicionar(@NotNull(message = NOT_NULL)
+    @Transactional
+    public void adicionar(@NotNull(message = NOT_NULL)
                                 @Valid Lancamento lancamento) throws
             ContabilException {
 
@@ -66,24 +67,22 @@ public class LancamentoServiceHandler {
             this.validaValores(lancamentoDO);
             logger.info("adicionar :: Adicionando {} ...", lancamento);
 
-            logger.info("adicionar :: Gerando códigos para {} e seus respectivos valores", lancamentoDO);
-            lancamentoDO.setCodigo(this.sequencialDao.proximoCodigo(Tabela.LANCAMENTO));
+//            logger.info("adicionar :: Atualizando saldos das contas para o {}", lancamento);
+//            this.atualizaSaldos(lancamentoDO.getValores(), lancamento.getData(),
+//                    false);
+//            logger.info("adicionar :: Saldo de {} atualizados com sucesso!",
+//                    lancamento);
+
             final List<ValorDO> valores = lancamentoDO.getValores();
-            for (final ValorDO valorDO : valores) {
-                valorDO.setCodigoLancamento(lancamentoDO.getCodigo());
-            }
-
-            logger.info("adicionar :: Atualizando saldos das contas para o {}", lancamento);
-            this.atualizaSaldos(lancamentoDO.getValores(), lancamento.getData(),
-                    false);
-            logger.info("adicionar :: Saldo de {} atualizados com sucesso!",
-                    lancamento);
-
+            lancamentoDO.setValores(null);
             lancamentoDO = this.dao.inserir(lancamentoDO);
-            logger.info("adicionar :: {} adicionado com sucesso!",
-                    lancamento);
-
-            return new Lancamento(lancamentoDO);
+            lancamentoDO.setValores(valores);
+            for (final ValorDO valorDO : lancamentoDO.getValores()) {
+                valorDO.setCodigoLancamento(lancamentoDO.getCodigo());
+                valorDO.setSaldoConta(BigDecimal.valueOf(0));
+            }
+            lancamentoDO = this.dao.atualizar(lancamentoDO);
+            logger.info("adicionar :: {} adicionado com sucesso!", lancamento);
         } catch (LancamentoInvalidoException e) {
             logger.error("adicionar :: {}", e.getMessage());
             throw e;
@@ -264,7 +263,7 @@ public class LancamentoServiceHandler {
                     this.modificador(valor)).doubleValue();
             this.valorDao.atualizaSaldo(valor, data, adicionar, remover);
 
-            final ContaDO contaDO = this.contaDao.procurar(valor.getConta().getCodigo());
+            final ContaDO contaDO = this.contaDao.procurar(valor.getConta().getCodigo(), false);
             if (contaDO.getSaldo() == null) {
                 contaDO.setSaldo(BigDecimal.valueOf(adicionar));
             } else {
@@ -285,7 +284,7 @@ public class LancamentoServiceHandler {
     private BigDecimal modificador(ValorDO valorDO) throws Exception {
         ContaDO contaDO = valorDO.getConta();
         if (contaDO != null && isBlank(contaDO.getNumero())) {
-            contaDO = this.contaDao.procurar(contaDO.getCodigo());
+            contaDO = this.contaDao.procurar(contaDO.getCodigo(), false);
         }
 
         final String numero = contaDO.getNumero();

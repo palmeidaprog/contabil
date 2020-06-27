@@ -56,8 +56,12 @@ public class Valor {
         this.codigoConta = valorDO.getConta().getCodigo();
         this.saldoConta = valorDO.getSaldoConta();
         this.codigoLancamento = valorDO.getCodigoLancamento();
-        this.historico = valorDO.getLancamento().getHistorico();
-        this.data = valorDO.getLancamento().getData();
+
+        if (valorDO.getLancamento() != null) {
+            this.historico = valorDO.getLancamento().getHistorico();
+            this.data = valorDO.getLancamento().getData();
+        }
+
         this.valor = valorDO.getValor();
     }
 

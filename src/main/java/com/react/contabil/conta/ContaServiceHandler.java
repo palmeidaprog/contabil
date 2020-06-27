@@ -1,6 +1,7 @@
 package com.react.contabil.conta;
 
 import com.react.contabil.dao.ContaDao;
+import com.react.contabil.dao.Saldo;
 import com.react.contabil.dao.SequencialDao;
 import com.react.contabil.dao.Tabela;
 import com.react.contabil.dataobject.ContaDO;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -104,13 +106,13 @@ public class ContaServiceHandler {
     private ContaDO pegaConta(@NotNull Long codigo, @NotNull Long codigoUsuario, String nomeMetodo)
             throws BancoDadosException, EntidadeNaoEncontradaException, UsuarioInvalidoException {
 
-        final ContaDO contaDO = this.dao.procurar(codigo);
+        final ContaDO contaDO = this.dao.procurar(codigo, false);
         if (contaDO == null) { // valida existencia
             String msg = String.format("Conta código %d não existe", codigo);
             logger.error("{} :: {}", nomeMetodo, msg);
             throw new EntidadeNaoEncontradaException(msg);
         } else if (!contaDO.getCodigoUsuario().equals(codigoUsuario)) {
-            String msg = String.format("Conta pai código {} não pertence ao usuário código {}",
+            String msg = String.format("Conta pai código %s não pertence ao usuário código %s",
                     codigo, codigoUsuario);
             logger.error("{} :: {}", nomeMetodo, msg);
             throw new UsuarioInvalidoException(msg);
@@ -128,7 +130,7 @@ public class ContaServiceHandler {
     private ContaDO verificaExistenciaConta(Long codigo, String nomeMetodo)
             throws BancoDadosException, EntidadeExistenteException {
 
-        final ContaDO contaDO = this.dao.procurar(codigo);
+        final ContaDO contaDO = this.dao.procurar(codigo, false);
         if (contaDO != null) {
             final String msg = String.format("A conta codigo %d já existe!",
                     codigo);
@@ -150,7 +152,7 @@ public class ContaServiceHandler {
             BancoDadosException, ContabilException {
         try {
             logger.debug("remover :: Removendo {} ...", conta);
-            final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
+            final ContaDO contaDO = this.dao.procurar(conta.getCodigo(), false);
             if (contaDO == null) { // valida existencia
                 final String msg = String.format("%s não existe",
                         conta.toString());
@@ -182,10 +184,11 @@ public class ContaServiceHandler {
      * @param conta Conta a ser atualizada
      * @throws ContabilException
      */
+    @Transactional
     public void atualizar(Conta conta) throws ContabilException {
         try {
             logger.info("atualizar :: Atualizando {}", conta.toString());
-            final ContaDO contaDO = this.dao.procurar(conta.getCodigo());
+            final ContaDO contaDO = this.dao.procurar(conta.getCodigo(), false);
             if (contaDO == null) {
                 final String erro = String.format("%s não existe",
                         conta.toString());
@@ -267,6 +270,7 @@ public class ContaServiceHandler {
      * @throws BancoDadosException erro de banco
      * @throws ContabilException erro desconhecido
      */
+    @Transactional
     public List<Conta> listar(Long codigoUsuario, String numero, String nome)
                 throws BancoDadosException, ContabilException {
 
@@ -296,13 +300,13 @@ public class ContaServiceHandler {
      * @return Conta achada
      * @throws ContabilException Erros
      */
-    public Conta procurar(Long codigo) throws
-            ContabilException {
+    @Transactional
+    public Conta procurar(Long codigo) throws ContabilException {
 
         final String msg = String.format("conta com código: %d", codigo);
         try {
             logger.info("procurar :: Procurando {}", msg);
-            final ContaDO contaDO = this.dao.procurar(codigo);
+            final ContaDO contaDO = this.dao.procurar(codigo, true);
             if (contaDO == null) {
                 final String erro = String.format("Conta com código %d não existe",
                         codigo);
@@ -310,9 +314,12 @@ public class ContaServiceHandler {
                 throw new EntidadeNaoEncontradaException(erro);
             }
 
-            logger.info("procurar :: Procura de {} efetuada com sucesso",
-                    msg);
-            return new Conta(contaDO);
+            logger.info("procurar :: Atualizando saldo da {}", contaDO);
+            final Conta conta = new Conta(contaDO);
+            conta.setSaldo(this.calculaSaldo(contaDO));
+
+            logger.info("procurar :: Procura de {} efetuada com sucesso", msg);
+            return conta;
         } catch (EntidadeNaoEncontradaException | BancoDadosException e) {
             throw e;
         } catch (Exception e) {
@@ -352,6 +359,26 @@ public class ContaServiceHandler {
             throw new ContabilException(erro, e);
         }
     }
+
+    private Saldo calculaSaldo(ContaDO conta) throws Exception {
+        logger.info("calculaSaldo :: Calculando saldo {}", conta);
+        final Saldo saldo = new Saldo(new BigDecimal(0), new BigDecimal(0));
+        if (conta.getContasFilhas() != null) {
+            for (final ContaDO contaFilha : conta.getContasFilhas()) {
+                final Saldo saldoContaFilha = this.calculaSaldo(contaFilha);
+                saldo.setTotalCredito(saldo.getTotalCredito().add(saldoContaFilha.getTotalCredito()));
+                saldo.setTotalDebito(saldo.getTotalDebito().add(saldoContaFilha.getTotalDebito()));
+            }
+        }
+        final Saldo saldoLocal = this.dao.saldoLocalConta(conta.getCodigo());
+        saldo.setTotalCredito(saldo.getTotalCredito().add(saldoLocal.getTotalCredito()));
+        saldo.setTotalDebito(saldo.getTotalDebito().add(saldoLocal.getTotalDebito()));
+        saldo.calculaSaldo();
+        logger.info("calculaSaldo :: Saldo da conta {} encontrado com sucesso", conta);
+
+        return saldo;
+    }
+
 
     /**
      * Converte lista de contaDO em contas

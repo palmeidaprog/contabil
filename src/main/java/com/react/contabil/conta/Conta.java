@@ -2,12 +2,17 @@ package com.react.contabil.conta;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.react.contabil.dao.Saldo;
 import com.react.contabil.dataobject.ContaDO;
+import com.react.contabil.dataobject.ValorDO;
+import com.react.contabil.lancamento.Valor;
 import com.react.contabil.util.Util;
 import static com.react.contabil.util.Constantes.Conta.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -32,9 +37,11 @@ public class Conta {
     @NotNull(message="O nome da conta não pode ser nulo")
     private String nome;
 
-    private BigDecimal saldo;
+    private Saldo saldo;
 
     private String descricao;
+
+    private List<Valor> valores;
 
     public Conta() { }
 
@@ -44,8 +51,29 @@ public class Conta {
         this.codigoUsuario = contaDO.getCodigoUsuario();
         this.numero = contaDO.getNumero();
         this.nome = contaDO.getNome();
-        this.saldo = contaDO.getSaldo();
         this.descricao = contaDO.getDescricao();
+
+        if (contaDO.getValores() != null) {
+            this.inicializaValores(contaDO.getValores());
+        }
+    }
+
+    private void inicializaValores(List<ValorDO> valores) {
+        if (this.valores == null) {
+            this.valores = new ArrayList<>();
+        }
+
+        for (final ValorDO valorDO : valores) {
+            this.valores.add(new Valor(valorDO));
+        }
+    }
+
+    public List<Valor> getValores() {
+        return valores;
+    }
+
+    public void setValores(List<Valor> valores) {
+        this.valores = valores;
     }
 
     public Long getCodigo() {
@@ -88,11 +116,11 @@ public class Conta {
         this.nome = nome;
     }
 
-    public BigDecimal getSaldo() {
+    public Saldo getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(BigDecimal saldo) {
+    public void setSaldo(Saldo saldo) {
         this.saldo = saldo;
     }
 
@@ -123,8 +151,7 @@ public class Conta {
     public ContaDO toDataObject() {
         final ContaDO contaDO = new ContaDO();
         contaDO.setNumero(this.numero);
-        contaDO.setSaldo(this.saldo == null ? new BigDecimal(0) :
-                this.saldo);
+        contaDO.setSaldo(new BigDecimal(0));
         contaDO.setNome(this.nome);
         contaDO.setCodigo(this.codigo);
         contaDO.setCodigoUsuario(this.codigoUsuario);
