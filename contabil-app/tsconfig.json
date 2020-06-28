@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
-        "target": "ESNext",
+        "target": "ES2018",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strictNullChecks": true,
