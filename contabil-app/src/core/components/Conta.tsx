@@ -1,14 +1,15 @@
 import React from 'react';
 import '../../assets/css/components/Search.scss';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { TextField, Button, Card, CardContent } from '@material-ui/core';
+import { TextField, Button, Card, CardContent, CircularProgress } from '@material-ui/core';
 import GenericTable from '../../components/GenericTable';
 //import SearchService from '../service/SearchService';
 import {ContaService} from "../service/ContaService";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
-import {ContaEntities, ContaMapper} from "../../entities/conta.entities";
+import {ContaEntities} from "../../entities/conta.entities";
 import Load from "./Load";
+import If from '../common/If';
 interface IOptionType{
     key : number,
     value : string
@@ -85,72 +86,78 @@ export default class Conta extends React.Component{
     }
 
     public render() {
-        if (this.state.loading) {
-            return <Load />;
-        }
-
-
         return (
+            <div className="search-page">
+                <div className="search-container animacaoSlide">
+                    <div className="search-header">
+                        <div className="search-field">
+                            <span className="search-title">{this.state.title}</span>
+                            <If test={!this.state.loading}>
 
-            <div className="search-container animacaoSlide">
-                <div className="search-header">
-                    <div className="search-field">
-                        <span className="search-title">{this.state.title}</span>
-                        <Card className="card col col-lg-12">
-                            <CardContent className="center">
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    this.onSearch();
-                                }}>
+                                <Card className="card col col-lg-12">
+                                    <CardContent className="center">
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            this.onSearch();
+                                        }}>
 
-                                    <Autocomplete
-                                        className="search-options"
-                                        options={this.options}
-                                        getOptionLabel={option => option.value}
-                                        noOptionsText={"Carregando..."}
-                                        multiple={false}
-                                        onChange={(e, v) => this.handleInputOption(v)}
-                                        onKeyPress={e => this.handleKeyPress(e)}
-                                        renderInput={params => (
+                                            <Autocomplete
+                                                className="search-options"
+                                                options={this.options}
+                                                getOptionLabel={option => option.value}
+                                                noOptionsText={"Carregando..."}
+                                                multiple={false}
+                                                onChange={(e, v) => this.handleInputOption(v)}
+                                                onKeyPress={e => this.handleKeyPress(e)}
+                                                renderInput={params => (
+                                                    <TextField
+                                                        {...params}
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        error={this.state.hasError}
+                                                        id="id-conta-pai"
+                                                        margin="normal"
+                                                        placeholder="Selecione uma Opção"
+                                                    />
+                                                )}
+                                            />
                                             <TextField
-                                                {...params}
-                                                fullWidth
+                                                className="search-input"
                                                 variant="outlined"
                                                 error={this.state.hasError}
-                                                id="id-conta-pai"
+                                                fullWidth
+                                                id="id-busca-texto"
+                                                type="string"
+                                                label="Busca"
+                                                placeholder="Ex: 123456"
                                                 margin="normal"
-                                                placeholder="Selecione uma Opção"
+                                                onChange={e => this.handleInputText(e.target.value)}
+                                                onKeyPress={e => this.handleKeyPress(e)}
                                             />
-                                        )}
-                                    />
-                                    <TextField
-                                        className="search-input"
-                                        variant="outlined"
-                                        error={this.state.hasError}
-                                        fullWidth
-                                        id="id-busca-texto"
-                                        type="string"
-                                        label="Busca"
-                                        placeholder="Ex: 123456"
-                                        margin="normal"
-                                        onChange={e => this.handleInputText(e.target.value)}
-                                        onKeyPress={e => this.handleKeyPress(e)}
-                                    />
-                                    <Button className="search-btn" type="submit">
-                                        <i className="fas fa-search"></i>
-                                        <span>Pesquisar</span>
-                                    </Button>
-                                </form>
-                            </CardContent>
-                        </Card>
+                                            <Button className="search-btn" type="submit">
+                                                <i className="fas fa-search"></i>
+                                                <span>Pesquisar</span>
+                                            </Button>
+                                        </form>
+                                    </CardContent>
+                                </Card>
+                            </If>
+                        </div>
                     </div>
+                    <If test={this.state.loading}>
+                        <div className="d-flex w-100 justify-content-center">
+                            <CircularProgress color={"primary"} size={50} thickness={5}/>
+                        </div>
+                    </If>
+                    <If test={!this.state.loading}>
+                        <Card className="card">
+                                <CardContent>
+                                    <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.tableContent}/>
+                                </CardContent>
+                        </Card>
+                    </If>
+                    
                 </div>
-                <Card className="card">
-                    <CardContent>
-                        <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.tableContent}/>
-                    </CardContent>
-                </Card>
-                
             </div>
         );
     }

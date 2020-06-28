@@ -48,9 +48,6 @@ function Content(props : {classProps? : any, children : any}){
 }
 export default function App() {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
-  const isAuthenticatedManual = () =>{
-    return false;
-  }
     return (
       <div className="app-page">
         <Router>
@@ -67,13 +64,13 @@ export default function App() {
 
           <RouteWrapper exact path="/sobre" component={About} restricted={!isAuthenticated} />
           <RouteWrapper exact path="/entrar" component={LoginPage} restricted={false} />
-          <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={false} />
-          <RouteWrapper exact path="/conta" component={Search} restricted={false} />
-          <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={false} />
-          <RouteWrapper exact path="/balancete" component={BalancePage} restricted={false} />
-          <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={false} />
+          <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/conta" component={Search} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/balancete" component={BalancePage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={!isAuthenticated} />
         </Router>
       </div>
     );
-  }
+  
 }
