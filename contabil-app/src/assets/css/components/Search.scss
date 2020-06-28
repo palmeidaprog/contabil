@@ -48,70 +48,73 @@
 .animacaoSlide {
     animation: dir-esq 0.4s ease;
 }
-
-.search-container{
-    display: flex;
-    flex-wrap: wrap;
-    width: 82.4%;
-    height: auto;
-    padding: 2em;
+.search-page{
+    display: block;
+    width: 100%;
+    height: 100%;
     background-color: #fafafa;
-    overflow-y: auto !important;
-    .search-header{
+    .search-container{
         display: flex;
         flex-wrap: wrap;
-        width: 100%;
-        margin-bottom: 2em;
-        .search-field{
+        height: auto;
+        padding: 2em;
+        overflow-y: auto !important;
+        .search-header{
             display: flex;
             flex-wrap: wrap;
             width: 100%;
-            .search-title{
+            margin-bottom: 2em;
+            .search-field{
                 display: flex;
+                flex-wrap: wrap;
                 width: 100%;
-                max-height: 4.5em;
-                color: $defaultColor;
-                font-weight: bold;
-                font-size: 2em;
-                padding: {
-                    top: 1.5em;
-                    bottom: 1.5em;
-                }
-            }
-            .search-title-area{
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                background-color: white;
-                padding: 1.3em;
-                border: 1px solid rgba(97, 95, 95, 0.527);
-                form{
+                .search-title{
                     display: flex;
-                    align-items: center;
                     width: 100%;
-                    .search-options{
-                        width: 18em !important;
-                        margin-right: 4em;
-                    } 
-                    .search-input{
-                        width: 40em !important;
-                        margin-right: 2em;
-                    }
-                    .search-btn{
-                        height: 3em;
-                        background-color: $defaultColor;
-                        color: white;
+                    max-height: 4.5em;
+                    color: $defaultColor;
+                    font-weight: bold;
+                    font-size: 2em;
+                    padding: {
+                        top: 1.5em;
+                        bottom: 1.5em;
                     }
                 }
-
+                .search-title-area{
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    background-color: white;
+                    padding: 1.3em;
+                    border: 1px solid rgba(97, 95, 95, 0.527);
+                    form{
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        .search-options{
+                            width: 18em !important;
+                            margin-right: 4em;
+                        } 
+                        .search-input{
+                            width: 40em !important;
+                            margin-right: 2em;
+                        }
+                        .search-btn{
+                            height: 3em;
+                            background-color: $defaultColor;
+                            color: white;
+                        }
+                    }
+    
+                }
             }
         }
-    }
-    .search-content{
-        display: flex;
-        width: 100%;
-        padding: 3em;
-        background-color: white;
-        border: 1px solid rgba(97, 95, 95, 0.527);
+        .search-content{
+            display: flex;
+            width: 100%;
+            padding: 3em;
+            background-color: white;
+            border: 1px solid rgba(97, 95, 95, 0.527);
+        }
     }
 }
