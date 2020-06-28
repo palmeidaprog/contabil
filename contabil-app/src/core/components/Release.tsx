@@ -103,7 +103,7 @@ export default class ReleasePage extends React.Component{
                                     onKeyPress={e => this.handleKeyPress(e)}
                                 />
                                 <Button className="search-btn" type="submit">
-                                    <i className="fas fa-search"></i>
+                                    <i className="bloom"></i>
                                     <span>Pesquisar</span>
                                 </Button>
                                 </form>

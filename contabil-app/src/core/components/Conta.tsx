@@ -86,11 +86,6 @@ export default class Conta extends React.Component{
     }
 
     public render() {
-        if (this.state.loading) {
-            return <Load />;
-        }
-
-
         return (
             <div className="search-page">
                 <div className="search-container animacaoSlide">
@@ -98,7 +93,6 @@ export default class Conta extends React.Component{
                         <div className="search-field">
                             <span className="search-title">{this.state.title}</span>
                             <If test={!this.state.loading}>
-
                                 <Card className="card col col-lg-12">
                                     <CardContent className="center">
                                         <form onSubmit={(e) => {
@@ -140,7 +134,7 @@ export default class Conta extends React.Component{
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                             />
                                             <Button className="search-btn" type="submit">
-                                                <i className="fas fa-search"></i>
+                                                <i className="bloom"></i>
                                                 <span>Pesquisar</span>
                                             </Button>
                                         </form>
