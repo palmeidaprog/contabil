@@ -7,7 +7,7 @@ import GenericTable from '../../components/GenericTable';
 import {ContaService} from "../service/ContaService";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
-import {ContaEntities} from "../../entities/conta.entities";
+import {ContaEntities, ContaMapper} from "../../entities/conta.entities";
 import Load from "./Load";
 import If from '../common/If';
 interface IOptionType{
@@ -24,15 +24,18 @@ class InternalState{
     contas: Array<ContaEntities>;
     title: string;
     loading = false;
+    contaSelecionada: ContaEntities;
 
     constructor() {
         this.option = null;
         this.searchStr = "";
         this.hasError = false;
-        this.contaService = new ContaService();
         this.title = 'Buscar Conta';
     }
 
+    /**
+     * Listar contas
+     */
     async listConta(): Promise<void> {
         let params = {};
         if (this.option && this.option.key == 0 && this.searchStr) {
@@ -59,7 +62,7 @@ class InternalState{
 
 export default class Conta extends React.Component{
     public state : InternalState = new InternalState();
-    //private searchService : SearchService = new SearchService();
+    private contaService: ContaService = new ContaService();
     public options : IOptionType[] = [{key : 0, value : "Número da Conta"}, {key : 1, value : "Nome da Conta"}]
     public handleKeyPress(evt : any){
 
@@ -85,12 +88,15 @@ export default class Conta extends React.Component{
         this.forceUpdate();
     }
 
+    async handleSelect(conta: any): Promise<void> {
+        this.state.loading = true;
+        console.log(conta);
+        this.state.loading = false;
+    }
+
+
+
     public render() {
-        if (this.state.loading) {
-            return <Load />;
-        }
-
-
         return (
             <div className="search-page">
                 <div className="search-container animacaoSlide">
@@ -157,7 +163,9 @@ export default class Conta extends React.Component{
                     <If test={!this.state.loading}>
                         <Card className="card">
                                 <CardContent>
-                                    <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.tableContent}/>
+                                    <GenericTable labels={["Nº da Conta", "Nome da Conta"]}
+                                                  datas={this.state.tableContent}
+                                                  onSelect={ value => this.handleSelect(value)}/>
                                 </CardContent>
                         </Card>
                     </If>

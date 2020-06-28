@@ -110,10 +110,10 @@ export default class ReleasePage extends React.Component{
                             </div>
                         </div>
                     </div>
-                    <div className="search-content">
-                            <GenericTable labels={this.tableLabels} datas={this.state.tableValues} onSelect={(value)=>this.handleSelect(value)}/>
-                        </div>
-                    
+                    <div className="search-content"></div>
+                    <GenericTable labels={this.tableLabels} datas={this.state.tableValues} onSelect={(value)=>this.handleSelect(value)}/>
+
+
                 </div>
             </div>
         );

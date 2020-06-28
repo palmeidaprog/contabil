@@ -65,7 +65,7 @@ export default function App() {
           <RouteWrapper exact path="/sobre" component={About} restricted={!isAuthenticated} />
           <RouteWrapper exact path="/entrar" component={LoginPage} restricted={false} />
           <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={!isAuthenticated} />
-          <RouteWrapper exact path="/conta" component={Search} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/conta" component={Search} restricted={false} />
           <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={!isAuthenticated} />
           <RouteWrapper exact path="/balancete" component={BalancePage} restricted={!isAuthenticated} />
           <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={!isAuthenticated} />
