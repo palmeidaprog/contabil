@@ -1,5 +1,36 @@
 @import '../variables';
 
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    box-shadow: 5px 10px 10px -3px rgba(255,146,0, 0.2),
+                0 16px 20px 1px rgba(255,146,0, 0.14),
+                0 6px 28px 2px rgba(255,146,0, 0.12);
+    form{
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 100%;
+        .search-options{
+            width: 18em !important;
+            margin-right: 4em;
+        }
+        .search-input{
+            width: 40em !important;
+            margin-right: 2em;
+        }
+        .search-btn{
+            height: 3em;
+            background-color: $defaultColor;
+            color: white;
+        }
+    }
+}
+
 .search-container{
     display: flex;
     flex-wrap: wrap;
@@ -7,6 +38,7 @@
     height: auto;
     padding: 2em;
     background-color: #fafafa;
+    overflow-y: auto !important;
     .search-header{
         display: flex;
         flex-wrap: wrap;
