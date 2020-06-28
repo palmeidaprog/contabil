@@ -1,14 +1,20 @@
 import React from 'react';
 import '../assets/css/components/GenericTable.scss';
+import { Action } from '../core/types/Functions';
 interface IBalanceTable{
     labels : any[];
     datas : any[];
+    onSelect? : Action<number>;
 }
 export default class GenericTable extends React.Component<IBalanceTable>{
 
     public getItem(item : any){
         delete item.destacado;
         return Object.values(item);
+    }
+    public handleSelect(index : number){
+        if(this.props.onSelect)
+            this.props.onSelect(index);
     }
     public render(){
         return (
@@ -25,7 +31,7 @@ export default class GenericTable extends React.Component<IBalanceTable>{
                 <tbody className="table-body">
                     {
                         this.props.datas.map((item, index)=>(
-                            <tr key={index} className={item.destacado ? "highlighted" : ""}>
+                            <tr key={index} onClick={()=>{this.handleSelect(index)}} className={item.destacado ? "highlighted" : ""}>
                                 {
                                     this.getItem(item).map((value, index)=>(
                                         <td key={index}>{value as any}</td>
