@@ -20,13 +20,13 @@ export default class Navigation extends React.Component {
                             <Link to="/entrar">Entrar</Link>
                         </li>
                         <li>
-                            <Link to="/editar">Editar Conta</Link>
+                            <Link to="/conta">Conta</Link>
                         </li>
                         <li>
                             <Link to="/balancete">Balancete</Link>
                         </li>
                         <li>
-                            <Link to="/buscar">Buscar</Link>
+                            <Link to="/lancamento">Lançamento</Link>
                         </li>
                         <li>
                             <Link to="/sobre">Sobre nós</Link>

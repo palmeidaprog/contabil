@@ -1,5 +1,5 @@
 import {GenericRestService} from "./GenericRestService";
-import {Conta} from "../../entities/conta";
+import {ContaEntities} from "../../entities/conta.entities";
 
 export class ContaService extends GenericRestService {
 
@@ -12,7 +12,7 @@ export class ContaService extends GenericRestService {
      * @param codigoUsuario
      * @param params
      */
-    async listar(codigoUsuario: number, params: any): Promise<Array<Conta>> {
+    async listar(codigoUsuario: number, params: any): Promise<Array<ContaEntities>> {
         let first = true;
         let path = `/listar/${codigoUsuario}`;
 

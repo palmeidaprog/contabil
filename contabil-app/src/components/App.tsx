@@ -12,7 +12,8 @@ import LoginPage from '../core/components/Login';
 import RegisterPage from '../core/components/Register';
 import EditRegisterPage from '../core/components/EditRegister';
 import BalancePage from '../core/components/Balance';
-import SearchPage from '../core/components/Search';
+import ReleasePage from '../core/components/Release';
+import Search from "../core/components/Conta";
 
 const RouteWrapper = ({component: Component, restricted, ...rest}) => {
   return (
@@ -55,9 +56,10 @@ export default class App extends React.Component {
           <RouteWrapper exact path="/sobre" component={About} restricted={!this.isAuthenticated} />
           <RouteWrapper exact path="/entrar" component={LoginPage} restricted={false} />
           <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={false} />
+          <RouteWrapper exact path="/conta" component={Search} restricted={false} />
           <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={false} />
           <RouteWrapper exact path="/balancete" component={BalancePage} restricted={false} />
-          <RouteWrapper exact path="/buscar" component={SearchPage} restricted={false} />
+          <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={false} />
         </Router>
       </div>
     );

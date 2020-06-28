@@ -3,28 +3,33 @@ import '../../assets/css/components/Search.scss';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { TextField, Button, Card, CardContent } from '@material-ui/core';
 import GenericTable from '../../components/GenericTable';
-import SearchService from '../service/SearchService';
+//import SearchService from '../service/SearchService';
 import {ContaService} from "../service/ContaService";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
-import {Conta} from "../../entities/conta";
+import {ContaEntities, ContaMapper} from "../../entities/conta.entities";
+import Load from "./Load";
 interface IOptionType{
     key : number,
     value : string
 }
+
 class InternalState{
     option : IOptionType | null;
     searchStr : string;
     hasError : boolean;
     private contaService: ContaService;
-    contas: Array<any> = [];
-    loadingActive = false;
+    tableContent: Array<any> = [];
+    contas: Array<ContaEntities>;
+    title: string;
+    loading = false;
 
     constructor() {
         this.option = null;
         this.searchStr = "";
         this.hasError = false;
         this.contaService = new ContaService();
+        this.title = 'Buscar Conta';
     }
 
     async listConta(): Promise<void> {
@@ -38,21 +43,22 @@ class InternalState{
         }
 
         await this.contaService.listar(46, params).then(lista => {
-            this.contas = lista.map(conta => {
+            this.contas = lista;
+            this.tableContent = lista.map(conta => {
                 return {
                     noConta : conta.numero,
                     nomeConta : conta.nome
                 };
             })
-            this.loadingActive = false;
         }, error => {
             throw error;
         });
     }
 }
-export default class SearchPage extends React.Component{
+
+export default class Conta extends React.Component{
     public state : InternalState = new InternalState();
-    private searchService : SearchService = new SearchService();
+    //private searchService : SearchService = new SearchService();
     public options : IOptionType[] = [{key : 0, value : "Número da Conta"}, {key : 1, value : "Nome da Conta"}]
     public handleKeyPress(evt : any){
 
@@ -65,24 +71,31 @@ export default class SearchPage extends React.Component{
         this.state.searchStr = value;
         this.forceUpdate();
     }
-    public onSearch(){
+    public async onSearch(): Promise<void> {
+        this.state.loading = true;
+        this.forceUpdate();
         try {
-            this.state.listConta();
+            await this.state.listConta();
         } catch (e) {
             console.log(e);
         } finally {
-            console.log('ok');
+            this.state.loading = false;
         }
-
-        console.log(this.state.option, this.state.searchStr);
+        this.forceUpdate();
     }
 
-    public render(){
+    public render() {
+        if (this.state.loading) {
+            return <Load />;
+        }
+
+
         return (
-            <div className="search-container">
+
+            <div className="search-container animacaoSlide">
                 <div className="search-header">
                     <div className="search-field">
-                        <span className="search-title">Buscar Conta</span>
+                        <span className="search-title">{this.state.title}</span>
                         <Card className="card col col-lg-12">
                             <CardContent className="center">
                                 <form onSubmit={(e) => {
@@ -132,9 +145,11 @@ export default class SearchPage extends React.Component{
                         </Card>
                     </div>
                 </div>
-                <div className="search-content">
-                        <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.contas}/>
-                    </div>
+                <Card className="card">
+                    <CardContent>
+                        <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.tableContent}/>
+                    </CardContent>
+                </Card>
                 
             </div>
         );
