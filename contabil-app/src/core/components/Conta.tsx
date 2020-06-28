@@ -7,8 +7,7 @@ import GenericTable from '../../components/GenericTable';
 import {ContaService} from "../service/ContaService";
 import {Simulate} from "react-dom/test-utils";
 import error = Simulate.error;
-import {ContaEntities, ContaMapper} from "../../entities/conta.entities";
-import Load from "./Load";
+import {ContaEntities} from "../../entities/conta.entities";
 interface IOptionType{
     key : number,
     value : string
@@ -50,27 +49,34 @@ class InternalState{
                     nomeConta : conta.nome
                 };
             })
-        }, error => {
-            throw error;
+        }, e => {
+            throw e;
         });
     }
 }
 
-export default class Conta extends React.Component{
-    public state : InternalState = new InternalState();
+export default class Conta extends React.Component {
+    public state: InternalState = new InternalState();
     //private searchService : SearchService = new SearchService();
-    public options : IOptionType[] = [{key : 0, value : "Número da Conta"}, {key : 1, value : "Nome da Conta"}]
-    public handleKeyPress(evt : any){
+    public options: IOptionType[] = [{key: 0, value: "Número da Conta"}, {
+        key: 1,
+        value: "Nome da Conta"
+    }]
+
+    public handleKeyPress(evt: any) {
 
     }
-    public handleInputOption(value : any){
+
+    public handleInputOption(value: any) {
         this.state.option = value;
         this.forceUpdate();
     }
-    public handleInputText(value : any){
+
+    public handleInputText(value: any) {
         this.state.searchStr = value;
         this.forceUpdate();
     }
+
     public async onSearch(): Promise<void> {
         this.state.loading = true;
         this.forceUpdate();
@@ -85,13 +91,7 @@ export default class Conta extends React.Component{
     }
 
     public render() {
-        if (this.state.loading) {
-            return <Load />;
-        }
-
-
         return (
-
             <div className="search-container animacaoSlide">
                 <div className="search-header">
                     <div className="search-field">
@@ -147,10 +147,11 @@ export default class Conta extends React.Component{
                 </div>
                 <Card className="card">
                     <CardContent>
-                        <GenericTable labels={["Nº da Conta", "Nome da Conta"]} datas={this.state.tableContent}/>
+                        <GenericTable labels={["Nº da Conta", "Nome da Conta"]}
+                                      datas={this.state.tableContent}/>
                     </CardContent>
                 </Card>
-                
+
             </div>
         );
     }
