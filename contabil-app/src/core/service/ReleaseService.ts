@@ -6,6 +6,9 @@ export default class ReleaseService{
 
     //todo
 
+    public getAccount() {
+        return localStorage.getItem("contas");
+    }
     public getReleases() : LancamentoEntities{
         //fetch release
         let release = new LancamentoEntities();

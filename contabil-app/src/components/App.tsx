@@ -13,6 +13,10 @@ import RegisterPage from '../core/components/Register';
 import EditRegisterPage from '../core/components/EditRegister';
 import BalancePage from '../core/components/Balance';
 import ReleasePage from '../core/components/Release';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Button } from '@material-ui/core';
+import If from '../core/common/If';
+
 
 const RouteWrapper = ({component: Component, restricted, ...rest}) => {
   return (
@@ -41,25 +45,32 @@ function Content(props : {classProps? : any, children : any}){
     </div>
   );
 }
-export default class App extends React.Component {
-
-  private get isAuthenticated(){
+export default function App() {
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+  const isAuthenticatedManual = () =>{
     return false;
   }
-  render() {
     return (
       <div className="app-page">
         <Router>
-          <Navigation />
-          <RouteWrapper exact path="/" component={Home} restricted={!this.isAuthenticated} />
-          <RouteWrapper exact path="/sobre" component={About} restricted={!this.isAuthenticated} />
+          <Navigation>
+            <If test={isAuthenticated}>
+              <span className="login-msg">{`Olá ${user?.name}!`}</span>
+              <Button className="auth-btn" onClick={()=>logout()}>Logout</Button>
+            </If>
+            <If test={!isAuthenticated}>
+              <Button className="auth-btn" onClick={()=>loginWithRedirect()}>Login</Button>
+            </If>
+          </Navigation>
+          <RouteWrapper exact path="/" component={Home} restricted={true} />
+          
+          <RouteWrapper exact path="/sobre" component={About} restricted={!isAuthenticated} />
           <RouteWrapper exact path="/entrar" component={LoginPage} restricted={false} />
-          <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={false} />
-          <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={false} />
-          <RouteWrapper exact path="/balancete" component={BalancePage} restricted={false} />
-          <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={false} />
+          <RouteWrapper exact path="/registrar" component={RegisterPage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/editar" component={EditRegisterPage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/balancete" component={BalancePage} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/lancamento" component={ReleasePage} restricted={!isAuthenticated} />
         </Router>
       </div>
     );
-  }
 }
