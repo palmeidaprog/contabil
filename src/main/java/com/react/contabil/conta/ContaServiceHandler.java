@@ -283,7 +283,7 @@ public class ContaServiceHandler {
         try {
             logger.info("listar :: Procurando lista de contas {}", msg);
             final List<Conta> contas = this.dao.listar(codigoUsuario, numero, nome)
-                    .stream().map(Conta::new).collect(Collectors.toList());
+                    .stream().map(contaDO -> new Conta(contaDO, true)).collect(Collectors.toList());
             logger.info("listar :: Lista encontrada com sucesso ({})", msg);
             return contas;
         } catch (BancoDadosException e) {

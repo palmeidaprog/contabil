@@ -3,5 +3,5 @@ export class UsuarioEntities {
     login: string;
     nome: string;
     sobrenome?: string;
-    congelado?: boolean
+    congelado?: boolean;
 }

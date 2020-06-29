@@ -3,7 +3,7 @@ Accept: application/json
 
 ###
 
-GET {{host}}/usuario/get?login=teste2
+GET {{host}}/usuario/get?login=xxx
 Accept: application/json
 
 ###

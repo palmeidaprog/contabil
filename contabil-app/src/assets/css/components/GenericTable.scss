@@ -37,11 +37,15 @@
     .table-body{
         flex-wrap: wrap;
         tr{
+            cursor: pointer;
             padding: {
                 left: .5em;
                 right: .5em;
             };
             border-radius: 2em;
+            &:hover{
+                box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            }
         }
         .highlighted{
             background-color: #96abb1;

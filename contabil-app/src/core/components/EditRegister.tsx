@@ -3,6 +3,7 @@ import { Card, TextField, CardContent, CardActions, Button } from '@material-ui/
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import '../../assets/css/components/Login.scss';
 import RegisterService from '../service/RegisterService';
+import GenericTable from '../../components/GenericTable';
 
 interface IUser{
     nomeUsuario : string,
@@ -108,10 +109,10 @@ export default class EditRegisterPage extends React.Component {
                         <CardContent>
                             <div className="edit-register-releases">
                                 <div className="releases-title">
-                                    Lançamentos
+                                    Valores Lançamentos
                                 </div>  
                                 <div className="releases-section">
-                                    aqui vai alguma coisa que eu ainda não sei!
+                                    <GenericTable labels={[]} datas={[]}/>
                                 </div>
                             </div>
                         </CardContent>
