@@ -47,6 +47,10 @@ public class Conta implements Comparable<Conta> {
     public Conta() { }
 
     public Conta(ContaDO contaDO) {
+        this(contaDO, false);
+    }
+
+    public Conta(ContaDO contaDO, boolean isFlat) {
         this.codigo = contaDO.getCodigo();
         this.contaPaiCodigo = contaDO.getContaPaiCodigo();
         this.codigoUsuario = contaDO.getCodigoUsuario();
@@ -55,7 +59,7 @@ public class Conta implements Comparable<Conta> {
         this.descricao = contaDO.getDescricao();
         this.saldo = contaDO.getSaldo();
 
-        if (contaDO.getValores() != null) {
+        if (contaDO.getValores() != null && !isFlat) {
             this.inicializaValores(contaDO.getValores());
         }
     }

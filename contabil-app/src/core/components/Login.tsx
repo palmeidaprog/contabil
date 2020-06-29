@@ -8,6 +8,8 @@ import RedirectService from '../common/Redirect';
 import { Grid } from '@material-ui/core';
 import '../../assets/css/components/Login.scss';
 import LoginService from '../service/LoginService';
+import { UsuarioService } from '../service/UsuarioService';
+import { UsuarioEntities } from '../../entities/usuario.entities';
 
 class InternalState {
     username: string;
@@ -24,11 +26,42 @@ class InternalState {
 
     }
 }
-export default class LoginPage extends Component {
+export default class LoginPage extends Component<{auth : any}> {
     public state: InternalState = new InternalState();
     private loginService : LoginService = new LoginService();
+    private usuarioService : UsuarioService = new UsuarioService();
     private redirectService : RedirectService = new RedirectService();
 
+    async componentDidMount(){
+        if(this.props.auth.getToken)
+            console.log(await this.props.auth.getToken());
+            let user : UsuarioEntities = new UsuarioEntities();
+            user.nome = this.props.auth.given_name;
+            user.sobrenome = this.props.auth.family_name;
+            user.login = this.props.auth.nickname;
+            try{
+                this.usuarioService.get(user).then(res=>{
+                    //workaround :)
+                    if(Object.keys(res).includes("cause")){
+                        this.usuarioService.adicionar(user).then(res=>{
+                            localStorage.setItem("usuario", JSON.stringify(res));
+                        });
+                    }else{
+                        localStorage.setItem("usuario", JSON.stringify(res));
+                    }
+                }).catch(err=>{
+                    //não está caindo aqui no catch
+                    this.usuarioService.adicionar(user).then(res=>{
+                        localStorage.setItem("usuario", JSON.stringify(res));
+                    }).catch(err =>{
+                        alert("ocorreu um erro!");
+                    });
+                });
+
+            }catch(e){
+
+            }
+    }
     private handleLogin() {
         
         if (this.state.username === "abc@email.com" && this.state.password === "password") {

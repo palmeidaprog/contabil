@@ -1,5 +1,6 @@
 package com.react.contabil.conta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Constantes;
 import com.react.contabil.util.Util;
@@ -32,14 +33,26 @@ public class ContaService {
 
     /**
      * Adiciona nova conta
-     * @param conta Conta a ser adicionada
+     * @param contaStr Conta a ser adicionada
      * @return Response com codigo 200 ou excecao
      */
     @POST
     @Path("/adicionar")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(Constantes.APPLICATION_JSON_UTF8)
-    public Response adicionar(Conta conta) {
+    public Response adicionar(String contaStr) {
+
+        final ObjectMapper mapper = new ObjectMapper();
+        Conta conta;
+        try {
+            conta = mapper.readValue(contaStr, Conta.class);
+        } catch (Exception e) {
+            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao adicionar Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
+
         try {
             logger.info("adicionar :: Acessando /conta/adiciona Adicionando" +
                             " nova {}", conta.toString());
@@ -75,9 +88,21 @@ public class ContaService {
      */
     @POST
     @Path("/remover")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(Constantes.APPLICATION_JSON_UTF8)
-    public Response remover(Conta conta) {
+    public Response remover(String contaStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Conta conta;
+        try {
+            conta = mapper.readValue(contaStr, Conta.class);
+        } catch (Exception e) {
+            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao remover Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
+
+
         try {
             logger.info("remover :: /conta/remover Removendo a {} ...",
                     conta.toString());
@@ -111,9 +136,20 @@ public class ContaService {
 
     @POST
     @Path("/atualizar")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(Constantes.APPLICATION_JSON_UTF8)
-    public Response atualizar(Conta conta) {
+    public Response atualizar(String contaStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Conta conta;
+        try {
+            conta = mapper.readValue(contaStr, Conta.class);
+        } catch (Exception e) {
+            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao atualizar Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
+
         try {
             this.handler.atualizar(conta);
             return Response.ok().build();
