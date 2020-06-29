@@ -222,8 +222,8 @@ export default class ReleasePage extends React.Component {
     }
 
     changeConta(evento: any): void {
-        console.log(evento);
-        this.state.optionSelected = evento;
+        console.log(evento.target.value);
+        this.state.optionSelected = evento.target.value;
         this.forceUpdate();
     }
 
@@ -235,12 +235,21 @@ export default class ReleasePage extends React.Component {
         let date = new Date(e.target.value);
         console.log(date.toLocaleString());
         this.state.dataInicio = date;
+        this.forceUpdate();
+    }
+
+    handleDataChanged(e: any): void {
+        let date = new Date(e.target.value);
+        console.log(date.toLocaleString());
+        this.state.selecionado.data = date;
+        this.forceUpdate();
     }
 
     changeDateFinal(e: any): void {
         let date = new Date(e.target.value);
         console.log(date.toLocaleString());
         this.state.dataFinal = date;
+        this.forceUpdate();
     }
 
     onToastClick(): void {
@@ -269,8 +278,20 @@ export default class ReleasePage extends React.Component {
 
     }
 
-    voltar(): void {
+    clear(): void {
+        this.state.selecionado = new LancamentoEntities();
 
+        this.state.valores = [];
+        this.state.contas = [];
+        this.state.option = {key: -1, value: ''};
+        this.state.searchStr = '';
+        this.state.tableContent = [];
+    }
+
+    voltar(): void {
+        this.clear();
+        this.state.screenState = ScreenState.SEARCH;
+        this.forceUpdate();
     }
 
     getCredito(): number {
@@ -283,6 +304,13 @@ export default class ReleasePage extends React.Component {
 
     adicionaValor(): void {
 
+    }
+
+
+
+    handleHistoricoChange(e: any): void {
+        this.state.selecionado.historico = e;
+        this.forceUpdate();
     }
 
     public render() {
@@ -332,7 +360,7 @@ export default class ReleasePage extends React.Component {
 
 
                                                 <Button
-                                                    className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                    className={this.state.screenState != ScreenState.SEARCH ? "generic-btn-off" : "search-btn"}
                                                     disabled={this.state.screenState != ScreenState.SEARCH}
                                                     type="submit">
                                                     <i className="bloom"></i>
@@ -340,7 +368,7 @@ export default class ReleasePage extends React.Component {
                                                 </Button>
                                                 <div className="col-lg-2 div25p">
                                                     <Button
-                                                        className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                        className={this.state.screenState != ScreenState.SEARCH ? "generic-btn-off" : "search-btn"}
                                                         disabled={this.state.screenState != ScreenState.SEARCH}
                                                         onClick={evento => this.novo()}>
                                                         <i className="bloom"></i>
@@ -389,7 +417,7 @@ export default class ReleasePage extends React.Component {
                                         label="Data"
                                         type="datetime-local"
                                         defaultValue=""
-                                        //onChange={e => this.changeDateInicio(e)}
+                                        onChange={e => this.handleDataChanged(e)}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -401,14 +429,14 @@ export default class ReleasePage extends React.Component {
                                         variant="outlined"
                                         // error={this.state.error}
                                         fullWidth
-                                        //value={this.state.numberConta}
+                                        value={this.state.selecionado.historico}
                                         id="id-historico"
                                         type="text"
                                         label="Histórico"
                                         placeholder="Histórico"
                                         //margin="normal"
                                         // helperText={this.state.helperText}
-                                        // onChange={e => this.handleEnterAccountNumber(e.target.value)}
+                                        onChange={e => this.handleHistoricoChange(e.target.value)}
                                         onKeyPress={e => this.handleKeyPress(e)}
                                     />
                                 </div>
@@ -423,8 +451,8 @@ export default class ReleasePage extends React.Component {
                                         <CardContent>
                                             <Autocomplete
                                                 options={this.state.contaOptions}
-                                                value={this.state.optionSelected.label}
-                                                getOptionSelected={option => this.state.optionSelected.numero = option.numero}
+                                                value={this.state.optionSelected}
+                                                getOptionSelected={option => option}
                                                 getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
@@ -437,18 +465,17 @@ export default class ReleasePage extends React.Component {
                                                         fullWidth
                                                         variant="outlined"
                                                         // error={this.state.error}
-                                                        id="id-conta-pai"
+                                                        id="id-conta-valor"
                                                         margin="normal"
                                                         // helperText={this.state.helperText}
-                                                        placeholder="Conta Pai"
+                                                        placeholder="Conta"
                                                     />
                                                 )}
                                             />
                                             <Autocomplete
                                                 options={this.state.contaOptions}
                                                 value={this.state.optionSelected.label}
-                                                getOptionSelected={option => this.state.optionSelected.numero = option.numero}
-                                                getOptionLabel={option => option.label}
+                                                getOptionSelected={option => this.state.optionSelected = option}                                                getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
                                                 multiple={false}
@@ -529,19 +556,20 @@ export default class ReleasePage extends React.Component {
 
                     <Card className="card-internal col col-lg-12 margin-top animacaoSlide">
                         <CardContent>
-                            <Button className="generic-btn"
+                            <div className="w-100 side-by-side-bt">
+                            <Button className="generic-btn-no-icon"
                                     onClick={evento => this.save()}>
                                 <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
                             </Button>
-                            <Button className="generic-btn"
+                            <Button className="generic-btn-no-icon"
                                     onClick={evento => this.remover()}>
                                 <span>Apagar</span>
-                            </Button>1
-                            <Button className="generic-btn"
+                            </Button>
+                            <Button className="generic-btn-no-icon"
                                     onClick={evento => this.voltar()}>
                                 <span>Voltar</span>
                             </Button>
-
+                            </div>
                         </CardContent>
                     </Card>
                 </If>

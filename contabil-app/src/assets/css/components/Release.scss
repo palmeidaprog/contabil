@@ -132,7 +132,16 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-}.big-col {
+}
+
+.side-by-side-bt {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+
+.big-col {
      display: flex;
      flex-direction: column;
      justify-content: center;
@@ -142,4 +151,52 @@
 
 .padding-top {
   padding-top: 15px;
+}
+
+.generic-btn-no-icon {
+    height: 3em;
+    background-color: $defaultColor;
+    color: white;
+    min-width: 10em;
+
+
+}
+
+
+.generic-btn {
+    height: 3em;
+    background-color: $defaultColor;
+    color: white;
+    min-width: 10em;
+
+    .bloom {
+        display: flex;
+        margin-right: 1em;
+        background-image: url('../../images/lupa.svg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 1.6em;
+        height: 1.6em;
+        background-position: center;
+
+    }
+}
+
+.generic-btn-off {
+    height: 3em;
+    background-color: white;
+    color: black;
+    min-width: 10em;
+
+    .bloom {
+        display: flex;
+        margin-right: 1em;
+        background-image: url('../../images/lupa.svg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 1.6em;
+        height: 1.6em;
+        background-position: center;
+
+    }
 }
