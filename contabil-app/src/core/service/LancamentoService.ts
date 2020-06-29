@@ -46,7 +46,7 @@ export class LancamentoService extends GenericRestService {
      * @param dataInicio data inicio
      * @param dataFinal data final
      */
-    async listar(codigoUsuario: number, dataInicio: Date, dataFinal: Date): Promise<any> {
+    async listar(codigoUsuario: number, dataInicio: string, dataFinal: string): Promise<any> {
         return this.getMethod(`/listar/${codigoUsuario}/${dataInicio}/${dataFinal}}`);
     }
 

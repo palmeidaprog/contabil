@@ -20,6 +20,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Search from "../core/components/Conta";
 
 const RouteWrapper = ({component: Component, restricted, authProps, ...rest}) => {
+  console.log(authProps);
   return (
       // restricted = false meaning public route
       // restricted = true meaning restricted route
@@ -42,7 +43,18 @@ function Home() {
 }
 
 function About() {
-  return <h2>Sobre</h2>;
+  return (
+      <div className="big-col">
+
+      <div className="center">
+        <img src="https://www.credit.com/wp-content/uploads/2017/02/opening-bank-account-2.jpg">
+
+        </img>
+
+      </div>
+          <span className="group-names">Bruno Henrique | Giulia Falcão | Mariana Lins | Paulo Almeida | Ramon Ranieri</span>
+      </div>
+    );
 }
 function Content(props : {classProps? : any, children : any}){
   return (
@@ -65,14 +77,14 @@ export default function App() {
               <Button className="auth-btn" onClick={()=>loginWithRedirect()}>Login</Button>
             </If>
           </Navigation>
-          <RouteWrapper exact path="/" component={Home} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={true} />
-          <RouteWrapper exact path="/sobre" component={About} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/" component={About} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={true} />
+          <RouteWrapper exact path="/sobre" component={About} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={false} />
           <RouteWrapper exact path="/entrar" component={LoginPage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={false} />
           <RouteWrapper exact path="/registrar" component={RegisterPage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
-          <RouteWrapper exact path="/conta" component={Search} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/conta" component={Search} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={false} />
           <RouteWrapper exact path="/editar" component={EditRegisterPage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
-          <RouteWrapper exact path="/balancete" component={BalancePage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
-          <RouteWrapper exact path="/lancamento" component={ReleasePage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={!isAuthenticated} />
+          <RouteWrapper exact path="/balancete" component={BalancePage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={false} />
+          <RouteWrapper exact path="/lancamento" component={ReleasePage} authProps={{user : user, getToken : getAccessTokenSilently}} restricted={false} />
         </Router>
       </div>
   );

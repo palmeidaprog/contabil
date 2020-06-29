@@ -4,6 +4,7 @@ import { Action } from '../core/types/Functions';
 interface IBalanceTable{
     labels : any[];
     datas : any[];
+    ignoreColums? : Array<number>
     onSelect? : Action<number>;
 }
 export default class GenericTable extends React.Component<IBalanceTable>{
@@ -33,9 +34,16 @@ export default class GenericTable extends React.Component<IBalanceTable>{
                         this.props.datas.map((item, index)=>(
                             <tr key={index} onClick={()=>{this.handleSelect(index)}} className={item.destacado ? "highlighted" : ""}>
                                 {
-                                    this.getItem(item).map((value, index)=>(
-                                        <td key={index}>{value as any}</td>
-                                    ))
+                                    this.getItem(item).map((value, index)=>{
+                                        console.log('index: ' + index + ' value:' + value);
+                                        const ignored = this.props.ignoreColums?.find(value => value == index);
+                                        if (this.props.ignoreColums && ignored !== undefined) {
+                                            return;
+                                        }
+                                        return (
+                                            <td key={index}>{value as any}</td>
+                                        )
+                                    })
                                 }
                             </tr>
                         ))

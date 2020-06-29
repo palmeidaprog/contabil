@@ -9,7 +9,7 @@
         display: flex;
         flex-wrap: wrap;
         height: auto;
-        padding: 2em;
+        //padding: 2em;
         .search-header{
             display: flex;
             flex-wrap: wrap;
@@ -67,6 +67,23 @@
                                 
                             }
                         }
+
+                        .search-btn-off {
+                            height: 3em;
+                            background-color: white;
+                            color: white;
+                            .bloom{
+                                display: flex;
+                                margin-right: 1em;
+                                background-image: url('../../images/lupa.svg');
+                                background-repeat: no-repeat;
+                                background-size: cover;
+                                width: 1.6em;
+                                height: 1.6em;
+                                background-position: center;
+
+                            }
+                        }
                     }
     
                 }
@@ -80,4 +97,49 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         }
     }
+}
+
+.card-table {
+    margin: {
+      top: 25px;
+    };
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.header-div {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+.div-divider {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    .divider {
+        color: $defaultColor;
+
+    }
+}
+
+.center {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.side-by-side {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}.big-col {
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+ }
+
+
+
+.padding-top {
+  padding-top: 15px;
 }

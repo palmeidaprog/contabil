@@ -4,12 +4,13 @@ import {ValorEntities} from "./valor.entities";
 export class ContaEntities {
     codigo?: number;
     contaPaiCodigo?: number;
-    condigoUsuario: number;
+    codigoUsuario: number;
     numero?: string;
     nome: string
     saldo?: SaldoEntities;
     descricao?: string;
-    valores?: Array<ValorEntities>
+    valores?: Array<ValorEntities>;
+    nivel?: number;
 }
 
 export interface ContaMapper {
