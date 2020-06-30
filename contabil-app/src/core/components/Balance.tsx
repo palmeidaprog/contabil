@@ -57,7 +57,7 @@ class InternalBalanceData{
         await this.contaService.balancete(codigoUsuario).then(response => {
             const balanceData: Array<ContaEntities> = response;
             if (balanceData) {
-                this.datas = balanceData.map(conta => {
+                this.datas = balanceData?.map(conta => {
                     return {
                         conta: conta.numero,
                         nome: conta.nome,

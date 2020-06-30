@@ -36,23 +36,24 @@ export default class LoginPage extends Component<{auth : any}> {
         if(this.props.auth.getToken)
             console.log(await this.props.auth.getToken());
             let user : UsuarioEntities = new UsuarioEntities();
-            user.nome = this.props.auth.given_name;
-            user.sobrenome = this.props.auth.family_name;
-            user.login = this.props.auth.nickname;
+            user.nome = this.props.auth.user.given_name ?? this.props.auth.user.name;
+            user.sobrenome = this.props.auth.user.family_name ?? "";
+            user.login = this.props.auth.user.nickname;
             try{
+                debugger;
                 this.usuarioService.get(user).then(res=>{
                     //workaround :)
                     if(Object.keys(res).includes("cause")){
                         this.usuarioService.adicionar(user).then(res=>{
-                            localStorage.setItem("usuario", JSON.stringify(res));
+                            localStorage.setItem("usuario", JSON.stringify(res ?? {}));
                         });
                     }else{
-                        localStorage.setItem("usuario", JSON.stringify(res));
+                        localStorage.setItem("usuario", JSON.stringify(res ?? {}));
                     }
                 }).catch(err=>{
                     //não está caindo aqui no catch
                     this.usuarioService.adicionar(user).then(res=>{
-                        localStorage.setItem("usuario", JSON.stringify(res));
+                        localStorage.setItem("usuario", JSON.stringify(res ?? {}));
                     }).catch(err =>{
                         alert("ocorreu um erro!");
                     });

@@ -1,21 +1,21 @@
 import React from 'react';
 import '../../assets/css/components/Release.scss';
 import '../../assets/css/components/Conta.scss';
-import {Button, Card, CardContent, CircularProgress, Divider, TextField} from '@material-ui/core';
+import { Button, Card, CardContent, CircularProgress, Divider, TextField } from '@material-ui/core';
 import GenericTable from '../../components/GenericTable';
 import ReleaseService from '../service/ReleaseService';
-import {LancamentoEntities} from '../../entities/lancamento.entities';
-import {ScreenState} from "../../entities/screen-state.enum";
+import { LancamentoEntities } from '../../entities/lancamento.entities';
+import { ScreenState } from "../../entities/screen-state.enum";
 import If from "../common/If";
-import {LancamentoService} from "../service/LancamentoService";
-import {Keys} from "../../entities/keys.enum";
-import {UsuarioEntities} from "../../entities/usuario.entities";
+import { LancamentoService } from "../service/LancamentoService";
+import { Keys } from "../../entities/keys.enum";
+import { UsuarioEntities } from "../../entities/usuario.entities";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import {UtilService} from "../service/util-service";
+import { UtilService } from "../service/util-service";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {ContaEntities} from "../../entities/conta.entities";
-import {ContaService} from "../service/ContaService";
+import { ContaEntities } from "../../entities/conta.entities";
+import { ContaService } from "../service/ContaService";
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -63,7 +63,7 @@ class InternalState {
         this.dataFinal = new Date('2029-07-01');
         this.loading = false;
         this.selecionado = new LancamentoEntities();
-        this.optionSelected = { label: '-', numero: 0};
+        this.optionSelected = { label: '-', numero: 0 };
         this.loadContaCache();
 
     }
@@ -117,7 +117,7 @@ class InternalState {
      * Atualiza cache de contas no state e no localstorage do banco
      */
     async updateContaCache(): Promise<void> {
-        await this.listConta(true).then(() => {}, error => { throw error });
+        await this.listConta(true).then(() => { }, error => { throw error });
         if (this.contaCache) {
             localStorage.setItem(Keys.CONTAS, JSON.stringify(this.contaCache));
             this.contaOptions = this.contaCache.map(conta => {
@@ -152,8 +152,8 @@ class InternalState {
 
             this.tableContent = lista.map(conta => {
                 return {
-                    noConta : conta.numero,
-                    nomeConta : conta.nome
+                    noConta: conta.numero,
+                    nomeConta: conta.nome
                 };
             })
             this.tableContent.sort((c1, c2) => c1.numero > c2.numero ? -1 : 1);
@@ -192,7 +192,7 @@ class InternalState {
 export default class ReleasePage extends React.Component {
     public state: InternalState = new InternalState();
     private releaseService: ReleaseService = new ReleaseService();
-    public options: IOptionType[] = [{key: 0, value: "Número da Conta"}, {
+    public options: IOptionType[] = [{ key: 0, value: "Número da Conta" }, {
         key: 1,
         value: "Nome da Conta"
     }];
@@ -221,9 +221,9 @@ export default class ReleasePage extends React.Component {
         this.forceUpdate();
     }
 
-    changeConta(evento: any): void {
-        console.log(evento.target.value);
-        this.state.optionSelected = evento.target.value;
+    changeConta(value: any): void {
+        console.log(value);
+        this.state.optionSelected = value;
         this.forceUpdate();
     }
 
@@ -283,7 +283,7 @@ export default class ReleasePage extends React.Component {
 
         this.state.valores = [];
         this.state.contas = [];
-        this.state.option = {key: -1, value: ''};
+        this.state.option = { key: -1, value: '' };
         this.state.searchStr = '';
         this.state.tableContent = [];
     }
@@ -386,9 +386,9 @@ export default class ReleasePage extends React.Component {
                             <Card className="card-table col-lg-12 animacaoSlide">
                                 <CardContent>
                                     <GenericTable labels={this.tableLabels}
-                                                  datas={this.state.tableValues}
-                                                  ignoreColums={[0]}
-                                                  onSelect={(value) => this.handleSelect(value)}/>
+                                        datas={this.state.tableValues}
+                                        ignoreColums={[0]}
+                                        onSelect={(value) => this.handleSelect(value)} />
                                 </CardContent>
                             </Card>
                         </If>
@@ -400,7 +400,7 @@ export default class ReleasePage extends React.Component {
                     <div className="padding">Carregando ...</div>
                     <div className="d-flex w-100 justify-content-center">
 
-                        <CircularProgress color={"primary"} size={50} thickness={5}/>
+                        <CircularProgress color={"primary"} size={50} thickness={5} />
                     </div>
 
                 </If>
@@ -450,14 +450,13 @@ export default class ReleasePage extends React.Component {
                                     <Card className="card-generic ">
                                         <CardContent>
                                             <Autocomplete
-                                                options={this.state.contaOptions}
                                                 value={this.state.optionSelected}
-                                                getOptionSelected={option => option}
+                                                options={this.state.contaOptions}
                                                 getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
                                                 multiple={false}
-                                                onChange={(evento) => this.changeConta(evento)}
+                                                onChange={(e, v) => this.changeConta(v)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                                 renderInput={params => (
                                                     <TextField
@@ -473,13 +472,13 @@ export default class ReleasePage extends React.Component {
                                                 )}
                                             />
                                             <Autocomplete
+                                                value={this.state.optionSelected}
                                                 options={this.state.contaOptions}
-                                                value={this.state.optionSelected.label}
-                                                getOptionSelected={option => this.state.optionSelected = option}                                                getOptionLabel={option => option.label}
+                                                getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
                                                 multiple={false}
-                                                onChange={(evento) => this.changeConta(evento)}
+                                                onChange={(e, v) => this.changeConta(v)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                                 renderInput={params => (
                                                     <TextField
@@ -496,25 +495,25 @@ export default class ReleasePage extends React.Component {
                                             />
 
                                             <div className="padding-top">
-                                                    <TextField
-                                                        variant="outlined"
-                                                        // error={this.state.error}
-                                                        fullWidth
-                                                        className="w-100 padding"
-                                                        //value={this.state.numberConta}
-                                                        id="id-valor"
-                                                        type="number"
-                                                        label="Valor"
-                                                        placeholder="Valor"
-                                                        //margin="normal"
-                                                        // helperText={this.state.helperText}
-                                                        // onChange={e => this.handleEnterAccountNumber(e.target.value)}
-                                                        onKeyPress={e => this.handleKeyPress(e)}
-                                                    />
+                                                <TextField
+                                                    variant="outlined"
+                                                    // error={this.state.error}
+                                                    fullWidth
+                                                    className="w-100 padding"
+                                                    //value={this.state.numberConta}
+                                                    id="id-valor"
+                                                    type="number"
+                                                    label="Valor"
+                                                    placeholder="Valor"
+                                                    //margin="normal"
+                                                    // helperText={this.state.helperText}
+                                                    // onChange={e => this.handleEnterAccountNumber(e.target.value)}
+                                                    onKeyPress={e => this.handleKeyPress(e)}
+                                                />
                                             </div>
                                             <div className={"padding-top"}>
                                                 <Button className="generic-btn"
-                                                        onClick={evento => this.adicionaValor()}>
+                                                    onClick={evento => this.adicionaValor()}>
                                                     <span>Adicionar Valor</span>
                                                 </Button>
                                             </div>
@@ -525,26 +524,26 @@ export default class ReleasePage extends React.Component {
 
 
                                 <div className="col-lg-7">
-                                <Card className="card-generic ">
-                                    <CardContent>
-                                        <GenericTable
-                                            labels={["Data", "Histórico", "Tipo", "Valor"]}
-                                            datas={this.state.valores}
-                                            ignoreColums={[0, 1]}/>
-                                        <If test={this.state.selecionado}>
-                                            {/*<Card className="card-internal col col-lg-12 margin-top">*/}
-                                            {/*    <CardContent>*/}
-                                            <Card className="total">
-                                                <span className="entire-line">Total Debitos: {this.getDebito()}</span>
-                                                <span>Total Debitos: {this.getCredito()}</span>
+                                    <Card className="card-generic ">
+                                        <CardContent>
+                                            <GenericTable
+                                                labels={["Data", "Histórico", "Tipo", "Valor"]}
+                                                datas={this.state.valores}
+                                                ignoreColums={[0, 1]} />
+                                            <If test={this.state.selecionado}>
+                                                {/*<Card className="card-internal col col-lg-12 margin-top">*/}
+                                                {/*    <CardContent>*/}
+                                                <Card className="total">
+                                                    <span className="entire-line">Total Debitos: {this.getDebito()}</span>
+                                                    <span>Total Debitos: {this.getCredito()}</span>
 
-                                            </Card>
-                                            {/*    </CardContent>*/}
-                                            {/*</Card>*/}
-                                        </If>
+                                                </Card>
+                                                {/*    </CardContent>*/}
+                                                {/*</Card>*/}
+                                            </If>
 
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
                                 </div>
 
                             </div>
@@ -557,25 +556,25 @@ export default class ReleasePage extends React.Component {
                     <Card className="card-internal col col-lg-12 margin-top animacaoSlide">
                         <CardContent>
                             <div className="w-100 side-by-side-bt">
-                            <Button className="generic-btn-no-icon"
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.save()}>
-                                <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
-                            </Button>
-                            <Button className="generic-btn-no-icon"
+                                    <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
+                                </Button>
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.remover()}>
-                                <span>Apagar</span>
-                            </Button>
-                            <Button className="generic-btn-no-icon"
+                                    <span>Apagar</span>
+                                </Button>
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.voltar()}>
-                                <span>Voltar</span>
-                            </Button>
+                                    <span>Voltar</span>
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
                 </If>
                 <If test={!this.state.loading && this.state.toastShow}>
                     <Snackbar open={this.state.toastShow} autoHideDuration={6000}
-                              onClick={e => this.onToastClick()}>
+                        onClick={e => this.onToastClick()}>
                         <Alert severity={this.state.toastType} onClick={e => this.onToastClick()}>
                             {this.state.toastMsg}
                         </Alert>
