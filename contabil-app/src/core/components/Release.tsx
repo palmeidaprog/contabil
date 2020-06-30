@@ -16,6 +16,8 @@ import {UtilService} from "../service/util-service";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {ContaEntities} from "../../entities/conta.entities";
 import {ContaService} from "../service/ContaService";
+import {TipoValor} from "../../entities/tipo-valor.enum";
+import {ValorEntities} from "../../entities/valor.entities";
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -50,6 +52,10 @@ class InternalState {
     tableContent: Array<any> = [];
     contaService: ContaService;
     contas: Array<ContaEntities> = [];
+    tiposOptions: Array<any> = [];
+    tipoSelecionado: any;
+    valorAdicionar: number | null;
+    dataLancamento: Date | null;
 
     constructor() {
         this.releases = new LancamentoEntities();
@@ -63,7 +69,12 @@ class InternalState {
         this.dataFinal = new Date('2029-07-01');
         this.loading = false;
         this.selecionado = new LancamentoEntities();
-        this.optionSelected = { label: '-', numero: 0};
+        this.optionSelected = { label: '-', numero: 0 };
+        this.tipoSelecionado = {label: "DEBITO", key: TipoValor.DEBITO}
+        this.tiposOptions = [
+            {label: "Débito", key: TipoValor.DEBITO},
+            {label: "Crédito", key: TipoValor.CREDITO}
+        ];
         this.loadContaCache();
 
     }
@@ -72,7 +83,7 @@ class InternalState {
         if (!this._userCode) {
             await this.updateUser();
         }
-        return this._userCode;
+        return this._userCode ? this._userCode : 46;
     }
 
     async updateUser(): Promise<void> {
@@ -85,6 +96,14 @@ class InternalState {
                 }
             }
         }
+    }
+
+    /**
+     * Adiciona lancamento
+     * @param lancamenoto conta a adicionar
+     */
+    async adicionarLancamento(lancamento: LancamentoEntities): Promise<any> {
+        return await this.lancamentoService.adicionar(lancamento).then(response => response, error => { throw error; });
     }
 
     /**
@@ -117,7 +136,7 @@ class InternalState {
      * Atualiza cache de contas no state e no localstorage do banco
      */
     async updateContaCache(): Promise<void> {
-        await this.listConta(true).then(() => {}, error => { throw error });
+        await this.listConta(true).then(() => { }, error => { throw error });
         if (this.contaCache) {
             localStorage.setItem(Keys.CONTAS, JSON.stringify(this.contaCache));
             this.contaOptions = this.contaCache.map(conta => {
@@ -152,8 +171,8 @@ class InternalState {
 
             this.tableContent = lista.map(conta => {
                 return {
-                    noConta : conta.numero,
-                    nomeConta : conta.nome
+                    noConta: conta.numero,
+                    nomeConta: conta.nome
                 };
             })
             this.tableContent.sort((c1, c2) => c1.numero > c2.numero ? -1 : 1);
@@ -192,14 +211,14 @@ class InternalState {
 export default class ReleasePage extends React.Component {
     public state: InternalState = new InternalState();
     private releaseService: ReleaseService = new ReleaseService();
-    public options: IOptionType[] = [{key: 0, value: "Número da Conta"}, {
+    public options: IOptionType[] = [{ key: 0, value: "Número da Conta" }, {
         key: 1,
         value: "Nome da Conta"
     }];
     public tableLabels = ["Data", "Historico"];
 
     public componentDidMount() {
-        this.state.releases = this.releaseService.getReleases();
+        //this.state.releases = this.releaseService.getReleases();
         this.forceUpdate();
     }
 
@@ -221,9 +240,15 @@ export default class ReleasePage extends React.Component {
         this.forceUpdate();
     }
 
-    changeConta(evento: any): void {
-        console.log(evento);
-        this.state.optionSelected = evento;
+    changeConta(value: any): void {
+        console.log(value);
+        this.state.optionSelected = value;
+        this.forceUpdate();
+    }
+
+    changeTipo(value: any): void {
+        console.log(value);
+        this.state.tipoSelecionado = value;
         this.forceUpdate();
     }
 
@@ -235,12 +260,22 @@ export default class ReleasePage extends React.Component {
         let date = new Date(e.target.value);
         console.log(date.toLocaleString());
         this.state.dataInicio = date;
+        this.forceUpdate();
+    }
+
+    handleDataChanged(e: any): void {
+        let date = new Date(e.target.value);
+        console.log(date.toLocaleString());
+        this.state.selecionado.data = date;
+        this.state.dataLancamento = date;
+        this.forceUpdate();
     }
 
     changeDateFinal(e: any): void {
         let date = new Date(e.target.value);
         console.log(date.toLocaleString());
         this.state.dataFinal = date;
+        this.forceUpdate();
     }
 
     onToastClick(): void {
@@ -261,28 +296,131 @@ export default class ReleasePage extends React.Component {
         this.forceUpdate();
     }
 
-    save(): void {
+    handleValorAdicionarChange(e: any): void {
+        this.state.valorAdicionar = e;
+        this.forceUpdate();
+    }
 
+    async save(): Promise<void> {
+        if (this.getCredito() != this.getDebito()) {
+            this.state.toastType = 'error';
+            this.state.toastMsg = 'Total de débitos e créditos dos valores devem ser iguais';
+            this.state.toastShow = true;
+            this.forceUpdate();
+        } else if (this.state.selecionado.historico == null) {
+            this.state.toastType = 'error';
+            this.state.toastMsg = 'É necessário preencher o histórico';
+            this.state.toastShow = true;
+            this.forceUpdate();
+        } else {
+            this.state.loading = true;
+            this.forceUpdate();
+            const historico = this.state.selecionado.historico;
+            this.state.selecionado = new LancamentoEntities();
+            this.state.selecionado.historico = historico;
+            this.state.selecionado.data = this.state.dataLancamento ? this.state.dataLancamento : new Date();
+            this.state.selecionado.codigoUsuario = await this.state.userCode();
+
+            this.state.selecionado.valores = this.state.valores.map(valor => {
+                const c = this.state.contaCache.find(c => c.numero == valor.numeroConta);
+                const v = new ValorEntities();
+                v.valor = valor.valor;
+                v.data = valor.data;
+                v.tipo = valor.tipo;
+                v.codigoConta = c && c.codigo ? c.codigo : 0;
+
+                return v;
+            });
+
+            try {
+                await this.state.adicionarLancamento(this.state.selecionado);
+                this.state.toastType = 'success';
+                this.state.toastMsg = 'Lançamento adicionado com sucesso';
+                this.state.toastShow = true
+                this.state.screenState = ScreenState.SEARCH;
+            } catch (e) {
+                this.state.toastType = 'error';
+                this.state.toastMsg = e?.message;
+                this.state.toastShow = true;
+            } finally {
+                this.state.loading = false;
+                this.forceUpdate();
+            }
+        }
     }
 
     remover(): void {
 
     }
 
-    voltar(): void {
+    clear(): void {
+        this.state.selecionado = new LancamentoEntities();
 
+        this.state.valores = [];
+        this.state.contas = [];
+        this.state.option = { key: -1, value: '' };
+        this.state.searchStr = '';
+        this.state.tableContent = [];
+    }
+
+    voltar(): void {
+        this.clear();
+        this.state.screenState = ScreenState.SEARCH;
+        this.forceUpdate();
     }
 
     getCredito(): number {
-        return 0.00;
+        let credito = 0;
+        this.state.valores.forEach(valor => {
+            if (valor.tipo == TipoValor.CREDITO) {
+                credito += valor.valor;
+            }
+        });
+        return credito;
     }
 
     getDebito(): number {
-        return 0.00;
+        let debito = 0;
+        this.state.valores.forEach(valor => {
+            if (valor.tipo == TipoValor.DEBITO) {
+                debito += valor.valor;
+            }
+        });
+        return debito;
+    }
+
+    cleanValorForm(): void {
+        this.state.optionSelected = { label: '-', numero: 0 };
+        this.state.tipoSelecionado = {label: "Débito", key: TipoValor.DEBITO};
+        this.state.valorAdicionar = null;
     }
 
     adicionaValor(): void {
+        if (this.state.valorAdicionar != null && this.state.optionSelected != null &&
+            this.state.tipoSelecionado != null) {
+            this.state.valores.push({
+                numeroConta: this.state.optionSelected.numero,
+                conta: this.state.optionSelected.label,
+                tipo: this.state.tipoSelecionado.key,
+                valor: this.state.valorAdicionar//.toFixed(2)
+            });
+            this.cleanValorForm();
+            this.state.toastType = 'success';
+            this.state.toastMsg = 'Novo valor adicionado'
+        } else {
+            this.state.toastType = 'error';
+            this.state.toastMsg = 'Favor preencher todos campos para adicionar novo valor';
+        }
+        this.state.toastShow = true;
+        this.forceUpdate();
+    }
 
+
+
+
+    handleHistoricoChange(e: any): void {
+        this.state.selecionado.historico = e;
+        this.forceUpdate();
     }
 
     public render() {
@@ -332,7 +470,7 @@ export default class ReleasePage extends React.Component {
 
 
                                                 <Button
-                                                    className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                    className={this.state.screenState != ScreenState.SEARCH ? "generic-btn-off" : "search-btn"}
                                                     disabled={this.state.screenState != ScreenState.SEARCH}
                                                     type="submit">
                                                     <i className="bloom"></i>
@@ -340,7 +478,7 @@ export default class ReleasePage extends React.Component {
                                                 </Button>
                                                 <div className="col-lg-2 div25p">
                                                     <Button
-                                                        className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                        className={this.state.screenState != ScreenState.SEARCH ? "generic-btn-off" : "search-btn"}
                                                         disabled={this.state.screenState != ScreenState.SEARCH}
                                                         onClick={evento => this.novo()}>
                                                         <i className="bloom"></i>
@@ -358,9 +496,9 @@ export default class ReleasePage extends React.Component {
                             <Card className="card-table col-lg-12 animacaoSlide">
                                 <CardContent>
                                     <GenericTable labels={this.tableLabels}
-                                                  datas={this.state.tableValues}
-                                                  ignoreColums={[0]}
-                                                  onSelect={(value) => this.handleSelect(value)}/>
+                                        datas={this.state.tableValues}
+                                        ignoreColums={[0]}
+                                        onSelect={(value) => this.handleSelect(value)} />
                                 </CardContent>
                             </Card>
                         </If>
@@ -372,7 +510,7 @@ export default class ReleasePage extends React.Component {
                     <div className="padding">Carregando ...</div>
                     <div className="d-flex w-100 justify-content-center">
 
-                        <CircularProgress color={"primary"} size={50} thickness={5}/>
+                        <CircularProgress color={"primary"} size={50} thickness={5} />
                     </div>
 
                 </If>
@@ -383,13 +521,13 @@ export default class ReleasePage extends React.Component {
                                 <div className="col-md-4">
                                     <TextField
                                         variant="outlined"
-                                        value={this.state.selecionado.data}
+                                        value={this.state.dataLancamento}
                                         disabled={this.state.screenState == ScreenState.EDIT}
                                         id="data-lanc"
                                         label="Data"
                                         type="datetime-local"
-                                        defaultValue=""
-                                        //onChange={e => this.changeDateInicio(e)}
+                                        defaultValue="2019-05-24T10:30"
+                                        onChange={e => this.handleDataChanged(e)}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -401,14 +539,14 @@ export default class ReleasePage extends React.Component {
                                         variant="outlined"
                                         // error={this.state.error}
                                         fullWidth
-                                        //value={this.state.numberConta}
+                                        value={this.state.selecionado.historico}
                                         id="id-historico"
                                         type="text"
                                         label="Histórico"
                                         placeholder="Histórico"
                                         //margin="normal"
                                         // helperText={this.state.helperText}
-                                        // onChange={e => this.handleEnterAccountNumber(e.target.value)}
+                                        onChange={e => this.handleHistoricoChange(e.target.value)}
                                         onKeyPress={e => this.handleKeyPress(e)}
                                     />
                                 </div>
@@ -422,14 +560,13 @@ export default class ReleasePage extends React.Component {
                                     <Card className="card-generic ">
                                         <CardContent>
                                             <Autocomplete
+                                                value={this.state.optionSelected}
                                                 options={this.state.contaOptions}
-                                                value={this.state.optionSelected.label}
-                                                getOptionSelected={option => this.state.optionSelected.numero = option.numero}
                                                 getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
                                                 multiple={false}
-                                                onChange={(evento) => this.changeConta(evento)}
+                                                onChange={(e, v) => this.changeConta(v)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                                 renderInput={params => (
                                                     <TextField
@@ -437,22 +574,21 @@ export default class ReleasePage extends React.Component {
                                                         fullWidth
                                                         variant="outlined"
                                                         // error={this.state.error}
-                                                        id="id-conta-pai"
+                                                        id="id-conta-valor"
                                                         margin="normal"
                                                         // helperText={this.state.helperText}
-                                                        placeholder="Conta Pai"
+                                                        placeholder="Conta"
                                                     />
                                                 )}
                                             />
                                             <Autocomplete
-                                                options={this.state.contaOptions}
-                                                value={this.state.optionSelected.label}
-                                                getOptionSelected={option => this.state.optionSelected.numero = option.numero}
+                                                value={this.state.tipoSelecionado}
+                                                options={this.state.tiposOptions}
                                                 getOptionLabel={option => option.label}
                                                 className="w-100"
                                                 noOptionsText={"Carregando..."}
                                                 multiple={false}
-                                                onChange={(evento) => this.changeConta(evento)}
+                                                onChange={(e, v) => this.changeTipo(v)}
                                                 onKeyPress={e => this.handleKeyPress(e)}
                                                 renderInput={params => (
                                                     <TextField
@@ -469,25 +605,25 @@ export default class ReleasePage extends React.Component {
                                             />
 
                                             <div className="padding-top">
-                                                    <TextField
-                                                        variant="outlined"
-                                                        // error={this.state.error}
-                                                        fullWidth
-                                                        className="w-100 padding"
-                                                        //value={this.state.numberConta}
-                                                        id="id-valor"
-                                                        type="number"
-                                                        label="Valor"
-                                                        placeholder="Valor"
-                                                        //margin="normal"
-                                                        // helperText={this.state.helperText}
-                                                        // onChange={e => this.handleEnterAccountNumber(e.target.value)}
-                                                        onKeyPress={e => this.handleKeyPress(e)}
-                                                    />
+                                                <TextField
+                                                    variant="outlined"
+                                                    // error={this.state.error}
+                                                    fullWidth
+                                                    className="w-100 padding"
+                                                    value={this.state.valorAdicionar}
+                                                    id="id-valor"
+                                                    type="number"
+                                                    label="Valor"
+                                                    placeholder="Valor"
+                                                    //margin="normal"
+                                                    // helperText={this.state.helperText}
+                                                    onChange={e => this.handleValorAdicionarChange(e.target.value)}
+                                                    onKeyPress={e => this.handleKeyPress(e)}
+                                                />
                                             </div>
                                             <div className={"padding-top"}>
                                                 <Button className="generic-btn"
-                                                        onClick={evento => this.adicionaValor()}>
+                                                    onClick={evento => this.adicionaValor()}>
                                                     <span>Adicionar Valor</span>
                                                 </Button>
                                             </div>
@@ -498,26 +634,26 @@ export default class ReleasePage extends React.Component {
 
 
                                 <div className="col-lg-7">
-                                <Card className="card-generic ">
-                                    <CardContent>
-                                        <GenericTable
-                                            labels={["Data", "Histórico", "Tipo", "Valor"]}
-                                            datas={this.state.valores}
-                                            ignoreColums={[0, 1]}/>
-                                        <If test={this.state.selecionado}>
-                                            {/*<Card className="card-internal col col-lg-12 margin-top">*/}
-                                            {/*    <CardContent>*/}
-                                            <Card className="total">
-                                                <span className="entire-line">Total Debitos: {this.getDebito()}</span>
-                                                <span>Total Debitos: {this.getCredito()}</span>
+                                    <Card className="card-generic ">
+                                        <CardContent>
+                                            <GenericTable
+                                                labels={["Conta", "Tipo", "Valor"]}
+                                                datas={this.state.valores}
+                                                ignoreColums={[0]} />
+                                            <If test={this.state.selecionado}>
+                                                {/*<Card className="card-internal col col-lg-12 margin-top">*/}
+                                                {/*    <CardContent>*/}
+                                                <Card className="total">
+                                                    <span className="entire-line">Total Debitos: {this.getDebito()}</span>
+                                                    <span>Total Debitos: {this.getCredito()}</span>
 
-                                            </Card>
-                                            {/*    </CardContent>*/}
-                                            {/*</Card>*/}
-                                        </If>
+                                                </Card>
+                                                {/*    </CardContent>*/}
+                                                {/*</Card>*/}
+                                            </If>
 
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
                                 </div>
 
                             </div>
@@ -529,25 +665,26 @@ export default class ReleasePage extends React.Component {
 
                     <Card className="card-internal col col-lg-12 margin-top animacaoSlide">
                         <CardContent>
-                            <Button className="generic-btn"
+                            <div className="w-100 side-by-side-bt">
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.save()}>
-                                <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
-                            </Button>
-                            <Button className="generic-btn"
+                                    <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
+                                </Button>
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.remover()}>
-                                <span>Apagar</span>
-                            </Button>1
-                            <Button className="generic-btn"
+                                    <span>Apagar</span>
+                                </Button>
+                                <Button className="generic-btn-no-icon"
                                     onClick={evento => this.voltar()}>
-                                <span>Voltar</span>
-                            </Button>
-
+                                    <span>Voltar</span>
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 </If>
                 <If test={!this.state.loading && this.state.toastShow}>
                     <Snackbar open={this.state.toastShow} autoHideDuration={6000}
-                              onClick={e => this.onToastClick()}>
+                        onClick={e => this.onToastClick()}>
                         <Alert severity={this.state.toastType} onClick={e => this.onToastClick()}>
                             {this.state.toastMsg}
                         </Alert>

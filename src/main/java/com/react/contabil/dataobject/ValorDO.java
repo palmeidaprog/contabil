@@ -33,15 +33,27 @@ public class ValorDO implements Entidade {
     )
     private LancamentoDO lancamento;
 
+    @Column(name = "conta_codigo", nullable = false)
+    private Long codigoConta;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "conta_codigo",
         referencedColumnName = "codigo",
-        nullable = false
+        updatable = false,
+        insertable = false
     )
     private ContaDO conta;
 
     public ValorDO() {  }
+
+    public Long getCodigoConta() {
+        return codigoConta;
+    }
+
+    public void setCodigoConta(Long codigoConta) {
+        this.codigoConta = codigoConta;
+    }
 
     public Long getCodigo() {
         return codigo;

@@ -83,7 +83,7 @@ public class ContaService {
 
     /**
      * Remover conta
-     * @param conta conta a ser removida
+     * @param contaStr conta a ser removida
      * @return 200 para ok ou exceção e codigo de erro
      */
     @POST
@@ -96,7 +96,7 @@ public class ContaService {
         try {
             conta = mapper.readValue(contaStr, Conta.class);
         } catch (Exception e) {
-            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+            logger.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
                     "ocorreu um erro ao remover Erro: {}", e.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();
@@ -144,7 +144,7 @@ public class ContaService {
         try {
             conta = mapper.readValue(contaStr, Conta.class);
         } catch (Exception e) {
-            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+            logger.error("atualizar :: Respondendo INTERNAL_SERVER_ERROR, " +
                     "ocorreu um erro ao atualizar Erro: {}", e.getMessage());
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
                     .build();

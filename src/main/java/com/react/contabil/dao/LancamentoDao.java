@@ -93,7 +93,7 @@ public class LancamentoDao extends DaoGenerico<LancamentoDO, Long> {
             return atualizado;
         } catch (Exception e) {
             final String erro = String.format("Ocorreu um erro ao atualizar" +
-                    " %s no banco de dados");
+                    " %s no banco de dados", lancamentoDO);
             logger.error("atualizar :: {} Erro: {}", erro, e.getMessage(), e);
             throw new BancoDadosException(erro, e);
         }

@@ -3,7 +3,7 @@ import { TipoValor } from "./tipo-valor.enum";
 
 export class LancamentoEntities {
     codigo?: number;
-    codigoUsuario: string;
+    codigoUsuario: number;
     data: Date;
     historico: string;
     valores: Array<ValorEntities>;
