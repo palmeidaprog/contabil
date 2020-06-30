@@ -1,32 +1,32 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
 import '../../assets/css/components/Conta.scss';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {Button, Card, CardContent, CircularProgress, Divider, TextField} from '@material-ui/core';
+import { Button, Card, CardContent, CircularProgress, Divider, TextField } from '@material-ui/core';
 import GenericTable from '../../components/GenericTable';
 //import SearchService from '../service/SearchService';
-import {ContaService} from "../service/ContaService";
-import {ContaEntities} from "../../entities/conta.entities";
+import { ContaService } from "../service/ContaService";
+import { ContaEntities } from "../../entities/conta.entities";
 import If from '../common/If';
-import {ScreenState} from "../../entities/screen-state.enum";
-import {Keys} from "../../entities/keys.enum";
-import {UsuarioEntities} from "../../entities/usuario.entities";
+import { ScreenState } from "../../entities/screen-state.enum";
+import { Keys } from "../../entities/keys.enum";
+import { UsuarioEntities } from "../../entities/usuario.entities";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from '@material-ui/lab/Alert';
-import {UtilService} from "../service/util-service";
+import { UtilService } from "../service/util-service";
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-interface IOptionType{
-    key : number,
-    value : string
+interface IOptionType {
+    key: number,
+    value: string
 }
 
-class InternalState{
-    option : IOptionType | null;
-    searchStr : string;
-    hasError : boolean;
+class InternalState {
+    option: IOptionType | null;
+    searchStr: string;
+    hasError: boolean;
     private contaService: ContaService;
     tableContent: Array<any> = [];
     contas: Array<ContaEntities>;
@@ -52,7 +52,7 @@ class InternalState{
         this.contaService = new ContaService();
         this.title = 'Buscar Conta';
         this.screenState = ScreenState.SEARCH;
-        this.optionSelected = { label: '-', numero: 0};
+        this.optionSelected = { label: '-', numero: 0 };
         this.loadContaCache();
         this.toastShow = false;
         this.toastType = 'success';
@@ -108,7 +108,7 @@ class InternalState{
      * Atualiza cache de contas no state e no localstorage do banco
      */
     async updateContaCache(): Promise<void> {
-        await this.listConta(true).then(() => {}, error => { throw error });
+        await this.listConta(true).then(() => { }, error => { throw error });
         if (this.contaCache) {
             localStorage.setItem(Keys.CONTAS, JSON.stringify(this.contaCache));
             this.contaOptions = this.contaCache.map(conta => {
@@ -126,7 +126,7 @@ class InternalState{
      * @param codigoConta
      */
     async getConta(codigoConta: number): Promise<any> {
-        return await this.contaService.get(codigoConta).then(response => response, error => {throw error;});
+        return await this.contaService.get(codigoConta).then(response => response, error => { throw error; });
     }
 
     /**
@@ -134,7 +134,7 @@ class InternalState{
      * @param conta conta a adicionar
      */
     async addConta(conta: ContaEntities): Promise<any> {
-        return await this.contaService.adicionar(conta).then(response => response, error => {throw error;});
+        return await this.contaService.adicionar(conta).then(response => response, error => { throw error; });
     }
 
     /**
@@ -142,7 +142,7 @@ class InternalState{
      * @param conta conta a adicionar
      */
     async removeConta(conta: ContaEntities): Promise<any> {
-        return await this.contaService.remover(conta).then(response => response, error => {throw error;});
+        return await this.contaService.remover(conta).then(response => response, error => { throw error; });
     }
 
 
@@ -168,8 +168,8 @@ class InternalState{
 
             this.tableContent = lista.map(conta => {
                 return {
-                    noConta : conta.numero,
-                    nomeConta : conta.nome
+                    noConta: conta.numero,
+                    nomeConta: conta.nome
                 };
             })
             this.tableContent.sort((c1, c2) => c1.numero > c2.numero ? -1 : 1);
@@ -179,21 +179,28 @@ class InternalState{
     }
 }
 
-export default class Conta extends React.Component{
-    public state : InternalState = new InternalState();
+export default class Conta extends React.Component {
+    public state: InternalState = new InternalState();
     private contaService: ContaService = new ContaService();
-    public options : IOptionType[] = [
-        {key : 0, value : "Número da Conta"},
-        {key : 1, value : "Nome da Conta"}
+    public options: IOptionType[] = [
+        { key: 0, value: "Número da Conta" },
+        { key: 1, value: "Nome da Conta" }
     ];
-    public handleKeyPress(evt : any){
+    public componentDidMount(){
+        if(this.options.length > 0){
+            this.state.option = this.options[0];
+            this.forceUpdate();
+        }
+    }
+    public handleKeyPress(evt: any) {
 
     }
-    public handleInputOption(value : any){
+    public handleInputOption(value: any) {
+        debugger;
         this.state.option = value;
         this.forceUpdate();
     }
-    public handleInputText(value : any){
+    public handleInputText(value: any) {
         this.state.searchStr = value;
         this.forceUpdate();
     }
@@ -219,7 +226,7 @@ export default class Conta extends React.Component{
         this.state.numberConta = '';
         this.state.valores = [];
         this.state.contas = [];
-        this.state.option = {key: -1, value: ''};
+        this.state.option = { key: -1, value: '' };
         this.state.searchStr = '';
         this.state.tableContent = [];
     }
@@ -240,17 +247,17 @@ export default class Conta extends React.Component{
 
     getCredito(): string {
         return this.state.contaSelecionada && this.state.contaSelecionada.saldo ? this.state.contaSelecionada.saldo.totalCredito.toFixed(2) : '0.00';
-    }ntaSelecionada
+    } ntaSelecionada
 
     handleEnterAccountName(event: any): void {
-        console.log(event);
+        // console.log(event);
         this.state.nameConta = event;
         this.forceUpdate();
     }
 
-    changeContaPai(evento: any): void {
-        console.log(evento);
-        this.state.optionSelected = evento;
+    changeContaPai(value: any): void {
+        // console.log(value);
+        this.state.optionSelected = value;
         this.forceUpdate();
     }
 
@@ -396,68 +403,69 @@ export default class Conta extends React.Component{
                     <div className="search-header">
                         <div className="search-field">
                             <If test={!this.state.loading}>
-                            <span className="search-title">{this.state.title}</span>
+                                <span className="search-title">{this.state.title}</span>
 
 
                                 <Card className="card-generic col col-lg-12">
                                     <CardContent className="center">
                                         <Card className="card-mini col-lg-12"><CardContent>
-                                        <form className="" onSubmit={(e) => {
-                                            e.preventDefault();
-                                            this.onSearch();
-                                        }}>
+                                            <form className="" onSubmit={(e) => {
+                                                e.preventDefault();
+                                                this.onSearch();
+                                            }}>
 
-                                            <Autocomplete
-                                                className="search-options"
-                                                options={this.options}
-                                                getOptionLabel={option => option.value}
-                                                disabled={this.state.screenState != ScreenState.SEARCH}
-                                                noOptionsText={"Carregando..."}
-                                                multiple={false}
-                                                onChange={(e, v) => this.handleInputOption(v)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                                renderInput={params => (
-                                                    <TextField
-                                                        {...params}
-                                                        fullWidth
-                                                        variant="outlined"
-                                                        error={this.state.hasError}
-                                                        id="id-conta-pai"
-                                                        margin="normal"
-                                                        placeholder="Selecione uma Opção"
-                                                    />
-                                                )}
-                                            />
-                                            <TextField
-                                                className="search-input"
-                                                variant="outlined"
-                                                error={this.state.hasError}
-                                                fullWidth
-                                                disabled={this.state.screenState != ScreenState.SEARCH}
-                                                id="id-busca-texto"
-                                                type="string"
-                                                label="Busca"
-                                                placeholder={this.getPlaceHolderSearchInput()}
-                                                margin="normal"
-                                                onChange={e => this.handleInputText(e.target.value)}
-                                                onKeyPress={e => this.handleKeyPress(e)}
-                                            />
+                                                <Autocomplete
+                                                    className="search-options"
+                                                    value={this.state.option}
+                                                    options={this.options}
+                                                    getOptionLabel={option => option.value}
+                                                    disabled={this.state.screenState != ScreenState.SEARCH}
+                                                    noOptionsText={"Carregando..."}
+                                                    multiple={false}
+                                                    onChange={(e, v) => this.handleInputOption(v)}
+                                                    onKeyPress={e => this.handleKeyPress(e)}
+                                                    renderInput={params => (
+                                                        <TextField
+                                                            {...params}
+                                                            fullWidth
+                                                            variant="outlined"
+                                                            error={this.state.hasError}
+                                                            id="id-conta-pai"
+                                                            margin="normal"
+                                                            placeholder="Selecione uma Opção"
+                                                        />
+                                                    )}
+                                                />
+                                                <TextField
+                                                    className="search-input"
+                                                    variant="outlined"
+                                                    error={this.state.hasError}
+                                                    fullWidth
+                                                    disabled={this.state.screenState != ScreenState.SEARCH}
+                                                    id="id-busca-texto"
+                                                    type="string"
+                                                    label="Busca"
+                                                    placeholder={this.getPlaceHolderSearchInput()}
+                                                    margin="normal"
+                                                    onChange={e => this.handleInputText(e.target.value)}
+                                                    onKeyPress={e => this.handleKeyPress(e)}
+                                                />
 
-                                            <Button className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                <Button className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
                                                     disabled={this.state.screenState != ScreenState.SEARCH}
                                                     type="submit">
-                                                <i className="bloom"></i>
-                                                <span>Pesquisar</span>
-                                            </Button>
-                                            <div className="col-lg-2 div25p">
-                                            <Button className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
-                                                    disabled={this.state.screenState != ScreenState.SEARCH}
-                                                    onClick={evento => this.newConta()}>
-                                                <i className="bloom"></i>
-                                                <span>Novo</span>
-                                            </Button>
-                                            </div>
-                                        </form>
+                                                    <i className="bloom"></i>
+                                                    <span>Pesquisar</span>
+                                                </Button>
+                                                <div className="col-lg-2 div25p">
+                                                    <Button className={this.state.screenState != ScreenState.SEARCH ? "search-btn-off" : "search-btn"}
+                                                        disabled={this.state.screenState != ScreenState.SEARCH}
+                                                        onClick={evento => this.newConta()}>
+                                                        <i className="bloom"></i>
+                                                        <span>Novo</span>
+                                                    </Button>
+                                                </div>
+                                            </form>
                                         </CardContent></Card>
                                     </CardContent>
                                 </Card>
@@ -467,19 +475,19 @@ export default class Conta extends React.Component{
                     <If test={this.state.loading}>
                         <div className="empty"></div>
                         <div className="col-lg-12">
-"                            <div className="padding">Carregando ...</div>
+                            "                            <div className="padding">Carregando ...</div>
                             <div className="d-flex w-100 justify-content-center">
-                                <CircularProgress color={"primary"} size={50} thickness={5}/>
+                                <CircularProgress color={"primary"} size={50} thickness={5} />
                             </div>
                         </div>
                     </If>
                     <If test={!this.state.loading && this.state.screenState == ScreenState.SEARCH
-                    && this.state.tableContent.length > 0}>
+                        && this.state.tableContent.length > 0}>
                         <Card className="card-generic animacaoSlide">
                             <CardContent>
                                 <GenericTable labels={["Nº da Conta", "Nome da Conta"]}
-                                              datas={this.state.tableContent}
-                                              onSelect={value => this.handleSelect(value)}/>
+                                    datas={this.state.tableContent}
+                                    onSelect={value => this.handleSelect(value)} />
                             </CardContent>
                         </Card>
                     </If>
@@ -524,14 +532,12 @@ export default class Conta extends React.Component{
                                     <div className="col-md-6">
                                         <Autocomplete
                                             options={this.state.contaOptions}
-                                            value={this.state.optionSelected.label}
-                                            getOptionSelected={option => this.state.optionSelected.numero = option.numero}
                                             disabled={this.state.screenState != ScreenState.NEW}
                                             getOptionLabel={option => option.label}
                                             className="w-100"
                                             noOptionsText={"Carregando..."}
                                             multiple={false}
-                                            onChange={(evento) => this.changeContaPai(evento)}
+                                            onChange={(e, v) => this.changeContaPai(v)}
                                             onKeyPress={e => this.handleKeyPress(e)}
                                             renderInput={params => (
                                                 <TextField
@@ -557,7 +563,7 @@ export default class Conta extends React.Component{
                                         <GenericTable
                                             labels={["Data", "Histórico", "Tipo", "Valor"]}
                                             datas={this.state.valores}
-                                            ignoreColums={[0, 1]}/>
+                                            ignoreColums={[0, 1]} />
                                         <If test={this.state.contaSelecionada}>
                                             {/*<Card className="card-internal col col-lg-12 margin-top">*/}
                                             {/*    <CardContent>*/}
@@ -578,23 +584,23 @@ export default class Conta extends React.Component{
                             </CardContent>
                         </Card>
 
-                            <Card className="card-internal col col-lg-12 margin-top animacaoSlide">
-                                <CardContent>
-                                    <Button className="generic-btn"
-                                            onClick={evento => this.save()}>
-                                        <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
-                                    </Button>
-                                    <Button className="generic-btn"
-                                            onClick={evento => this.removeConta()}>
-                                        <span>Apagar</span>
-                                    </Button>
-                                    <Button className="generic-btn"
-                                            onClick={evento => this.handleVoltarClick()}>
-                                        <span>Voltar</span>
-                                    </Button>
+                        <Card className="card-internal col col-lg-12 margin-top animacaoSlide">
+                            <CardContent>
+                                <Button className="generic-btn"
+                                    onClick={evento => this.save()}>
+                                    <span>{this.state.screenState == ScreenState.NEW ? "Adicionar" : "Atualizar"}</span>
+                                </Button>
+                                <Button className="generic-btn"
+                                    onClick={evento => this.removeConta()}>
+                                    <span>Apagar</span>
+                                </Button>
+                                <Button className="generic-btn"
+                                    onClick={evento => this.handleVoltarClick()}>
+                                    <span>Voltar</span>
+                                </Button>
 
-                                </CardContent>
-                            </Card>
+                            </CardContent>
+                        </Card>
                     </If>
                     <If test={this.state.toastShow}>
                         <Snackbar open={this.state.toastShow} autoHideDuration={6000} onClick={e => this.onToastClick()}>

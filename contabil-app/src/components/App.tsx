@@ -20,7 +20,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Search from "../core/components/Conta";
 
 const RouteWrapper = ({component: Component, restricted, authProps, ...rest}) => {
-  console.log(authProps);
+  // console.log(authProps);
   return (
       // restricted = false meaning public route
       // restricted = true meaning restricted route
