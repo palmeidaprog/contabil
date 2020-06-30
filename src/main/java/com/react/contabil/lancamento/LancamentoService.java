@@ -1,5 +1,7 @@
 package com.react.contabil.lancamento;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.react.contabil.conta.Conta;
 import com.react.contabil.dao.FiltroLancamentos;
 import com.react.contabil.excecao.BancoDadosException;
 import com.react.contabil.excecao.ContabilException;
@@ -31,9 +33,21 @@ public class LancamentoService {
 
     @POST
     @Path("/adicionar")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response adicionar(@Valid Lancamento lancamento) {
+    public Response adicionar(String lancamentoStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Lancamento lancamento;
+        try {
+            lancamento = mapper.readValue(lancamentoStr, Lancamento.class);
+        } catch (Exception e) {
+            logger.error("adicionar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao adicionar Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
+
+
             try {
             logger.info("adicionar :: Acessando /lancamento/adiciona " +
                         "Adicionando novo lancamento: {}", lancamento
@@ -54,8 +68,18 @@ public class LancamentoService {
 
     @POST
     @Path("/remover")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response remover(@Valid Lancamento lancamento) {
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response remover(String lancamentoStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Lancamento lancamento;
+        try {
+            lancamento = mapper.readValue(lancamentoStr, Lancamento.class);
+        } catch (Exception e) {
+            logger.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao remover Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+
         try {
             logger.info("remover :: /lancamento/remover Removendo {} ...", 
                     lancamento);
@@ -75,7 +99,19 @@ public class LancamentoService {
     @POST
     @Path("/atualizar")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response atualizar(@Valid Lancamento lancamento) {
+    public Response atualizar(String lancamentoStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Lancamento lancamento;
+        try {
+            lancamento = mapper.readValue(lancamentoStr, Lancamento.class);
+        } catch (Exception e) {
+            logger.error("atualizar :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao atualizar Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+
+
+
         try {
             logger.info("atualizar :: /lancamento/atualizar Atualizando {}" +
                     " ... ", lancamento);

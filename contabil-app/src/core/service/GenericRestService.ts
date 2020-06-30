@@ -3,6 +3,7 @@ export class GenericRestService {
 
     constructor(restPath: string) {
         const apiPath = 'http://138.197.71.50:8080/contabil';
+        // const apiPath = 'http://127.0.0.1:8080/contabil';
         this.restPath = apiPath + (restPath.startsWith('/') ? '' : '/') + restPath;
     }
 

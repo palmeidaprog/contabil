@@ -22,7 +22,7 @@ export default class ReleaseService{
         entityValue.tipo = TipoValor.CREDITO;
         entityValue.valor = 1000;
         release.codigo = 1;
-        release.codigoUsuario = "11";
+        release.codigoUsuario = 11;
         release.data = new Date();
         release.historico = "teste";
         release.valores = new Array(15).fill(entityValue);

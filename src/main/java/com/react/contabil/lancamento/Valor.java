@@ -53,7 +53,7 @@ public class Valor {
     public Valor(ValorDO valorDO) {
         this.codigo = valorDO.getCodigo();
         this.tipo = valorDO.getTipo();
-        this.codigoConta = valorDO.getConta().getCodigo();
+        this.codigoConta = valorDO.getCodigoConta();
         this.saldoConta = valorDO.getSaldoConta();
         this.codigoLancamento = valorDO.getCodigoLancamento();
 
@@ -84,9 +84,7 @@ public class Valor {
         final ValorDO valorDO = new ValorDO();
         valorDO.setCodigoLancamento(this.codigoLancamento);
         valorDO.setSaldoConta(this.saldoConta);
-        final ContaDO contaDO = new ContaDO();
-        contaDO.setCodigo(this.codigoConta);
-        valorDO.setConta(contaDO);
+        valorDO.setCodigoConta(this.codigoConta);
 
         valorDO.setTipo(this.tipo);
         valorDO.setCodigo(this.codigo);

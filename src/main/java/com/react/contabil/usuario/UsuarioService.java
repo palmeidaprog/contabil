@@ -1,5 +1,7 @@
 package com.react.contabil.usuario;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.react.contabil.conta.Conta;
 import com.react.contabil.excecao.*;
 import com.react.contabil.util.Constantes;
 import com.react.contabil.util.Util;
@@ -33,10 +35,21 @@ public class UsuarioService {
      */
     @POST
     @Path("/adicionar")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(Constantes.APPLICATION_JSON_UTF8)
-    public Response adicionar(@NotNull(message = Constantes.Usuario.NOT_NULL)
-                                       Usuario usuario) {
+    public Response adicionar(String usuarioStr) {
+        final ObjectMapper mapper = new ObjectMapper();
+        Usuario usuario;
+        try {
+            usuario = mapper.readValue(usuarioStr, Usuario.class);
+        } catch (Exception e) {
+            LOGGER.error("remover :: Respondendo INTERNAL_SERVER_ERROR, " +
+                    "ocorreu um erro ao remover Erro: {}", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
+                    .build();
+        }
+
+
         try {
             LOGGER.info("adicionar :: Acessando /usuario/adiciona " +
                     "Adicionando novo {}", usuario.getLogin());
